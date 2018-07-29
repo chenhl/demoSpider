@@ -4,7 +4,7 @@ from baby.items import BabyItem
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
 from scrapy.loader.processors import TakeFirst
-
+#item loader
 class DefaultItemLoader(ItemLoader):
     default_output_processor = TakeFirst()
 
