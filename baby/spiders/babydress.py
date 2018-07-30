@@ -14,13 +14,14 @@ class BabydressSpider(scrapy.Spider):
     start_urls = ['http://www-test.babyonlinedress.cn/accessories-c147/']
 
     def parse(self, response):
-        infos1 = response.css('div.clothing-item div.clothing-info')
+        infos1 = response.css('div.clothing-item')
         for info in infos1:
             l = DefaultItemLoader(item=BabyItem(),selector=info)
             l.add_value('cur_link', get_base_url(response))
-            l.add_css('name', 'p.clothing-name::text')
-            l.add_css('shop_price', 'span.price-small b::text')
-            l.add_css('market_price', 'span.price-big b::text')
+            l.add_css('name', 'div.clothing-info p.clothing-name::text')
+            l.add_xpath('image_urls', 'a/img/@data-original')
+            l.add_css('shop_price', 'div.clothing-info span.price-small b::text')
+            l.add_css('market_price', 'div.clothing-info span.price-big b::text')
             # print(l.load_item())
             yield l.load_item()
 
@@ -41,6 +42,7 @@ class BabydressSpider(scrapy.Spider):
             item = BabyItem()
             item['cur_link'] = get_base_url(response)
             item['name'] = info.css('p.clothing-name::text').extract()[0]
+            item['image_url'] = info.css('a img::attr(src)::text').extract()[0]
             item['shop_price'] = info.css('span.price-small b::text').extract()[0]
             item['market_price'] = info.css('span.price-big b::text').extract()[0]
             items.append(item)

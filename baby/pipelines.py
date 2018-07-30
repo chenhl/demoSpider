@@ -6,7 +6,12 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 import logging
+
+import scrapy
 from scrapy.exceptions import DropItem
+from scrapy.pipelines.images import ImagesPipeline
+
+
 class BabyPipeline(object):
     def process_item(self, item, spider):
         # pass
@@ -26,4 +31,17 @@ class JsonWriterPipeline(object):
     def process_item(self, item, spider):
         line = json.dumps(dict(item)) + "\n"
         self.file.write(line)
+        return item
+
+class MyImagesPipeline(ImagesPipeline):
+
+    def get_media_requests(self, item, info):
+        for image_url in item['image_urls']:
+            yield scrapy.Request(image_url)
+
+    def item_completed(self, results, item, info):
+        # image_paths = [x['path'] for ok, x in results if ok]
+        # if not image_paths:
+        #     raise DropItem("Item contains no images")
+        # item['image_paths'] = image_paths
         return item
