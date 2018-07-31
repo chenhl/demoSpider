@@ -69,11 +69,10 @@ ROBOTSTXT_OBEY = True
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    'baby.pipelines.BabyPipeline': 300,
+   'baby.pipelines.MyImagesPipeline': 400,
    'baby.pipelines.JsonWriterPipeline': 500,
-   'baby.pipelines.MyImagesPipeline': 600,
 }
 IMAGES_STORE='images'
-
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True

@@ -18,6 +18,9 @@ class BabyItem(scrapy.Item):
         output_processor=TakeFirst()
     )
     cur_link = scrapy.Field()
+    image_urls = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     shop_price = scrapy.Field(
         output_processor=TakeFirst()
     )
