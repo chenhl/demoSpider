@@ -42,6 +42,7 @@ class BabydressSpider(scrapy.Spider):
             item = BabyItem()
             item['cur_link'] = get_base_url(response)
             item['name'] = info.css('p.clothing-name::text').extract()[0]
+            item['image_url'] = info.css('a img::attr(src)::text').extract()[0]
             item['shop_price'] = info.css('span.price-small b::text').extract()[0]
             item['market_price'] = info.css('span.price-big b::text').extract()[0]
             items.append(item)

@@ -13,6 +13,10 @@ class BabyItem(scrapy.Item):
     name = scrapy.Field(
         output_processor=TakeFirst()
     )
+    image_paths = scrapy.Field()
+    image_urls = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     cur_link = scrapy.Field()
     image_urls = scrapy.Field(
         output_processor=TakeFirst()
