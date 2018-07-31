@@ -21,7 +21,7 @@ NEWSPIDER_MODULE = 'baby.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 #启用feed
-#FEED_URI = 'file:///D:/apps/baby/123.jsonl'
+#FEED_URI = 'file:///D:/apps/baby/data/123.jsonl'
 #FEED_FORMAT = 'jsonlines'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
