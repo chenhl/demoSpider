@@ -3,3 +3,4 @@ images
 items.jl
 123.jsonl
 items.jsonl
+*.pyc
