@@ -1,4 +1,5 @@
-.idea
+.idea/*
+.git/*
 images
 items.jl
 123.jsonl
