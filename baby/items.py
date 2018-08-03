@@ -8,6 +8,14 @@
 import scrapy
 from scrapy.loader.processors import TakeFirst
 
+class BabyDetailItem(scrapy.Item):
+    # define the fields for your item here like:
+    name = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    cur_link = scrapy.Field()
+    pass
+
 class BabyItem(scrapy.Item):
     # define the fields for your item here like:
     name = scrapy.Field(

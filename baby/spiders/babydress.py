@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import BabyItem
+from baby.items import BabyItem,BabyDetailItem
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
 from scrapy.loader.processors import TakeFirst
+from scrapy.spiders import CrawlSpider,Rule
+from scrapy.linkextractors import LinkExtractor
 #item loader
 class DefaultItemLoader(ItemLoader):
     default_output_processor = TakeFirst()
@@ -13,12 +15,26 @@ CrawlSpider。都知道在写自己的spider的时候需要继承scrapy的spider
 CrawlSpider的优势在于可以用rules方便地规定新的url的样子，即通过正则匹配来约束url。并且不需要自己生成新的url，
 CrawlSpider会自己寻找源码中所有符合要求的新url的。另外，rules的回调方法名字最好不要叫parse。
 '''
-class BabydressSpider(scrapy.Spider):
+class BabydressSpider(CrawlSpider):
     name = 'babydress'
     allowed_domains = ['babyonlinedress.cn']
-    start_urls = ['http://www-test.babyonlinedress.cn/accessories-c147/']
+    # accessories - c147 /
+    start_urls = ['http://www-test.babyonlinedress.cn/']
+    rules = (
+        Rule(LinkExtractor(allow=('http://www-test.babyonlinedress.cn/-c\d'))),
+        Rule(LinkExtractor(allow=('http://www-test.babyonlinedress.cn/-g\d')),callback='pass_item')
+    )
+    def parse_item(self, response):
+        infos1 = response.css('div.clothing-item')
+        for info in infos1:
+            l = DefaultItemLoader(item=BabyDetailItem(),selector=info)
+            l.add_value('cur_link', get_base_url(response))
+            l.add_css('name', '/html/head/title')
+            # print(l.load_item())
+            yield l.load_item()
 
-    def parse(self, response):
+
+    def parse1(self, response):
         infos1 = response.css('div.clothing-item')
         for info in infos1:
             l = DefaultItemLoader(item=BabyItem(),selector=info)
