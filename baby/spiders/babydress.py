@@ -8,6 +8,11 @@ from scrapy.loader.processors import TakeFirst
 class DefaultItemLoader(ItemLoader):
     default_output_processor = TakeFirst()
 
+'''
+CrawlSpider。都知道在写自己的spider的时候需要继承scrapy的spider，除了scrapy.Spider外，scrapy还提供了好几种spider，其中CrawlSpider算是比较常用的。
+CrawlSpider的优势在于可以用rules方便地规定新的url的样子，即通过正则匹配来约束url。并且不需要自己生成新的url，
+CrawlSpider会自己寻找源码中所有符合要求的新url的。另外，rules的回调方法名字最好不要叫parse。
+'''
 class BabydressSpider(scrapy.Spider):
     name = 'babydress'
     allowed_domains = ['babyonlinedress.cn']

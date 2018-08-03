@@ -22,11 +22,17 @@ class RandomUserAgent(object):
         # print "**************************" + random.choice(self.agents)
         request.headers.setdefault('User-Agent', random.choice(self.agents))
 
-
+'''
+Spider中间件是介入到Scrapy的spider处理机制的钩子框架，您可以添加代码来处理发送给 Spiders 的response及spider产生的item和request。
+'''
 class BabySpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
+
+    # 如果存在from_crawler，则调用此类方法以从a创建流水线实例Crawler。它必须返回管道的新实例。
+    # Crawler对象提供对所有Scrapy核心组件（如设置和信号）的访问;
+    # 它是管道访问它们并将其功能挂钩到Scrapy中的一种方式。
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -70,7 +76,9 @@ class BabySpiderMiddleware(object):
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
 
-
+'''
+下载器中间件是介于Scrapy的request/response处理的钩子框架。 是用于全局修改Scrapy request和response的一个轻量、底层的系统。
+'''
 class BabyDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
