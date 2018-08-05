@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import scrapy
 from baby.items import BabyItem,BabyDetailItem
 from scrapy.utils.response import get_base_url
@@ -6,6 +7,8 @@ from scrapy.loader import ItemLoader
 from scrapy.loader.processors import TakeFirst
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.linkextractors import LinkExtractor
+
+from urllib.parse import urlsplit,urljoin
 #item loader
 class DefaultItemLoader(ItemLoader):
     default_output_processor = TakeFirst()
@@ -17,21 +20,35 @@ CrawlSpider会自己寻找源码中所有符合要求的新url的。另外，rul
 '''
 class BabydressSpider(CrawlSpider):
     name = 'babydress'
+    # 设置下载延时
+    download_delay = 1
     allowed_domains = ['babyonlinedress.cn']
-    # accessories - c147 /
     start_urls = ['http://www-test.babyonlinedress.cn/']
     rules = (
-        Rule(LinkExtractor(allow=('http://www-test.babyonlinedress.cn/-c\d'))),
-        Rule(LinkExtractor(allow=('http://www-test.babyonlinedress.cn/-g\d')),callback='pass_item')
+        # 导航地址
+        Rule(LinkExtractor(allow=('[a-z-0-9]-c\d+'),allow_domains=('www-test.babyonlinedress.cn'),
+                           restrict_xpaths=('//div[@class="nav-box"]'),unique=False)),
+        # 导航地址分页
+        Rule(LinkExtractor(allow=('[a-z-0-9]-c\d+/page-\d+'), allow_domains=('www-test.babyonlinedress.cn'),
+                           restrict_xpaths=('//div[@class="paging fr"]'))),
+        #详情页
+        Rule(LinkExtractor(allow=('[a-z-0-9]-g\d+'),allow_domains=('www-test.babyonlinedress.cn')),callback='parse_item')
     )
+    # def pro_links(self,links):
+    #     for link in links:
+    #        u = urlsplit(link)
+    #        u_new = urljoin('http://www-test.babyonlinedress.cn/',u.path)
+    #        return u_new
+     # pass
+    # def start_requests(self):
+    #
+    #     pass
     def parse_item(self, response):
-        infos1 = response.css('div.clothing-item')
-        for info in infos1:
-            l = DefaultItemLoader(item=BabyDetailItem(),selector=info)
-            l.add_value('cur_link', get_base_url(response))
-            l.add_css('name', '/html/head/title')
-            # print(l.load_item())
-            yield l.load_item()
+        l = DefaultItemLoader(item=BabyDetailItem(),selector=response)
+        l.add_value('cur_link', get_base_url(response))
+        l.add_xpath('name', '/html/head/title/text()')
+        d = l.load_item()
+        yield d
 
 
     def parse1(self, response):

@@ -11,3 +11,5 @@ items.jsonl
 *.py[cod]
 *.pyc
 */__pycache__/*.pyc
+logs
+logs/*
