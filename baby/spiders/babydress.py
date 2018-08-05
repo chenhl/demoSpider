@@ -8,7 +8,7 @@ from scrapy.loader.processors import TakeFirst
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.linkextractors import LinkExtractor
 
-from urllib.parse import urlsplit,urljoin
+from urllib.parse import urlsplit,urlparse,urljoin
 #item loader
 class DefaultItemLoader(ItemLoader):
     default_output_processor = TakeFirst()
@@ -32,13 +32,23 @@ class BabydressSpider(CrawlSpider):
         Rule(LinkExtractor(allow=('[a-z-0-9]-c\d+/page-\d+'), allow_domains=('www-test.babyonlinedress.cn'),
                            restrict_xpaths=('//div[@class="paging fr"]'))),
         #详情页
-        Rule(LinkExtractor(allow=('[a-z-0-9]-g\d+'),allow_domains=('www-test.babyonlinedress.cn')),callback='parse_item')
+        Rule(LinkExtractor(allow=('[a-z-0-9]-g\d+'),allow_domains=('www-test.babyonlinedress.cn')),process_links='process_links1',callback='parse_item')
     )
-    # def pro_links(self,links):
-    #     for link in links:
-    #        u = urlsplit(link)
-    #        u_new = urljoin('http://www-test.babyonlinedress.cn/',u.path)
-    #        return u_new
+    def process_links1(self,links):
+        # ret = []
+        for link in links:
+           # print('---------')
+           # print(link)
+           # print(type(link))
+           # print('---------')
+           u = urlparse(link.url)
+           # print(u)
+           u_new = urljoin('http://www-test.babyonlinedress.cn/',u.path)
+           # print(u_new)
+           link.url=u_new
+           yield link
+           # ret.append(u_new)
+        # return ret
      # pass
     # def start_requests(self):
     #
