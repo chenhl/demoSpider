@@ -11,6 +11,8 @@ import scrapy
 from scrapy.pipelines.images import ImagesPipeline
 import hashlib
 from urllib.parse import quote
+import pymysql
+import pymongo
 
 class BabyPipeline(object):
     def process_item(self, item, spider):
@@ -20,10 +22,44 @@ class BabyPipeline(object):
         else:
             raise DropItem("Missing price in %s" % item)
 
+class artPipeline(object):
+    def process_item(self, item, spider):
+        # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
+        item['name'] = "".join(item['name'].split())
+        item['content'] = "".join(item['content'])
+        return item
+        # pass
+
+class MysqlWriterPipeline(object):
+    # cur=''
+    def open_spider(self, spider):
+        self.db = pymysql.connect(host='localhost',user='root',password='',db='yishujia')
+        self.cur = self.db.cursor()
+
+        # self.file = open('../data/items.jl', 'w')
+
+    def close_spider(self, spider):
+        self.db.close()
+        # self.file.close()
+
+    def process_item(self, item, spider):
+        insert_data = item
+        sql = "insert into a_artist (name,image,content,spider_url) values (%s,%s,%s,%s)"
+        try:
+            self.cur.execute(sql,(insert_data['name'],insert_data['image_url'],insert_data['content'],insert_data['spider_link']))
+            self.db.commit()
+            pass
+        except Exception as e:
+            self.db.rollback()
+        # finally:
+        #     self.db.close()
+
+        return item
+
 class JsonWriterPipeline(object):
 
     def open_spider(self, spider):
-        self.file = open('data/items.jl', 'w')
+        self.file = open('../data/items.jl', 'w')
 
     def close_spider(self, spider):
         self.file.close()

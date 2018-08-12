@@ -36,7 +36,8 @@ USER_AGENTS = [
     "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52",
 ]
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
+FEED_EXPORT_ENCODING = 'utf-8'
 #启用feed
 #FEED_URI = 'file:///D:/apps/baby/data/123.jsonl'
 #FEED_FORMAT = 'jsonlines'
@@ -73,7 +74,8 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   'baby.middlewares.RandomUserAgent': 100,
+    'scrapy_crawlera.CrawleraMiddleware': 50,
+    'baby.middlewares.RandomUserAgent': 100,
 }
 
 # Enable or disable extensions
@@ -85,12 +87,13 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   # 'baby.pipelines.BabyPipeline': 300,
+   'baby.pipelines.artPipeline': 300,
    # 'baby.pipelines.MyImagesPipeline': 400,
-   'baby.pipelines.JsonWriterPipeline': 500,
+   # 'baby.pipelines.JsonWriterPipeline': 500,
+   'baby.pipelines.MysqlWriterPipeline': 500,
 }
 IMAGES_STORE='images'
-LOG_FILE='logs/log.txt'
+# LOG_FILE='logs/log.txt'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
@@ -114,3 +117,11 @@ AUTOTHROTTLE_MAX_DELAY = 60
 
 UPEFILTER_CLASS = 'baby.dupefilter.itemDupeFilter'
 DUPEFILTER_DEBUG = False
+
+#https://scrapy-crawlera.readthedocs.io/en/latest/settings.html#crawlera-apikey
+#https://app.scrapinghub.com/o/229596
+CRAWLERA_ENABLED = True
+CRAWLERA_PRESERVE_DELAY=True
+CRAWLERA_APIKEY = 'abe0b9a51ddc4de99c54ab8f3c69a603'
+# CRAWLERA_USER = ''
+# CRAWLERA_PASS = 'Home5528'

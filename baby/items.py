@@ -34,3 +34,17 @@ class BabyItem(scrapy.Item):
         output_processor=TakeFirst()
     )
     pass
+
+class artistMeishujiaItem(scrapy.Item):
+    name = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    image_url = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    spider_link = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    content = scrapy.Field(
+        # output_processor=TakeFirst()
+    )
