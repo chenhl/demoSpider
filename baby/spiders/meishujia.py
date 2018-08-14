@@ -45,8 +45,20 @@ class MeishujiaSpider(CrawlSpider):
         l.add_css('name', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[2]/td)')
         # normalize-space 去除 html \r\n\t
         # re 正则表达式，class只要包含theme_body_4656
-        l.add_xpath('content', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td)')
+        # l.add_xpath('content', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td)')
+        # content=""for selector in sel.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'): content=content+ selector.xpath("/text()").extract()
+
+        for sele in response.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'):
+            content = content + sele.xpath('./text()').extract()
+
+
+        l.add_value('content',content)
+        # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td')
+
         # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//text()')
 
         d = l.load_item()
         yield d
+
+    def parse_content_item(self, selector):
+        pass
