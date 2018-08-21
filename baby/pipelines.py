@@ -25,7 +25,7 @@ class BabyPipeline(object):
 class artPipeline(object):
     def process_item(self, item, spider):
         # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
-        item['name'] = "".join(item['name'].split())
+        # item['title'] = "".join(item['name'].split())
         item['content'] = "".join(item['content'])
         return item
         # pass
@@ -44,12 +44,17 @@ class MysqlWriterPipeline(object):
 
     def process_item(self, item, spider):
         insert_data = item
-        sql = "insert into a_artist (name,image,content,spider_url) values (%s,%s,%s,%s)"
+        sql = "insert into v9_news (catid,title,thumb) values (%s,%s,%s)"
         try:
-            self.cur.execute(sql,(insert_data['name'],insert_data['image_url'],insert_data['content'],insert_data['spider_link']))
+            self.cur.execute(sql,(insert_data['catid'],insert_data['title'],insert_data['thumb']))
+            self.cur.execute("select last_insert_id()")
+            data = self.cur.fetchone()
+            sql_data = "insert into v9_news_data(id,content) values (%s,%s)"
+            self.cur.execute(sql_data,(data[0],insert_data['content']))
             self.db.commit()
             pass
         except Exception as e:
+            print(str(e))
             self.db.rollback()
         # finally:
         #     self.db.close()

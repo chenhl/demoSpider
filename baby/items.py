@@ -36,10 +36,14 @@ class BabyItem(scrapy.Item):
     pass
 
 class artistMeishujiaItem(scrapy.Item):
-    name = scrapy.Field(
+    catid = scrapy.Field(
         output_processor=TakeFirst()
     )
-    image_url = scrapy.Field(
+
+    title = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    thumb = scrapy.Field(
         output_processor=TakeFirst()
     )
     spider_link = scrapy.Field(

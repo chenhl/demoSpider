@@ -120,8 +120,8 @@ DUPEFILTER_DEBUG = False
 
 #https://scrapy-crawlera.readthedocs.io/en/latest/settings.html#crawlera-apikey
 #https://app.scrapinghub.com/o/229596
-CRAWLERA_ENABLED = True
-CRAWLERA_PRESERVE_DELAY=True
-CRAWLERA_APIKEY = 'abe0b9a51ddc4de99c54ab8f3c69a603'
+# CRAWLERA_ENABLED = True
+# CRAWLERA_PRESERVE_DELAY=True
+# CRAWLERA_APIKEY = 'abe0b9a51ddc4de99c54ab8f3c69a603'
 # CRAWLERA_USER = ''
 # CRAWLERA_PASS = 'Home5528'
