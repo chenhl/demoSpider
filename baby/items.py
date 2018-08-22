@@ -39,14 +39,37 @@ class artistMeishujiaItem(scrapy.Item):
     catid = scrapy.Field(
         output_processor=TakeFirst()
     )
-
-    title = scrapy.Field(
+    typeid = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    spider_link = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    status = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    sysadd = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    inputtime = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    updatetime = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    username = scrapy.Field(
         output_processor=TakeFirst()
     )
     thumb = scrapy.Field(
         output_processor=TakeFirst()
     )
-    spider_link = scrapy.Field(
+    title = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    keywords = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    description =scrapy.Field(
         output_processor=TakeFirst()
     )
     content = scrapy.Field(

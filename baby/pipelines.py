@@ -30,10 +30,37 @@ class artPipeline(object):
         return item
         # pass
 
+class phpcmsSpiderPipeline(object):
+    # cur=''
+    def open_spider(self, spider):
+        self.db = pymysql.connect(host='localhost',user='root',password='',db='phpcmsv9')
+        self.cur = self.db.cursor()
+
+        # self.file = open('../data/items.jl', 'w')
+
+    def close_spider(self, spider):
+        self.db.close()
+        # self.file.close()
+
+    def process_item(self, item, spider):
+        insert_data = item
+        sql = "insert into v9_collection_content (url,title,data) values (%s,%s,%s)"
+        try:
+            self.cur.execute(sql,(insert_data['url'],insert_data['title'],insert_data['data']))
+            self.db.commit()
+            pass
+        except Exception as e:
+            print(str(e))
+            self.db.rollback()
+        # finally:
+        #     self.db.close()
+
+        return item
+
 class MysqlWriterPipeline(object):
     # cur=''
     def open_spider(self, spider):
-        self.db = pymysql.connect(host='localhost',user='root',password='',db='yishujia')
+        self.db = pymysql.connect(host='localhost',user='root',password='',db='phpcmsv9')
         self.cur = self.db.cursor()
 
         # self.file = open('../data/items.jl', 'w')

@@ -15,6 +15,9 @@ class DefaultItemLoader(ItemLoader):
     pass
 class MeishujiaSpider(CrawlSpider):
     name = 'artist.meishujia'
+    catid=6
+    typeid=0
+
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = ["http://artist.meishujia.cn/index.php?act=pps&smid=2"]
     # 设置下载延时
@@ -39,6 +42,7 @@ class MeishujiaSpider(CrawlSpider):
         yield links[0]
 
     def parse_item(self, response):
+        # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
         l.add_css('thumb', '.theme_body_4656 table:nth-child(2) tr:nth-child(1) td:nth-child(1) img::attr(src)')
@@ -53,7 +57,7 @@ class MeishujiaSpider(CrawlSpider):
         # l.add_value('content',content)
 
         l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td/node()')
-        l.add_value('catid',6)
+        l.add_value('catid',self.catid)
 
         # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td')
 
