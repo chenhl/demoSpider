@@ -8,6 +8,7 @@ from scrapy.loader.processors import TakeFirst
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.linkextractors import LinkExtractor
 from urllib.parse import urlsplit,urlparse,urljoin
+from datetime import time,datetime
 
 #item loader
 class DefaultItemLoader(ItemLoader):
@@ -17,6 +18,7 @@ class MeishujiaSpider(CrawlSpider):
     name = 'artist.meishujia'
     catid=6
     typeid=0
+    sysadd=1
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = ["http://artist.meishujia.cn/index.php?act=pps&smid=2"]

@@ -57,6 +57,12 @@ class artistMeishujiaItem(scrapy.Item):
     updatetime = scrapy.Field(
         output_processor=TakeFirst()
     )
+    create_time = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    update_time = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     username = scrapy.Field(
         output_processor=TakeFirst()
     )
