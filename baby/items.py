@@ -45,6 +45,12 @@ class artistMeishujiaItem(scrapy.Item):
     spider_link = scrapy.Field(
         output_processor=TakeFirst()
     )
+    spider_img = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    spider_imgs = scrapy.Field(
+        # output_processor=TakeFirst()
+    )
     status = scrapy.Field(
         output_processor=TakeFirst()
     )
@@ -66,6 +72,7 @@ class artistMeishujiaItem(scrapy.Item):
     username = scrapy.Field(
         output_processor=TakeFirst()
     )
+
     thumb = scrapy.Field(
         output_processor=TakeFirst()
     )

@@ -27,6 +27,7 @@ class MeishujiaSpider(CrawlSpider):
     custom_settings = {
         'ITEM_PIPELINES': {
                     'baby.pipelines.artPipeline': 300,
+                    'baby.pipelines.MyImagesPipeline': 400,
                     'baby.pipelines.MysqlWriterPipeline': 500,
         },
 
@@ -48,7 +49,7 @@ class MeishujiaSpider(CrawlSpider):
         l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
         # l.add_css('thumb', '.theme_body_4656 table:nth-child(2) tr:nth-child(1) td:nth-child(1) img::attr(src)')
-        l.add_css('thumb', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
+        l.add_css('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[2]/td)')
         # normalize-space 去除 html \r\n\t
         # re 正则表达式，class只要包含theme_body_4656
