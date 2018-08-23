@@ -8,8 +8,8 @@ from scrapy.loader.processors import TakeFirst
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.linkextractors import LinkExtractor
 from urllib.parse import urlsplit,urlparse,urljoin
-from datetime import time,datetime
-
+import time
+import datetime
 #item loader
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
@@ -47,7 +47,8 @@ class MeishujiaSpider(CrawlSpider):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
-        l.add_css('thumb', '.theme_body_4656 table:nth-child(2) tr:nth-child(1) td:nth-child(1) img::attr(src)')
+        # l.add_css('thumb', '.theme_body_4656 table:nth-child(2) tr:nth-child(1) td:nth-child(1) img::attr(src)')
+        l.add_css('thumb', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[2]/td)')
         # normalize-space 去除 html \r\n\t
         # re 正则表达式，class只要包含theme_body_4656
@@ -59,7 +60,16 @@ class MeishujiaSpider(CrawlSpider):
         # l.add_value('content',content)
 
         l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td/node()')
+        l.add_value('keywords', '')
+        l.add_value('description', '')
+
         l.add_value('catid',self.catid)
+        l.add_value('status', self.status)
+        l.add_value('sysadd', self.sysadd)
+        l.add_value('inputtime',int(time.time()))
+        l.add_value('updatetime', int(time.time()))
+        l.add_value('create_time',datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        l.add_value('update_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
         # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td')
 
