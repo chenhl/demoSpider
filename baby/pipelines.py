@@ -85,10 +85,10 @@ class MysqlWriterPipeline(object):
 
     def process_item(self, item, spider):
         insert_data = item
-        sql = "insert into v9_news (catid,typeid,thumb,title,keywords,description,sysadd,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        sql = "insert into v9_news (catid,typeid,status,thumb,title,keywords,description,sysadd,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         try:
             #值为空的item给删除了？
-            self.cur.execute(sql,(insert_data['catid'],insert_data['typeid'],insert_data['thumb'],insert_data['title'],'','',insert_data['sysadd'],insert_data['inputtime'],insert_data['updatetime'],insert_data['create_time']))
+            self.cur.execute(sql,(insert_data['catid'],insert_data['typeid'],insert_data['status'],insert_data['thumb'],insert_data['title'],'','',insert_data['sysadd'],insert_data['inputtime'],insert_data['updatetime'],insert_data['create_time']))
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
             sql_data = "insert into v9_news_data(id,content) values (%s,%s)"
