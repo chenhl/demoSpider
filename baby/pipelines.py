@@ -37,8 +37,9 @@ class artPipeline(object):
         urls = urlparse(item['spider_img'])
         if not urls.netloc.strip():
             baseurls = urlparse(item['spider_link'])
-            item['spider_img']=baseurls.scheme+"://"+baseurls.netloc+baseurls.path
+            item['spider_img']=baseurls.scheme+"://"+baseurls.netloc+urls.path
 
+        print(item['spider_img'] + "###############")
         item['content'] = "".join(item['content'])
         return item
         # pass
@@ -84,12 +85,13 @@ class MysqlWriterPipeline(object):
 
     def process_item(self, item, spider):
         insert_data = item
-        sql = "insert into v9_news (catid,typeid,thumb,title,keywords,description,sysadd,inputtime,updatetime,create_time) values (%d,%d,%s,%s,%s,%s,%s,%s,%s,%s)"
+        sql = "insert into v9_news (catid,typeid,thumb,title,keywords,description,sysadd,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         try:
-            self.cur.execute(sql,(insert_data['catid'],insert_data['typeid'],insert_data['thumb'],insert_data['title'],insert_data['keywords'],insert_data['description'],insert_data['sysadd'],insert_data['inputtime'],insert_data['updatetime'],insert_data['create_time']))
+            #值为空的item给删除了？
+            self.cur.execute(sql,(insert_data['catid'],insert_data['typeid'],insert_data['thumb'],insert_data['title'],'','',insert_data['sysadd'],insert_data['inputtime'],insert_data['updatetime'],insert_data['create_time']))
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
-            sql_data = "insert into v9_news_data(id,content) values (%d,%s)"
+            sql_data = "insert into v9_news_data(id,content) values (%s,%s)"
             self.cur.execute(sql_data,(data[0],insert_data['content']))
             self.db.commit()
             pass
@@ -121,6 +123,7 @@ class MyImagesPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
         # for image_url in item['image_urls']:
+        print(item['spider_img']+"----------")
         yield scrapy.Request(item['spider_img'])
 
     def item_completed(self, results, item, info):
@@ -133,22 +136,25 @@ class MyImagesPipeline(ImagesPipeline):
         # PEP0202列表递推式 https://www.python.org/dev/peps/pep-0202/
 
         image_path = [x['path'] for ok, x in results if ok]
+        print(image_path)
         if not image_path:
             raise DropItem("Item contains no images")
         # 定义分类保存的路径
-        _path = image_path.lstrip("full/")
+        _path = image_path[0].lstrip("full/")
         _path1 = _path[0:2]
         _path2 = _path[2:4]
 
         img_path = "%s\\%s\\%s" % (self.img_store, _path1,_path2)
         # 目录不存在则创建目录
         if os.path.exists(img_path) == False:
-            os.mkdir(img_path)
+            os.makedirs(img_path)
 
         # 将文件从默认下路路径移动到指定路径下
-        shutil.move(self.img_store + image_path, img_path + "\\" + _path)
+        shutil.move(self.img_store + image_path[0], img_path + "\\" + _path)
 
         item['thumb'] = _path1+'/'+_path2+'/'+_path
+        print(item['thumb'])
+        print(image_path)
         return item
 '''
 此示例演示如何从方法返回Deferredprocess_item()。

@@ -19,6 +19,7 @@ class MeishujiaSpider(CrawlSpider):
     catid=6
     typeid=0
     sysadd=1
+    status=99
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = ["http://artist.meishujia.cn/index.php?act=pps&smid=2"]
@@ -48,8 +49,8 @@ class MeishujiaSpider(CrawlSpider):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
-        # l.add_css('thumb', '.theme_body_4656 table:nth-child(2) tr:nth-child(1) td:nth-child(1) img::attr(src)')
-        l.add_css('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
+        l.add_css('spider_img', '.theme_body_4656 table:nth-child(2) tr:nth-child(1) td:nth-child(1) img::attr(src)')
+        # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[2]/td)')
         # normalize-space 去除 html \r\n\t
         # re 正则表达式，class只要包含theme_body_4656
@@ -67,6 +68,7 @@ class MeishujiaSpider(CrawlSpider):
         l.add_value('catid',self.catid)
         l.add_value('status', self.status)
         l.add_value('sysadd', self.sysadd)
+        l.add_value('typeid', self.typeid)
         l.add_value('inputtime',int(time.time()))
         l.add_value('updatetime', int(time.time()))
         l.add_value('create_time',datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
