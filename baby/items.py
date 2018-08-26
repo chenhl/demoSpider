@@ -76,6 +76,9 @@ class artistMeishujiaItem(scrapy.Item):
     thumb = scrapy.Field(
         output_processor=TakeFirst()
     )
+    thumbs = scrapy.Field(
+        # output_processor=TakeFirst()
+    )
     title = scrapy.Field(
         output_processor=TakeFirst()
     )
@@ -88,3 +91,6 @@ class artistMeishujiaItem(scrapy.Item):
     content = scrapy.Field(
         # output_processor=TakeFirst()
     )
+
+class exhibitMeishujiaItem(artistMeishujiaItem):
+    pass

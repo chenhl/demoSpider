@@ -93,7 +93,9 @@ ITEM_PIPELINES = {
    'baby.pipelines.MysqlWriterPipeline': 500,
 }
 # IMAGES_STORE='D:\\xampp71\\htdocs\\phpcms\\uploadfile'
-IMAGES_STORE='D:\\xampp7\\htdocs\\phpcms\\uploadfile\\'
+IMAGES_STORE='D:\\xampp7\\htdocs\\test.phpcms.cn\\uploadfile\\'
+IMAGES_MIN_WIDTH=300
+IMAGES_MIN_HEIGHT=300
 # LOG_FILE='logs/log.txt'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

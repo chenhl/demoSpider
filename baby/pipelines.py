@@ -29,6 +29,15 @@ class BabyPipeline(object):
         else:
             raise DropItem("Missing price in %s" % item)
 
+
+class exhibitPipeline(object):
+    def process_item(self, item, spider):
+        # print(item)
+        return item
+        # pass
+
+
+
 class artPipeline(object):
     def process_item(self, item, spider):
         # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
@@ -40,6 +49,7 @@ class artPipeline(object):
             item['spider_img']=baseurls.scheme+"://"+baseurls.netloc+urls.path
 
         print(item['spider_img'] + "###############")
+
         item['content'] = "".join(item['content'])
         return item
         # pass
@@ -85,10 +95,15 @@ class MysqlWriterPipeline(object):
 
     def process_item(self, item, spider):
         insert_data = item
-        sql = "insert into v9_news (catid,typeid,status,thumb,title,keywords,description,sysadd,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        if not insert_data['thumbs']:
+            insert_data['thumbs']=''
+        if not insert_data['spider_imgs']:
+            insert_data['spider_imgs']=''
+
+        sql = "insert into v9_news (catid,typeid,status,sysadd,spider_link,spider_img,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         try:
             #值为空的item给删除了？
-            self.cur.execute(sql,(insert_data['catid'],insert_data['typeid'],insert_data['status'],insert_data['thumb'],insert_data['title'],'','',insert_data['sysadd'],insert_data['inputtime'],insert_data['updatetime'],insert_data['create_time']))
+            self.cur.execute(sql,(insert_data['catid'],insert_data['typeid'],insert_data['status'],insert_data['sysadd'],insert_data['spider_link'],insert_data['spider_img'],insert_data['spider_imgs'],insert_data['thumb'],insert_data['thumbs'],insert_data['title'],'','',insert_data['inputtime'],insert_data['updatetime'],insert_data['create_time']))
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
             sql_data = "insert into v9_news_data(id,content) values (%s,%s)"
@@ -115,6 +130,39 @@ class JsonWriterPipeline(object):
         line = json.dumps(dict(item)) + "\n"
         self.file.write(line)
         return item
+class MultiImagesPipeline(ImagesPipeline):
+    # 从项目设置文件中导入图片下载路径
+    img_store = get_project_settings().get('IMAGES_STORE')
+
+    def get_media_requests(self, item, info):
+        # for image_url in item['image_urls']:
+        if item['spider_imgs']:
+            for img in item['spider_imgs']:
+                print(img+"$$$$$")
+                yield scrapy.Request(img)
+
+    def item_completed(self, results, item, info):
+        image_path = [x['path'] for ok, x in results if ok]
+        if not image_path:
+            raise DropItem("Item contains no images")
+
+        for img in image_path:
+            pass
+        # 定义分类保存的路径
+        _path = image_path[0].lstrip("full/")
+        _path1 = _path[0:2]
+        _path2 = _path[2:4]
+        img_path = "%s\\%s\\%s" % (self.img_store, _path1,_path2)
+        # 目录不存在则创建目录
+        if os.path.exists(img_path) == False:
+            os.makedirs(img_path)
+        # 将文件从默认下路路径移动到指定路径下
+        shutil.move(self.img_store + image_path[0], img_path + "\\" + _path)
+
+        item['thumb'] = _path1+'/'+_path2+'/'+_path
+        print(item['thumb'])
+        print(image_path)
+        return item
 
 class MyImagesPipeline(ImagesPipeline):
     # basepath="D:\xampp71\htdocs\phpcms\uploadfile"
@@ -123,6 +171,12 @@ class MyImagesPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
         # for image_url in item['image_urls']:
+        if item['spider_imgs']:
+            for img in item['spider_imgs']:
+                print(img+"$$$$$")
+                yield scrapy.Request(img)
+                # pass
+
         print(item['spider_img']+"----------")
         yield scrapy.Request(item['spider_img'])
 
