@@ -18,7 +18,7 @@ from scrapy.utils.project import get_project_settings
 import shutil
 # 这个包不解释
 import os
-
+import time
 import pymongo
 
 class BabyPipeline(object):
@@ -31,12 +31,41 @@ class BabyPipeline(object):
 
 
 class exhibitPipeline(object):
+    #在你的多少范围内有展览
+    meta = ['展览名称：', '展览时间：', '展览地点：', '主办单位：', '参展艺术家：']
+    meta2 = [{'txt':'展览名称：','code':'name'},{'txt':'展览时间：','code':'time'},{'txt':'展览地点：','code':'area'},{'txt':'主办单位：','code':'company'},{'txt':'参展艺术家：','code':'artists'}]
     def process_item(self, item, spider):
-        # print(item)
+        print(item['attr'])
+        print(type(item['attr']))
+        print(len(item['attr']))
+
+        i=0
+        max = len(self.meta)-1
+        res=[]
+        for data_meta in self.meta2:
+            _index = item['attr'].index(data_meta['txt'])
+            if i < max:
+                _next_index = item['attr'].index(self.meta[i+1])
+                _tmp = {'attr':data_meta['code'],'attr_txt':data_meta['txt'],'value':item['attr'][_index+1:_next_index]}
+            else:
+                _tmp = {'attr':data_meta['code'],'attr_txt': data_meta['txt'], 'value': item['attr'][_index+1:_index+2]}
+
+            #时间范围处理
+            if data_meta['code'] == 'time':
+                _times = _tmp['value'].split('~')
+                time_struct_start = time.strptime(_times[0],'%Y%m/%d')
+                time_struct_end = time.strptime(_times[1], '%Y%m/%d')
+                str_time_start = time.strftime('%Y-%m-%d %H:%M:%S',time_struct_start)
+                str_time_end = time.strftime('%Y-%m-%d %H:%M:%S', time_struct_end)
+            #地点处理
+            if data_meta['code'] == 'area':
+                pass
+
+            res.append(_tmp)
+            i=i+1
+
+        item['attr_value'] = res
         return item
-        # pass
-
-
 
 class artPipeline(object):
     def process_item(self, item, spider):

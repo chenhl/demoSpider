@@ -49,20 +49,17 @@ class exhibitMeishujiaSpider(CrawlSpider):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=exhibitMeishujiaItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
-
         l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_1611")]//ul[re:test(@class,"zl_r_af")]//img[@src]')
         l.add_value('spider_imgs', '//*[@id="photos"]//div[@class="panel"]')
-
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"theme_body_1611")]//h1)')
 
-        l.add_xpath('content', '//dd[re:test(@class,"theme_body_1611")]//ul[re:test(@class,"zl_r_kzzd")]/node()')
-        l.add_xpath('content', '//dd[re:test(@class,"theme_body_1611")]//ul[re:test(@class,"zl_r_b zl_r_bt")]/node()')
+        l.add_xpath('attr', '//dd[re:test(@class,"theme_body_1611")]/ol//text()')
+        l.add_value('attr_value',[])
 
+        l.add_xpath('content', '//dd[re:test(@class,"theme_body_1611")]//ul[re:test(@class,"zl_r_b zl_r_bt")]/node()')
         l.add_value('keywords', '')
         l.add_value('description', '')
-
         l.add_value('thumbs', '')
-
         l.add_value('catid',self.catid)
         l.add_value('status', self.status)
         l.add_value('sysadd', self.sysadd)
@@ -72,9 +69,11 @@ class exhibitMeishujiaSpider(CrawlSpider):
         l.add_value('create_time',datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         l.add_value('update_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-        # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td')
 
+        # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td')
         # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//text()')
+        # l.add_xpath('attr', '//dd[re:test(@class,"theme_body_1611")]/ol/span/text()')
+        # l.add_xpath('attr_value', '//dd[re:test(@class,"theme_body_1611")]/ol/text()')
 
         d = l.load_item()
         # print(d)
