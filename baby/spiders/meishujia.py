@@ -15,6 +15,9 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 class MeishujiaSpider(CrawlSpider):
+    #https://news.artron.net//morenews/list732/
+    # http: // comment.artron.net / column
+    #艺术家（认证过的）修改自己的简介，可排名提前
     name = 'artist.meishujia'
     catid=6
     typeid=0
