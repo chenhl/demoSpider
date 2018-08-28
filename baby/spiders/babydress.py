@@ -22,19 +22,27 @@ class BabydressSpider(CrawlSpider):
     name = 'babydress'
     # 设置下载延时
     download_delay = 1
-    allowed_domains = ['babyonlinedress.cn']
-    start_urls = ['http://www-test.babyonlinedress.cn/']
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'baby.pipelines.BabyPipeline': 300,
+            # 'baby.pipelines.JsonWriterPipeline': 350,
+            # 'baby.pipelines.MultiImagesPipeline': 400,
+            # 'baby.pipelines.MysqlWriterPipeline': 500,
+        },
+    }
+    allowed_domains = ['babyonlinewholesale.com']
+    start_urls = ['https://www.babyonlinewholesale.com/wedding-dresses-c1']
     rules = (
-        # 导航地址
-        Rule(LinkExtractor(allow=('[a-z-0-9]-c\d+'),allow_domains=('www-test.babyonlinedress.cn'),
-                           restrict_xpaths=('//div[@class="nav-box"]'),unique=False)),
+        # # 导航地址
+        # Rule(LinkExtractor(allow=('[a-z-0-9]-c\d+'),allow_domains=('www.babyonlinewholesale.com'),
+        #                    restrict_xpaths=('//div[@class="nav-box"]'),unique=False)),
         # 导航地址分页
-        Rule(LinkExtractor(allow=('[a-z-0-9]-c\d+/page-\d+'), allow_domains=('www-test.babyonlinedress.cn'),
-                           restrict_xpaths=('//div[@class="paging fr"]'))),
+        Rule(LinkExtractor(allow=('[a-z-0-9]-c\d+/page-\d+'),restrict_xpaths=('//div[@class="paging fr"]/a[last()]'))),
         #详情页
-        Rule(LinkExtractor(allow=('[a-z-0-9]-g\d+'),allow_domains=('www-test.babyonlinedress.cn')),process_links='process_links1',callback='parse_item')
+        # Rule(LinkExtractor(allow=('[a-z-0-9]-g\d+'),process_links='process_links',callback='parse_item')),
+        Rule(LinkExtractor(allow=('[a-z-0-9]-g\d+'),restrict_xpaths=('//div[re:test(@class,"clothing-item")]/a')), process_links='parse_links', callback='parse_item'),
     )
-    def process_links1(self,links):
+    def parse_links(self,links):
         # ret = []
         for link in links:
            # print('---------')
@@ -43,7 +51,7 @@ class BabydressSpider(CrawlSpider):
            # print('---------')
            u = urlparse(link.url)
            # print(u)
-           u_new = urljoin('http://www-test.babyonlinedress.cn/',u.path)
+           u_new = urljoin('http://www.babyonlinewholesale.com/',u.path)
            # print(u_new)
            link.url=u_new
            yield link
