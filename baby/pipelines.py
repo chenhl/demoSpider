@@ -23,11 +23,11 @@ import pymongo
 
 class BabyPipeline(object):
     def process_item(self, item, spider):
-        # pass
-        if float(item['shop_price']) > 10.0:
-            return item
-        else:
-            raise DropItem("Missing price in %s" % item)
+        pass
+        # if float(item['shop_price']) > 10.0:
+        #     return item
+        # else:
+        #     raise DropItem("Missing price in %s" % item)
 
 
 class exhibitPipeline(object):

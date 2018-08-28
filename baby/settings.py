@@ -87,10 +87,10 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'baby.pipelines.artPipeline': 300,
+   # 'baby.pipelines.artPipeline': 300,
    # 'baby.pipelines.MyImagesPipeline': 400,
    # 'baby.pipelines.JsonWriterPipeline': 500,
-   'baby.pipelines.MysqlWriterPipeline': 500,
+   # 'baby.pipelines.MysqlWriterPipeline': 500,
 }
 # IMAGES_STORE='D:\\xampp71\\htdocs\\phpcms\\uploadfile'
 IMAGES_STORE='D:\\xampp7\\htdocs\\test.phpcms.cn\\uploadfile\\'
@@ -122,9 +122,11 @@ UPEFILTER_CLASS = 'baby.dupefilter.itemDupeFilter'
 DUPEFILTER_DEBUG = False
 
 #https://scrapy-crawlera.readthedocs.io/en/latest/settings.html#crawlera-apikey
-#https://app.scrapinghub.com/o/229596
-# CRAWLERA_ENABLED = True
+#http://httpbin.org/ip
+#curl -vx proxy.crawlera.com:8010 -U 728032ed0fc84375974a5e499b7aeadc: http://httpbin.org/ip
+#https://app.scrapinghub.com/o/232264
+CRAWLERA_ENABLED = True
 # CRAWLERA_PRESERVE_DELAY=True
-# CRAWLERA_APIKEY = 'abe0b9a51ddc4de99c54ab8f3c69a603'
-# CRAWLERA_USER = ''
-# CRAWLERA_PASS = 'Home5528'
+CRAWLERA_APIKEY = '728032ed0fc84375974a5e499b7aeadc'
+#CRAWLERA_USER = '52480721@qq.com'
+#CRAWLERA_PASS = 'home5528'
