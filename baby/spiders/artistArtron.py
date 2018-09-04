@@ -25,7 +25,7 @@ class MeishujiaSpider(CrawlSpider):
     status=99
 
     # allowed_domains = ['artist.meishujia.cn']
-    start_urls = ["http://artist.meishujia.cn/index.php?act=pps&smid=2"]
+    start_urls = ["http://artso.artron.net/artist/search_artist.php?keyword=&Class=&BirthArea=&Graduated=&page=1"]
     # 设置下载延时
     download_delay = 1
     custom_settings = {
@@ -40,13 +40,16 @@ class MeishujiaSpider(CrawlSpider):
         # 地址分页
         # Rule(LinkExtractor(allow=('/index.php?page=1&act=pps&smid=2'), allow_domains=('meishujia.cn'),restrict_xpaths=('//ul[@class="sert"]'))),
         # 详情页1
-        Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
+        Rule(LinkExtractor(restrict_xpaths=('//div[re:test(@class,"listPic")]//dt//div[@class="pic"]/a[@href]'))),
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        Rule(LinkExtractor(restrict_css=('.theme_title_4647 a')),process_links=('detail_link'),
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="work"]')),process_links=('detail_link'),
           callback='parse_item')
     )
-    def detail_lik(self,links):
-        yield links[0]
+    def detail_link(self,links):
+        if links:
+            yield links[0]
+        else:
+            self.parse_item(self,links)
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
