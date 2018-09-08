@@ -25,9 +25,9 @@ class MeishujiaSpider(CrawlSpider):
     status=99
 
     # allowed_domains = ['artist.meishujia.cn']
-    start_urls = ["http://artist.meishujia.cn/index.php?act=pps&smid=2"]
+    start_urls = ["http://artist.artron.net/class-0-2-1.html"]
     # 设置下载延时
-    download_delay = 1
+    download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
                     'baby.pipelines.artPipeline': 300,

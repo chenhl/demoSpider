@@ -125,8 +125,8 @@ DUPEFILTER_DEBUG = False
 #http://httpbin.org/ip
 #curl -vx proxy.crawlera.com:8010 -U 728032ed0fc84375974a5e499b7aeadc: http://httpbin.org/ip
 #https://app.scrapinghub.com/o/232264
-CRAWLERA_ENABLED = True
+# CRAWLERA_ENABLED = True
 # CRAWLERA_PRESERVE_DELAY=True
-CRAWLERA_APIKEY = '728032ed0fc84375974a5e499b7aeadc'
+# CRAWLERA_APIKEY = '728032ed0fc84375974a5e499b7aeadc'
 #CRAWLERA_USER = '52480721@qq.com'
 #CRAWLERA_PASS = 'home5528'
