@@ -88,9 +88,9 @@ class artistMeishujiaItem(scrapy.Item):
     description =scrapy.Field(
         output_processor=TakeFirst()
     )
-    # content = scrapy.Field(
-    #     # output_processor=TakeFirst()
-    # )
+    content = scrapy.Field(
+        # output_processor=TakeFirst()
+    )
 
 class exhibitMeishujiaItem(artistMeishujiaItem):
     attr = scrapy.Field(

@@ -43,11 +43,18 @@ class newsSohuSpider(CrawlSpider):
 
     def parse(self, response):
         base_url = "http://www.sohu.com/a/"
-        js = json.load(response.body)
+        print(base_url)
+        print("#############")
+        js = json.loads(response.body_as_unicode())
+        # print(js)
         for item in js:
             id=item["id"]
+            print(id)
             aid=item["authorId"]
-            yield scrapy.Request(base_url+id+"_"+aid,callback=self.parse_item,meta=item)
+            print(aid)
+            url=base_url+str(id)+"_"+str(aid)
+            print(url)
+            yield scrapy.Request(url,callback=self.parse_item,meta=item)
         # pass
 
     def parse_item(self, response):
@@ -56,11 +63,13 @@ class newsSohuSpider(CrawlSpider):
         l.add_value('spider_link', get_base_url(response))
         l.add_xpath('title', 'normalize-space(//div[re:test(@class,"text-title")]//h1)')
         l.add_xpath('content', '//article/node()')
+        # l.add_value('content', 'abc')
+        # // *[ @ id = "mp-editor"]
         l.add_value('keywords', '')
         l.add_value('description', '')
 
-        imgs = json.dump(response.meta['images'])
-        l.add_value('spider_imgs', imgs)
+        # imgs = json.dump(response.meta['images'])
+        l.add_value('spider_imgs', response.meta['images'])
         l.add_value('spider_img',response.meta['picUrl'])
         l.add_value('thumbs', '')
 
