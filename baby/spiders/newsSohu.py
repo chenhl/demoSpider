@@ -47,7 +47,7 @@ class newsSohu(CrawlSpider):
         for item in js:
             id=item["id"]
             aid=item["authorId"]
-            yield scrapy.Request(base_url+id+"_"+aid,callback=self.parse_item)
+            yield scrapy.Request(base_url+id+"_"+aid,callback=self.parse_item,meta=item)
         # pass
 
     def parse_item(self, response):
@@ -59,10 +59,10 @@ class newsSohu(CrawlSpider):
         l.add_value('keywords', '')
         l.add_value('description', '')
 
-        l.add_value('spider_imgs', '')
+        imgs = json.dump(response.meta['images'])
+        l.add_value('spider_imgs', imgs)
+        l.add_value('spider_img',response.meta['picUrl'])
         l.add_value('thumbs', '')
-
-        l.add_value('spider_img','')
 
         l.add_value('catid', self.catid)
         l.add_value('status', self.status)
