@@ -28,9 +28,7 @@ class newsSohuSpider(CrawlSpider):
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20"
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
                   ]
     # 设置下载延时
     download_delay = 10
@@ -40,43 +38,33 @@ class newsSohuSpider(CrawlSpider):
                     'baby.pipelines.MyImagesPipeline': 400,
                     'baby.pipelines.MysqlWriterPipeline': 500,
         },
+        'COOKIES_ENABLED':False,
     }
-    def parse_start_url(self,response):
 
-        pass
     def parse(self, response):
-        base_url="http://www.sohu.com/a/"
-        js = json.loads(response.body)
+        base_url = "http://www.sohu.com/a/"
+        js = json.load(response.body)
         for item in js:
-            id = item["id"]
-            aid = item["authorId"]
-            url = base_url+id+"_"+aid
-            yield scrapy.Request(url,callback=self.parse_item)
-        pass
+            id=item["id"]
+            aid=item["authorId"]
+            yield scrapy.Request(base_url+id+"_"+aid,callback=self.parse_item,meta=item)
+        # pass
+
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
-        l.add_css('spider_img', '.theme_body_4656 table:nth-child(2) tr:nth-child(1) td:nth-child(1) img::attr(src)')
-        # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
-        l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[2]/td)')
-        # normalize-space 去除 html \r\n\t
-        # re 正则表达式，class只要包含theme_body_4656
-        # l.add_xpath('content', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td)')
-        # content=""for selector in sel.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'): content=content+ selector.xpath("/text()").extract()
-
-        # for sele in response.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'):
-        #     content = content + sele.xpath('./text()').extract()
-        # l.add_value('content',content)
-
-        l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td/node()')
+        l.add_xpath('title', 'normalize-space(//div[re:test(@class,"text-title")]//h1)')
+        l.add_xpath('content', '//article/node()')
         l.add_value('keywords', '')
         l.add_value('description', '')
 
-        l.add_value('spider_imgs', '')
+        imgs = json.dump(response.meta['images'])
+        l.add_value('spider_imgs', imgs)
+        l.add_value('spider_img',response.meta['picUrl'])
         l.add_value('thumbs', '')
 
-        l.add_value('catid',self.catid)
+        l.add_value('catid', self.catid)
         l.add_value('status', self.status)
         l.add_value('sysadd', self.sysadd)
         l.add_value('typeid', self.typeid)
