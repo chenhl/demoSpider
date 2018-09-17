@@ -28,7 +28,7 @@ class newsSohu(CrawlSpider):
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
                   ]
     # 设置下载延时
     download_delay = 10
@@ -38,7 +38,7 @@ class newsSohu(CrawlSpider):
                     'baby.pipelines.MyImagesPipeline': 400,
                     'baby.pipelines.MysqlWriterPipeline': 500,
         },
-
+        'COOKIES_ENABLED':False,
     }
 
     def parse(self, response):
