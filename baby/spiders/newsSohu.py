@@ -10,22 +10,28 @@ from scrapy.linkextractors import LinkExtractor
 from urllib.parse import urlsplit,urlparse,urljoin
 import time
 import datetime
+import json
+
 #item loader
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
-class MeishujiaSpider(CrawlSpider):
+class newsSohuSpider(CrawlSpider):
     #https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
     #艺术家（认证过的）修改自己的简介，可排名提前
-    name = 'artist.artron'
+    name = 'news.sohu'
     catid=6
     typeid=0
     sysadd=1
     status=99
 
     # allowed_domains = ['artist.meishujia.cn']
-    start_urls = ["http://artist.artron.net/class-0-2-1.html"]
+    start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20"
+                  ]
     # 设置下载延时
     download_delay = 10
     custom_settings = {
@@ -34,20 +40,19 @@ class MeishujiaSpider(CrawlSpider):
                     'baby.pipelines.MyImagesPipeline': 400,
                     'baby.pipelines.MysqlWriterPipeline': 500,
         },
-
     }
-    rules = (
-        # 地址分页
-        # Rule(LinkExtractor(allow=('/index.php?page=1&act=pps&smid=2'), allow_domains=('meishujia.cn'),restrict_xpaths=('//ul[@class="sert"]'))),
-        # 详情页1
-        Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
-        # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        Rule(LinkExtractor(restrict_css=('.theme_title_4647 a')),process_links=('detail_link'),
-          callback='parse_item')
-    )
-    def detail_lik(self,links):
-        yield links[0]
+    def parse_start_url(self,response):
 
+        pass
+    def parse(self, response):
+        base_url="http://www.sohu.com/a/"
+        js = json.loads(response.body)
+        for item in js:
+            id = item["id"]
+            aid = item["authorId"]
+            url = base_url+id+"_"+aid
+            yield scrapy.Request(url,callback=self.parse_item)
+        pass
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
