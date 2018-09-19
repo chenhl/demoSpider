@@ -258,7 +258,7 @@ class MyImagesPipeline(ImagesPipeline):
             if os.path.exists(img_path) == False:
                 os.makedirs(img_path)
             # 将文件从默认下路路径移动到指定路径下
-            shutil.move(self.img_store + image_path[0], img_path + "\\" + _path)
+            shutil.move(self.img_store + image_path, img_path + "\\" + _path)
             #根据url判断是放到thumb 还是thumbs
             new_img_url = _path1+'/'+_path2+'/'+_path
             if item['spider_img'] == image_url:
