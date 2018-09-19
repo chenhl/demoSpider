@@ -77,6 +77,8 @@ class artPipeline(object):
 
         #spider_img
         if item['spider_img']:
+            print(item['spider_img'])
+            print("####")
             urls = urlparse(item['spider_img'])
             url_netloc = urls.netloc.strip()
             url_scheme = urls.scheme.strip()
