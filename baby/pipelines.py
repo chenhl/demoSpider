@@ -87,6 +87,8 @@ class artPipeline(object):
             if not url_scheme:
                 url_scheme = baseurls.scheme
             item['spider_img']=url_scheme+"://"+url_netloc+urls.path
+        else:
+            item['spider_img'] = ''
 
         #spider_imgs
         imgs = []
