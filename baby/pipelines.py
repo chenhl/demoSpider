@@ -76,14 +76,15 @@ class artPipeline(object):
         url_netloc = ""
 
         #spider_img
-        urls = urlparse(item['spider_img'])
-        url_netloc = urls.netloc.strip()
-        url_scheme = urls.scheme.strip()
-        if not url_netloc:
-            url_netloc = baseurls.netloc
-        if not url_scheme:
-            url_scheme = baseurls.scheme
-        item['spider_img']=url_scheme+"://"+url_netloc+urls.path
+        if item['spider_img']:
+            urls = urlparse(item['spider_img'])
+            url_netloc = urls.netloc.strip()
+            url_scheme = urls.scheme.strip()
+            if not url_netloc:
+                url_netloc = baseurls.netloc
+            if not url_scheme:
+                url_scheme = baseurls.scheme
+            item['spider_img']=url_scheme+"://"+url_netloc+urls.path
 
         #spider_imgs
         imgs = []
@@ -225,7 +226,9 @@ class MyImagesPipeline(ImagesPipeline):
         if item['spider_imgs']:
             for img in item['spider_imgs']:
                 yield scrapy.Request(img)
-        yield scrapy.Request(item['spider_img'])
+
+        if item['spider_img']:
+            yield scrapy.Request(item['spider_img'])
 
 
     def item_completed(self, results, item, info):
