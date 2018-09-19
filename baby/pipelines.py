@@ -71,15 +71,37 @@ class artPipeline(object):
     def process_item(self, item, spider):
         # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
         # item['title'] = "".join(item['name'].split())
+        baseurls = urlparse(item['spider_link'])
+        url_scheme = ""
+        url_netloc = ""
 
+        #spider_img
         urls = urlparse(item['spider_img'])
-        if not urls.netloc.strip():
-            baseurls = urlparse(item['spider_link'])
-            item['spider_img']=baseurls.scheme+"://"+baseurls.netloc+urls.path
+        url_netloc = urls.netloc.strip()
+        url_scheme = urls.scheme.strip()
+        if not url_netloc:
+            url_netloc = baseurls.netloc
+        if not url_scheme:
+            url_scheme = baseurls.scheme
+        item['spider_img']=url_scheme+"://"+url_netloc+urls.path
 
-        print(item['spider_img'] + "###############")
+        #spider_imgs
+        imgs = []
+        if item['spider_imgs']:
+            for img in item['spider_imgs']:
+                parse_url = urlparse(img)
+                url_netloc = parse_url.netloc.strip()
+                url_scheme = parse_url.scheme.strip()
+                if not url_netloc:
+                    url_netloc = baseurls.netloc
+                if not url_scheme:
+                    url_scheme = baseurls.scheme
+                imgs.append(url_scheme+"://"+url_netloc+parse_url.path)
+        item['spider_imgs'] = imgs
 
+        #content
         item['content'] = "".join(item['content'])
+
         return item
         # pass
 
@@ -200,16 +222,22 @@ class MyImagesPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
         # for image_url in item['image_urls']:
+        print(info)
+        print("####")
         if item['spider_imgs']:
             for img in item['spider_imgs']:
-                print(img+"$$$$$")
-                yield scrapy.Request(img)
-                # pass
+                yield scrapy.Request(img,meta={'field':'spider_imgs'})
+        yield scrapy.Request(item['spider_img'],meta={'field':'spider_img'})
 
-        print(item['spider_img']+"----------")
-        yield scrapy.Request(item['spider_img'])
-
+    def file_path(self, request, response=None, info=None):
+        if request.meta['field']=='spider_imgs':
+            pass
+        if request.meta['field'] == 'spider_img':
+            pass
+        pass
     def item_completed(self, results, item, info):
+        print(info)
+        print("$$$$")
         # for ok, x in results:
         #     if ok:
         #         print(x['path'])
@@ -217,11 +245,12 @@ class MyImagesPipeline(ImagesPipeline):
         # 容器中每个元素包含两个值，第一个代表状态True / False，第二个值是一个dict
         # 如果元素中状态为True则取dict中的path值
         # PEP0202列表递推式 https://www.python.org/dev/peps/pep-0202/
-
         image_path = [x['path'] for ok, x in results if ok]
         print(image_path)
         if not image_path:
             raise DropItem("Item contains no images")
+        # 当程序出现错误，python会自动引发异常，也可以通过raise显示地引发异常。一旦执行了raise语句，raise后面的语句将不能执行。
+
         # 定义分类保存的路径
         _path = image_path[0].lstrip("full/")
         _path1 = _path[0:2]
@@ -234,7 +263,6 @@ class MyImagesPipeline(ImagesPipeline):
 
         # 将文件从默认下路路径移动到指定路径下
         shutil.move(self.img_store + image_path[0], img_path + "\\" + _path)
-
         item['thumb'] = _path1+'/'+_path2+'/'+_path
         print(item['thumb'])
         print(image_path)
