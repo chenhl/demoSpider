@@ -27,7 +27,7 @@ class newsSohuSpider(CrawlSpider):
     status=99
 
     # allowed_domains = ['artist.meishujia.cn']
-    start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=10",
+    start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=3",
                   # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
                   ]
     # 设置下载延时
@@ -69,9 +69,14 @@ class newsSohuSpider(CrawlSpider):
         l.add_value('description', '')
 
         # imgs = json.dump(response.meta['images'])
-        l.add_value('spider_imgs', response.meta['images'])
-        l.add_value('spider_img',response.meta['picUrl'])
-
+        if not response.meta['images']:
+            l.add_value('spider_imgs', [])
+        else:
+            l.add_value('spider_imgs', response.meta['images'])
+        if not response.meta['picUrl']:
+            l.add_value('spider_img','')
+        else:
+            l.add_value('spider_img', response.meta['picUrl'])
 
         l.add_value('catid', self.catid)
         l.add_value('status', self.status)
