@@ -71,7 +71,7 @@ class newsSohuSpider(CrawlSpider):
         # imgs = json.dump(response.meta['images'])
         l.add_value('spider_imgs', response.meta['images'])
         l.add_value('spider_img',response.meta['picUrl'])
-        l.add_value('thumbs', '')
+        # l.add_value('thumbs', [])
 
         l.add_value('catid', self.catid)
         l.add_value('status', self.status)

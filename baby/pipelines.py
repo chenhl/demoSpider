@@ -222,8 +222,6 @@ class MyImagesPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
         # for image_url in item['image_urls']:
-        print(info)
-        print("####")
         if item['spider_imgs']:
             for img in item['spider_imgs']:
                 yield scrapy.Request(img)
@@ -231,8 +229,6 @@ class MyImagesPipeline(ImagesPipeline):
 
 
     def item_completed(self, results, item, info):
-        print(info)
-        print("$$$$")
         # for ok, x in results:
         #     if ok:
         #         print(x['path'])
@@ -240,7 +236,7 @@ class MyImagesPipeline(ImagesPipeline):
         # 容器中每个元素包含两个值，第一个代表状态True / False，第二个值是一个dict
         # 如果元素中状态为True则取dict中的path值
         # PEP0202列表递推式 https://www.python.org/dev/peps/pep-0202/
-
+        item['thumbs'] = []
         image_res = [x for ok, x in results if ok]
         # 当程序出现错误，python会自动引发异常，也可以通过raise显示地引发异常。一旦执行了raise语句，raise后面的语句将不能执行。
         if not image_res:
@@ -253,17 +249,23 @@ class MyImagesPipeline(ImagesPipeline):
             _path = image_path.lstrip("full/")
             _path1 = _path[0:2]
             _path2 = _path[2:4]
-            img_path = "%s\\%s\\%s" % (self.img_store, _path1,_path2)
+
             # 目录不存在则创建目录
-            if os.path.exists(img_path) == False:
-                os.makedirs(img_path)
+            img_target_path = "%s\\%s\\%s" % (self.img_store, _path1, _path2)
+            if os.path.exists(img_target_path) == False:
+                os.makedirs(img_target_path)
+
             # 将文件从默认下路路径移动到指定路径下
-            shutil.move(self.img_store + image_path, img_path + "\\" + _path)
+            img_target = img_target_path + "\\" + _path
+            img_source =self.img_store + image_path
+            if os.path.exists(img_source) == True:
+                shutil.move(img_source, img_target)
+
             #根据url判断是放到thumb 还是thumbs
             new_img_url = _path1+'/'+_path2+'/'+_path
             if item['spider_img'] == image_url:
                 item['thumb'] = new_img_url
-            if item['spider_img'].count(image_url) > 0:
+            if item['spider_imgs'].count(image_url) > 0:
                 item['thumbs'].append(new_img_url)
 
         return item
