@@ -158,19 +158,19 @@ class MysqlWriterPipeline(object):
     def process_item(self, item, spider):
         insert_data = item
 
-        if insert_data['spider_img'] is None:
+        if item['spider_img'] is None:
             insert_data['spider_img'] = ''
-        if insert_data['spider_imgs'] is None:
+        if item['spider_imgs'] is None:
             insert_data['spider_imgs'] = ''
 
-        if insert_data['thumb'] is None:
+        if item['thumb'] is None:
             insert_data['thumb'] = ''
-        if insert_data['thumbs'] is None:
+        if item['thumbs'] is None:
             insert_data['thumbs'] = ''
 
-        if insert_data['keywords'] is None:
+        if item['keywords'] is None:
             insert_data['keywords'] = ''
-        if insert_data['description'] is None:
+        if item['description'] is None:
             insert_data['description'] = ''
 
         sql = "insert into v9_news (catid,typeid,status,sysadd,spider_link,spider_img,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
