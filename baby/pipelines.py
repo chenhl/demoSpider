@@ -76,7 +76,9 @@ class artPipeline(object):
         url_netloc = ""
 
         #spider_img
-        if item['spider_img']:
+        if not item['spider_img']:
+            item['spider_img'] = ''
+        else:
             print(item['spider_img'])
             print("####")
             urls = urlparse(item['spider_img'])
@@ -86,13 +88,13 @@ class artPipeline(object):
                 url_netloc = baseurls.netloc
             if not url_scheme:
                 url_scheme = baseurls.scheme
-            item['spider_img']=url_scheme+"://"+url_netloc+urls.path
-        else:
-            item['spider_img'] = ''
+            item['spider_img'] = url_scheme + "://" + url_netloc + urls.path
 
         #spider_imgs
         imgs = []
-        if item['spider_imgs']:
+        if not item['spider_imgs']:
+            pass
+        else:
             for img in item['spider_imgs']:
                 parse_url = urlparse(img)
                 url_netloc = parse_url.netloc.strip()

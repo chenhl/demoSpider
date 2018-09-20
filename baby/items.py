@@ -6,7 +6,14 @@
 # https://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-from scrapy.loader.processors import TakeFirst
+from scrapy.loader.processors import TakeFirst,Identity,Join, MapCompose
+from w3lib.html import remove_tags
+def myTakeFirst(value):
+    if value != '':
+        for val in value:
+            if val is not None and val != '':
+                return val
+    return value
 
 class BabyDetailItem(scrapy.Item):
     # define the fields for your item here like:
@@ -46,10 +53,11 @@ class artistMeishujiaItem(scrapy.Item):
         output_processor=TakeFirst()
     )
     spider_img = scrapy.Field(
+        # output_processor=Identity()
         output_processor=TakeFirst()
     )
     spider_imgs = scrapy.Field(
-        # output_processor=TakeFirst()
+        # output_processor=Identity()
     )
     status = scrapy.Field(
         output_processor=TakeFirst()
@@ -77,7 +85,7 @@ class artistMeishujiaItem(scrapy.Item):
         output_processor=TakeFirst()
     )
     thumbs = scrapy.Field(
-        # output_processor=TakeFirst()
+        # output_processor=Identity()
     )
     title = scrapy.Field(
         output_processor=TakeFirst()
@@ -92,6 +100,15 @@ class artistMeishujiaItem(scrapy.Item):
         # output_processor=TakeFirst()
     )
 
+class newsSohuItem(artistMeishujiaItem):
+    spider_img = scrapy.Field(
+        input_processor=Identity(),
+        output_processor=MapCompose(myTakeFirst),
+    )
+    spider_imgs = scrapy.Field(
+        # input_processor=Identity()
+        # output_processor=TakeFirst()
+    )
 class exhibitMeishujiaItem(artistMeishujiaItem):
     attr = scrapy.Field(
         # output_processor=TakeFirst()

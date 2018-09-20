@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import artistMeishujiaItem
+from baby.items import artistMeishujiaItem, newsSohuItem
 
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -16,6 +16,7 @@ import json
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
+
 class newsSohuSpider(CrawlSpider):
     #https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -54,12 +55,12 @@ class newsSohuSpider(CrawlSpider):
             print(aid)
             url=base_url+str(id)+"_"+str(aid)
             print(url)
-            yield scrapy.Request(url,callback=self.parse_item,meta=item)
+            yield scrapy.Request(url, callback=self.parse_item, meta=item)
         # pass
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
-        l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
+        l = DefaultItemLoader(item=newsSohuItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
         l.add_xpath('title', 'normalize-space(//div[re:test(@class,"text-title")]//h1)')
         l.add_xpath('content', '//article/node()')
@@ -67,12 +68,15 @@ class newsSohuSpider(CrawlSpider):
         # // *[ @ id = "mp-editor"]
         l.add_value('keywords', '')
         l.add_value('description', '')
-
+        print('!!!!!!!!')
+        print(response.meta)
+        print('!!!!!!!!')
         # imgs = json.dump(response.meta['images'])
         if not response.meta['images']:
             l.add_value('spider_imgs', [])
         else:
             l.add_value('spider_imgs', response.meta['images'])
+
         if not response.meta['picUrl']:
             l.add_value('spider_img','')
         else:
