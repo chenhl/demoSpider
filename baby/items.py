@@ -9,7 +9,7 @@ import scrapy
 from scrapy.loader.processors import TakeFirst,Identity,Join, MapCompose
 from w3lib.html import remove_tags
 def myTakeFirst(value):
-    if value != '':
+    if value:
         for val in value:
             if val is not None and val != '':
                 return val
@@ -102,8 +102,9 @@ class artistMeishujiaItem(scrapy.Item):
 
 class newsSohuItem(artistMeishujiaItem):
     spider_img = scrapy.Field(
-        input_processor=Identity(),
-        output_processor=MapCompose(myTakeFirst),
+        output_processor=TakeFirst()
+        # input_processor=Identity(),
+        # output_processor=MapCompose(myTakeFirst),
     )
     spider_imgs = scrapy.Field(
         # input_processor=Identity()

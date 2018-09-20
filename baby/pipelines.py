@@ -76,9 +76,7 @@ class artPipeline(object):
         url_netloc = ""
 
         #spider_img
-        if not item['spider_img']:
-            item['spider_img'] = ''
-        else:
+        if item['spider_img'] is not None:
             print(item['spider_img'])
             print("####")
             urls = urlparse(item['spider_img'])
@@ -92,9 +90,7 @@ class artPipeline(object):
 
         #spider_imgs
         imgs = []
-        if not item['spider_imgs']:
-            pass
-        else:
+        if item['spider_imgs'] is not None:
             for img in item['spider_imgs']:
                 parse_url = urlparse(img)
                 url_netloc = parse_url.netloc.strip()
