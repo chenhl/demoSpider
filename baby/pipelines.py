@@ -10,7 +10,7 @@ from scrapy.exceptions import DropItem
 import scrapy
 from scrapy.pipelines.images import ImagesPipeline
 import hashlib
-from urllib.parse import quote,urlparse
+from urllib.parse import quote, urlparse
 import pymysql
 # 导入项目设置
 from scrapy.utils.project import get_project_settings
@@ -20,6 +20,7 @@ import shutil
 import os
 import time
 import pymongo
+
 
 class BabyPipeline(object):
     def process_item(self, item, spider):
@@ -31,41 +32,46 @@ class BabyPipeline(object):
 
 
 class exhibitPipeline(object):
-    #在你的多少范围内有展览
+    # 在你的多少范围内有展览
     meta = ['展览名称：', '展览时间：', '展览地点：', '主办单位：', '参展艺术家：']
-    meta2 = [{'txt':'展览名称：','code':'name'},{'txt':'展览时间：','code':'time'},{'txt':'展览地点：','code':'area'},{'txt':'主办单位：','code':'company'},{'txt':'参展艺术家：','code':'artists'}]
+    meta2 = [{'txt': '展览名称：', 'code': 'name'}, {'txt': '展览时间：', 'code': 'time'}, {'txt': '展览地点：', 'code': 'area'},
+             {'txt': '主办单位：', 'code': 'company'}, {'txt': '参展艺术家：', 'code': 'artists'}]
+
     def process_item(self, item, spider):
         print(item['attr'])
         print(type(item['attr']))
         print(len(item['attr']))
 
-        i=0
-        max = len(self.meta)-1
-        res=[]
+        i = 0
+        max = len(self.meta) - 1
+        res = []
         for data_meta in self.meta2:
             _index = item['attr'].index(data_meta['txt'])
             if i < max:
-                _next_index = item['attr'].index(self.meta[i+1])
-                _tmp = {'attr':data_meta['code'],'attr_txt':data_meta['txt'],'value':item['attr'][_index+1:_next_index]}
+                _next_index = item['attr'].index(self.meta[i + 1])
+                _tmp = {'attr': data_meta['code'], 'attr_txt': data_meta['txt'],
+                        'value': item['attr'][_index + 1:_next_index]}
             else:
-                _tmp = {'attr':data_meta['code'],'attr_txt': data_meta['txt'], 'value': item['attr'][_index+1:_index+2]}
+                _tmp = {'attr': data_meta['code'], 'attr_txt': data_meta['txt'],
+                        'value': item['attr'][_index + 1:_index + 2]}
 
-            #时间范围处理
+            # 时间范围处理
             if data_meta['code'] == 'time':
                 _times = _tmp['value'].split('~')
-                time_struct_start = time.strptime(_times[0],'%Y%m/%d')
+                time_struct_start = time.strptime(_times[0], '%Y%m/%d')
                 time_struct_end = time.strptime(_times[1], '%Y%m/%d')
-                str_time_start = time.strftime('%Y-%m-%d %H:%M:%S',time_struct_start)
+                str_time_start = time.strftime('%Y-%m-%d %H:%M:%S', time_struct_start)
                 str_time_end = time.strftime('%Y-%m-%d %H:%M:%S', time_struct_end)
-            #地点处理
+            # 地点处理
             if data_meta['code'] == 'area':
                 pass
 
             res.append(_tmp)
-            i=i+1
+            i = i + 1
 
         item['attr_value'] = res
         return item
+
 
 class artPipeline(object):
     def process_item(self, item, spider):
@@ -75,7 +81,7 @@ class artPipeline(object):
         url_scheme = ""
         url_netloc = ""
 
-        #spider_img
+        # spider_img
         if item['spider_img'] is not None:
             print(item['spider_img'])
             print("####")
@@ -88,7 +94,7 @@ class artPipeline(object):
                 url_scheme = baseurls.scheme
             item['spider_img'] = url_scheme + "://" + url_netloc + urls.path
 
-        #spider_imgs
+        # spider_imgs
         imgs = []
         if item['spider_imgs'] is not None:
             for img in item['spider_imgs']:
@@ -99,19 +105,20 @@ class artPipeline(object):
                     url_netloc = baseurls.netloc
                 if not url_scheme:
                     url_scheme = baseurls.scheme
-                imgs.append(url_scheme+"://"+url_netloc+parse_url.path)
+                imgs.append(url_scheme + "://" + url_netloc + parse_url.path)
         item['spider_imgs'] = imgs
 
-        #content
+        # content
         item['content'] = "".join(item['content'])
 
         return item
         # pass
 
+
 class phpcmsSpiderPipeline(object):
     # cur=''
     def open_spider(self, spider):
-        self.db = pymysql.connect(host='localhost',user='root',password='',db='phpcmsv9')
+        self.db = pymysql.connect(host='localhost', user='root', password='', db='phpcmsv9')
         self.cur = self.db.cursor()
 
         # self.file = open('../data/items.jl', 'w')
@@ -124,7 +131,7 @@ class phpcmsSpiderPipeline(object):
         insert_data = item
         sql = "insert into v9_collection_content (url,title,data) values (%s,%s,%s)"
         try:
-            self.cur.execute(sql,(insert_data['url'],insert_data['title'],insert_data['data']))
+            self.cur.execute(sql, (insert_data['url'], insert_data['title'], insert_data['data']))
             self.db.commit()
             pass
         except Exception as e:
@@ -135,10 +142,11 @@ class phpcmsSpiderPipeline(object):
 
         return item
 
+
 class MysqlWriterPipeline(object):
     # cur=''
     def open_spider(self, spider):
-        self.db = pymysql.connect(host='localhost',user='root',password='',db='phpcmsv9')
+        self.db = pymysql.connect(host='localhost', user='root', password='', db='phpcmsv9')
         self.cur = self.db.cursor()
 
         # self.file = open('../data/items.jl', 'w')
@@ -149,19 +157,34 @@ class MysqlWriterPipeline(object):
 
     def process_item(self, item, spider):
         insert_data = item
-        if not insert_data['thumbs']:
-            insert_data['thumbs']=''
-        if not insert_data['spider_imgs']:
-            insert_data['spider_imgs']=''
+
+        if insert_data['spider_img'] is None:
+            insert_data['spider_img'] = ''
+        if insert_data['spider_imgs'] is None:
+            insert_data['spider_imgs'] = ''
+
+        if insert_data['thumb'] is None:
+            insert_data['thumb'] = ''
+        if insert_data['thumbs'] is None:
+            insert_data['thumbs'] = ''
+
+        if insert_data['keywords'] is None:
+            insert_data['keywords'] = ''
+        if insert_data['description'] is None:
+            insert_data['description'] = ''
 
         sql = "insert into v9_news (catid,typeid,status,sysadd,spider_link,spider_img,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         try:
-            #值为空的item给删除了？
-            self.cur.execute(sql,(insert_data['catid'],insert_data['typeid'],insert_data['status'],insert_data['sysadd'],insert_data['spider_link'],insert_data['spider_img'],insert_data['spider_imgs'],insert_data['thumb'],insert_data['thumbs'],insert_data['title'],'','',insert_data['inputtime'],insert_data['updatetime'],insert_data['create_time']))
+            # 值为空的item给删除了？
+            self.cur.execute(sql, (
+            insert_data['catid'], insert_data['typeid'], insert_data['status'], insert_data['sysadd'],
+            insert_data['spider_link'], insert_data['spider_img'], insert_data['spider_imgs'], insert_data['thumb'],
+            insert_data['thumbs'], insert_data['title'], '', '', insert_data['inputtime'], insert_data['updatetime'],
+            insert_data['create_time']))
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
             sql_data = "insert into v9_news_data(id,content) values (%s,%s)"
-            self.cur.execute(sql_data,(data[0],insert_data['content']))
+            self.cur.execute(sql_data, (data[0], insert_data['content']))
             self.db.commit()
             pass
         except Exception as e:
@@ -171,6 +194,7 @@ class MysqlWriterPipeline(object):
         #     self.db.close()
 
         return item
+
 
 class JsonWriterPipeline(object):
 
@@ -184,6 +208,8 @@ class JsonWriterPipeline(object):
         line = json.dumps(dict(item)) + "\n"
         self.file.write(line)
         return item
+
+
 class MultiImagesPipeline(ImagesPipeline):
     # 从项目设置文件中导入图片下载路径
     img_store = get_project_settings().get('IMAGES_STORE')
@@ -192,7 +218,7 @@ class MultiImagesPipeline(ImagesPipeline):
         # for image_url in item['image_urls']:
         if item['spider_imgs']:
             for img in item['spider_imgs']:
-                print(img+"$$$$$")
+                print(img + "$$$$$")
                 yield scrapy.Request(img)
 
     def item_completed(self, results, item, info):
@@ -206,17 +232,18 @@ class MultiImagesPipeline(ImagesPipeline):
         _path = image_path[0].lstrip("full/")
         _path1 = _path[0:2]
         _path2 = _path[2:4]
-        img_path = "%s\\%s\\%s" % (self.img_store, _path1,_path2)
+        img_path = "%s\\%s\\%s" % (self.img_store, _path1, _path2)
         # 目录不存在则创建目录
         if os.path.exists(img_path) == False:
             os.makedirs(img_path)
         # 将文件从默认下路路径移动到指定路径下
         shutil.move(self.img_store + image_path[0], img_path + "\\" + _path)
 
-        item['thumb'] = _path1+'/'+_path2+'/'+_path
+        item['thumb'] = _path1 + '/' + _path2 + '/' + _path
         print(item['thumb'])
         print(image_path)
         return item
+
 
 class MyImagesPipeline(ImagesPipeline):
     # basepath="D:\xampp71\htdocs\phpcms\uploadfile"
@@ -231,7 +258,6 @@ class MyImagesPipeline(ImagesPipeline):
 
         if item['spider_img']:
             yield scrapy.Request(item['spider_img'])
-
 
     def item_completed(self, results, item, info):
         # for ok, x in results:
@@ -262,24 +288,28 @@ class MyImagesPipeline(ImagesPipeline):
 
             # 将文件从默认下路路径移动到指定路径下
             img_target = img_target_path + "\\" + _path
-            img_source =self.img_store + image_path
+            img_source = self.img_store + image_path
             if os.path.exists(img_source) == True:
                 shutil.move(img_source, img_target)
 
-            #根据url判断是放到thumb 还是thumbs
-            new_img_url = _path1+'/'+_path2+'/'+_path
+            # 根据url判断是放到thumb 还是thumbs
+            new_img_url = _path1 + '/' + _path2 + '/' + _path
             if item['spider_img'] == image_url:
                 item['thumb'] = new_img_url
             if item['spider_imgs'].count(image_url) > 0:
                 item['thumbs'].append(new_img_url)
 
         return item
+
+
 '''
 此示例演示如何从方法返回Deferredprocess_item()。
 它使用Splash来呈现项目网址的屏幕截图。
 Pipeline请求本地运行的Splash实例。
 在请求被下载并且Deferred回调触发后，它将项目保存到一个文件并将文件名添加到项目。
 '''
+
+
 class ScreenshotPipeline(object):
     """Pipeline that uses Splash to render screenshot of
     every Scrapy item."""

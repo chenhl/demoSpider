@@ -42,6 +42,7 @@ class newsSohuSpider(CrawlSpider):
             'baby.pipelines.MysqlWriterPipeline': 500,
         },
         'COOKIES_ENABLED': False,
+        # 'REFERER_ENABLED': True, #默认为True
     }
 
     def parse(self, response):
