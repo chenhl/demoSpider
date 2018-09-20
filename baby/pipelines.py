@@ -77,12 +77,29 @@ class artPipeline(object):
     def process_item(self, item, spider):
         # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
         # item['title'] = "".join(item['name'].split())
+
+        if 'spider_img' not in item:
+            item['spider_img'] = ''
+        if 'spider_imgs' not in item:
+            item['spider_imgs'] = []
+
+        if 'thumb' not in item:
+            item['thumb'] = ''
+        if 'thumbs' not in item:
+            item['thumbs'] = []
+
+        if 'keywords' not in item:
+            item['keywords'] = ''
+        if 'description' not in item:
+            item['description'] = ''
+
+
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
         url_netloc = ""
 
         # spider_img
-        if item['spider_img'] is not None:
+        if item['spider_img'] != '':
             print(item['spider_img'])
             print("####")
             urls = urlparse(item['spider_img'])
@@ -96,7 +113,7 @@ class artPipeline(object):
 
         # spider_imgs
         imgs = []
-        if item['spider_imgs'] is not None:
+        if item['spider_imgs']:
             for img in item['spider_imgs']:
                 parse_url = urlparse(img)
                 url_netloc = parse_url.netloc.strip()
@@ -157,30 +174,31 @@ class MysqlWriterPipeline(object):
 
     def process_item(self, item, spider):
         insert_data = item
-
-        if item['spider_img'] is None:
-            insert_data['spider_img'] = ''
-        if item['spider_imgs'] is None:
-            insert_data['spider_imgs'] = ''
-
-        if item['thumb'] is None:
-            insert_data['thumb'] = ''
-        if item['thumbs'] is None:
-            insert_data['thumbs'] = ''
-
-        if item['keywords'] is None:
-            insert_data['keywords'] = ''
-        if item['description'] is None:
-            insert_data['description'] = ''
+        insert_data['spider_imgs']=json.dumps(insert_data['spider_imgs'])
+        insert_data['thumbs'] = json.dumps(insert_data['thumbs'])
 
         sql = "insert into v9_news (catid,typeid,status,sysadd,spider_link,spider_img,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        print(sql)
         try:
+            print(insert_data['catid'])
             # 值为空的item给删除了？
-            self.cur.execute(sql, (
-            insert_data['catid'], insert_data['typeid'], insert_data['status'], insert_data['sysadd'],
-            insert_data['spider_link'], insert_data['spider_img'], insert_data['spider_imgs'], insert_data['thumb'],
-            insert_data['thumbs'], insert_data['title'], '', '', insert_data['inputtime'], insert_data['updatetime'],
-            insert_data['create_time']))
+            eret = self.cur.execute(sql, (
+                insert_data['catid'],
+                insert_data['typeid'],
+                insert_data['status'],
+                insert_data['sysadd'],
+                insert_data['spider_link'],
+                insert_data['spider_img'],
+                insert_data['spider_imgs'],
+                insert_data['thumb'],
+                insert_data['thumbs'],
+                insert_data['title'],
+                insert_data['keywords'],
+                insert_data['description'],
+                insert_data['inputtime'],
+                insert_data['updatetime'],
+                insert_data['create_time']))
+            print(eret)
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
             sql_data = "insert into v9_news_data(id,content) values (%s,%s)"
@@ -197,7 +215,6 @@ class MysqlWriterPipeline(object):
 
 
 class JsonWriterPipeline(object):
-
     def open_spider(self, spider):
         self.file = open('../data/items.jl', 'w')
 
