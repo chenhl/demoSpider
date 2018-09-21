@@ -21,6 +21,8 @@ import os
 import time
 import pymongo
 
+from scrapy import selector
+
 
 class BabyPipeline(object):
     def process_item(self, item, spider):
@@ -127,6 +129,8 @@ class artPipeline(object):
 
         # content
         item['content'] = "".join(item['content'])
+
+        # sel = selector(text=item['content'])
 
         return item
         # pass

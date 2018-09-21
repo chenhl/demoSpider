@@ -47,10 +47,7 @@ class newsSohuSpider(CrawlSpider):
 
     def parse(self, response):
         base_url = "http://www.sohu.com/a/"
-        # print(base_url)
-        # print("#############")
         js = json.loads(response.body_as_unicode())
-        # print(js)
         for item in js:
             id = item["id"]
             print(id)
