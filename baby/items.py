@@ -99,6 +99,10 @@ class artistMeishujiaItem(scrapy.Item):
     content = scrapy.Field(
         # output_processor=TakeFirst()
     )
+    content_imgs = scrapy.Field(
+        # input_processor=Identity()
+        # output_processor=TakeFirst()
+    )
 
 class newsSohuItem(artistMeishujiaItem):
     spider_img = scrapy.Field(
