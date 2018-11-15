@@ -30,9 +30,16 @@ class newsSohuSpider(CrawlSpider):
     status = 99
 
     # allowed_domains = ['artist.meishujia.cn']
-    start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+    start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
                   "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
                   ]
     # 设置下载延时
     download_delay = 10
@@ -69,8 +76,9 @@ class newsSohuSpider(CrawlSpider):
         # // *[ @ id = "mp-editor"]
         l.add_value('keywords', '')
         l.add_value('description', '')
-        # imgs = json.dump(response.meta['images'])authorName
+        # imgs = json.dump(response.meta['images'])authorName authorPic
         l.add_value('spider_imgs', response.meta['images'])
+        l.add_value('spider_userpic', response.meta['authorPic'])
         l.add_value('spider_img', response.meta['picUrl'])
         l.add_value('spider_tags', response.meta['tags'])
 

@@ -119,7 +119,19 @@ class newsSohuItem(artistMeishujiaItem):
         # input_processor=Identity()
         # output_processor=TakeFirst()
     )
+    spider_userpic = scrapy.Field(
+        output_processor=TakeFirst()
+        # input_processor=Identity(),
+        # output_processor=MapCompose(myTakeFirst),
+    )
+    userpic = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     spider_tags = scrapy.Field(
+        # input_processor=Identity()
+        # output_processor=TakeFirst()
+    )
+    tags = scrapy.Field(
         # input_processor=Identity()
         # output_processor=TakeFirst()
     )

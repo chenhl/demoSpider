@@ -112,6 +112,17 @@ class artPipeline(object):
                 url_scheme = baseurls.scheme
             item['spider_img'] = url_scheme + "://" + url_netloc + urls.path
 
+        # spider_userpic
+        if item['spider_userpic'] != '':
+            urls = urlparse(item['spider_userpic'])
+            url_netloc = urls.netloc.strip()
+            url_scheme = urls.scheme.strip()
+            if not url_netloc:
+                url_netloc = baseurls.netloc
+            if not url_scheme:
+                url_scheme = baseurls.scheme
+            item['spider_userpic'] = url_scheme + "://" + url_netloc + urls.path
+
         # spider_imgs
         imgs = []
         if item['spider_imgs']:
@@ -186,8 +197,9 @@ class MysqlWriterPipeline(object):
         insert_data = item
         insert_data['spider_imgs']=json.dumps(insert_data['spider_imgs'])
         insert_data['thumbs'] = json.dumps(insert_data['thumbs'])
+        insert_data['spider_tags'] = json.dumps(insert_data['spider_tags'])
 
-        sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,spider_tags,tags,spider_link,spider_img,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         print(sql)
         try:
             print(insert_data['catid'])
@@ -200,10 +212,12 @@ class MysqlWriterPipeline(object):
                 insert_data['sysadd'],
                 insert_data['uid'],
                 insert_data['uname'],
+                insert_data['userpic'],
                 insert_data['spider_tags'],
                 insert_data['tags'],
                 insert_data['spider_link'],
                 insert_data['spider_img'],
+                insert_data['spider_userpic'],
                 insert_data['spider_imgs'],
                 insert_data['thumb'],
                 insert_data['thumbs'],
@@ -291,6 +305,9 @@ class MyImagesPipeline(ImagesPipeline):
         if item['spider_img']:
             yield scrapy.Request(item['spider_img'])
 
+        if item['spider_userpic']:
+            yield scrapy.Request(item['spider_userpic'])
+
     def item_completed(self, results, item, info):
         # for ok, x in results:
         #     if ok:
@@ -326,8 +343,13 @@ class MyImagesPipeline(ImagesPipeline):
 
             # 根据url判断是放到thumb 还是thumbs
             new_img_url = _path1 + '/' + _path2 + '/' + _path
+
             if item['spider_img'] == image_url:
                 item['thumb'] = new_img_url
+
+            if item['spider_userpic'] == image_url:
+                item['userpic'] = new_img_url
+
             if item['spider_imgs'].count(image_url) > 0:
                 item['thumbs'].append(new_img_url)
 
