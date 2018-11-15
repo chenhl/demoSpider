@@ -30,8 +30,9 @@ class newsSohuSpider(CrawlSpider):
     status = 99
 
     # allowed_domains = ['artist.meishujia.cn']
-    start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=1",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+    start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
                   ]
     # 设置下载延时
     download_delay = 10
@@ -68,9 +69,15 @@ class newsSohuSpider(CrawlSpider):
         # // *[ @ id = "mp-editor"]
         l.add_value('keywords', '')
         l.add_value('description', '')
-        # imgs = json.dump(response.meta['images'])
+        # imgs = json.dump(response.meta['images'])authorName
         l.add_value('spider_imgs', response.meta['images'])
         l.add_value('spider_img', response.meta['picUrl'])
+        l.add_value('spider_tags', response.meta['tags'])
+
+        l.add_value('uid', response.meta['authorId'])
+        l.add_value('uname', response.meta['authorName'])
+        l.add_value('aid', response.meta['id'])
+
 
         l.add_value('catid', self.catid)
         l.add_value('status', self.status)
@@ -80,9 +87,7 @@ class newsSohuSpider(CrawlSpider):
         l.add_value('updatetime', int(time.time()))
         l.add_value('create_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         l.add_value('update_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-
         # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td')
-
         # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//text()')
 
         d = l.load_item()

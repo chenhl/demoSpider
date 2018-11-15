@@ -80,7 +80,12 @@ class artistMeishujiaItem(scrapy.Item):
     username = scrapy.Field(
         output_processor=TakeFirst()
     )
-
+    uid = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    uname = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     thumb = scrapy.Field(
         output_processor=TakeFirst()
     )
@@ -113,6 +118,13 @@ class newsSohuItem(artistMeishujiaItem):
     spider_imgs = scrapy.Field(
         # input_processor=Identity()
         # output_processor=TakeFirst()
+    )
+    spider_tags = scrapy.Field(
+        # input_processor=Identity()
+        # output_processor=TakeFirst()
+    )
+    aid = scrapy.Field(
+        output_processor=TakeFirst()
     )
 class exhibitMeishujiaItem(artistMeishujiaItem):
     attr = scrapy.Field(

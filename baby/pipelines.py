@@ -84,6 +84,8 @@ class artPipeline(object):
             item['spider_img'] = ''
         if 'spider_imgs' not in item:
             item['spider_imgs'] = []
+        if 'spider_tags' not in item:
+            item['spider_tags'] = []
 
         if 'thumb' not in item:
             item['thumb'] = ''
@@ -95,15 +97,12 @@ class artPipeline(object):
         if 'description' not in item:
             item['description'] = ''
 
-
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
         url_netloc = ""
 
         # spider_img
         if item['spider_img'] != '':
-            print(item['spider_img'])
-            print("####")
             urls = urlparse(item['spider_img'])
             url_netloc = urls.netloc.strip()
             url_scheme = urls.scheme.strip()
@@ -126,7 +125,14 @@ class artPipeline(object):
                     url_scheme = baseurls.scheme
                 imgs.append(url_scheme + "://" + url_netloc + parse_url.path)
         item['spider_imgs'] = imgs
-
+        # spider_tags
+        tags = []
+        tags_str = ''
+        if item['spider_tags']:
+            for tag in item['spider_tags']:
+                if tag['name'] is not None:
+                    tags.append(tag['name'])
+        item['tags'] = " ".join(tags)
         # content
         item['content'] = "".join(item['content'])
 
@@ -181,16 +187,21 @@ class MysqlWriterPipeline(object):
         insert_data['spider_imgs']=json.dumps(insert_data['spider_imgs'])
         insert_data['thumbs'] = json.dumps(insert_data['thumbs'])
 
-        sql = "insert into v9_news (catid,typeid,status,sysadd,spider_link,spider_img,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,spider_tags,tags,spider_link,spider_img,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         print(sql)
         try:
             print(insert_data['catid'])
             # 值为空的item给删除了？
             eret = self.cur.execute(sql, (
+                insert_data['aid'],
                 insert_data['catid'],
                 insert_data['typeid'],
                 insert_data['status'],
                 insert_data['sysadd'],
+                insert_data['uid'],
+                insert_data['uname'],
+                insert_data['spider_tags'],
+                insert_data['tags'],
                 insert_data['spider_link'],
                 insert_data['spider_img'],
                 insert_data['spider_imgs'],
