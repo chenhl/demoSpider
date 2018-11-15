@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import artistMeishujiaItem
+from baby.items import artistMeishujiaItem,newsSohuItem
 
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -14,43 +14,48 @@ import datetime
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
-class MeishujiaSpider(CrawlSpider):
+class artsoArtronSpider(CrawlSpider):
     #https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
     #艺术家（认证过的）修改自己的简介，可排名提前
-    name = 'artist.artron'
+    name = 'artso.artron'
     catid=6
     typeid=0
     sysadd=1
     status=99
 
-    # allowed_domains = ['artist.meishujia.cn']
-    start_urls = ["http://artist.artron.net/class-0-2-1.html"]
+    # allowed_domains = ['artist.meishujia.cn'] 国画 书法 油画 雕塑 版画 水粉水彩 当代艺术 当代水墨 漆画
+    start_urls = ["http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=2131"]
     # 设置下载延时
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
                     'baby.pipelines.artPipeline': 300,
-                    'baby.pipelines.MyImagesPipeline': 400,
-                    'baby.pipelines.MysqlWriterPipeline': 500,
+                    # 'baby.pipelines.MyImagesPipeline': 400,
+                    # 'baby.pipelines.MysqlWriterPipeline': 500,
         },
 
     }
     rules = (
-        # 地址分页
-        # Rule(LinkExtractor(allow=('/index.php?page=1&act=pps&smid=2'), allow_domains=('meishujia.cn'),restrict_xpaths=('//ul[@class="sert"]'))),
+        # 地址分页&page=2
+        Rule(LinkExtractor(allow=('?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated='), restrict_xpaths=('//div[@class="listJump"]')),
+             process_links=('page_link')),
         # 详情页1
-        Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
+        # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        Rule(LinkExtractor(restrict_css=('.theme_title_4647 a')),process_links=('detail_link'),
-          callback='parse_item')
+        Rule(LinkExtractor(restrict_xpaths=('//dl/dd/h4')),process_links=('detail_link'),callback='parse_item')
     )
+    def page_lik(self,links):
+        print(links[0])
+        yield links[0]
+
     def detail_lik(self,links):
+        print(links[0])
         yield links[0]
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
-        l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
+        l = DefaultItemLoader(item=newsSohuItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
         # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[2]/td)')
