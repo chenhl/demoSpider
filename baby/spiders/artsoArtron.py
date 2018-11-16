@@ -38,18 +38,17 @@ class artsoArtronSpider(CrawlSpider):
     }
     rules = (
         # 地址分页&page=2
-        # Rule(LinkExtractor(allow=('?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated='), restrict_xpaths=('//div[@class="listJump"]')),
-        #      process_links=('page_link')),
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]')),process_links='page_link'),
         # 详情页1
         # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        Rule(LinkExtractor(restrict_xpaths=('//dl/dd/h4')),process_links=('detail_link'),callback='parse_item')
+        Rule(LinkExtractor(restrict_xpaths=('//dl/dd/h4')),process_links='detail_link',callback='parse_item')
     )
-    def page_lik(self,links):
+    def page_link(self,links):
         print(links[0])
         yield links[0]
 
-    def detail_lik(self,links):
+    def detail_link(self,links):
         print(links[0])
         yield links[0]
 
@@ -58,7 +57,7 @@ class artsoArtronSpider(CrawlSpider):
         l = DefaultItemLoader(item=newsSohuItem(),selector=response)
         l.add_value('spider_link', get_base_url(response))
         # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
-        l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[2]/td)')
+        l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"poR")]//h3/text())')
         # normalize-space 去除 html \r\n\t
         # re 正则表达式，class只要包含theme_body_4656
         # l.add_xpath('content', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td)')
@@ -67,12 +66,16 @@ class artsoArtronSpider(CrawlSpider):
         # for sele in response.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'):
         #     content = content + sele.xpath('./text()').extract()
         # l.add_value('content',content)
-
-        l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td/node()')
+        #可能没有 click，如果返回2个则取第2个，否则取第1个。
+        l.add_xpath('content', '//dd//div[re:test(@class,"artTxt")]//p//node()')
         l.add_value('keywords', '')
         l.add_value('description', '')
 
-        l.add_css('spider_img', '.theme_body_4656 table:nth-child(2) tr:nth-child(1) td:nth-child(1) img::attr(src)')
+        #css
+        #l.add_css('spider_img', 'dl dt .pic img::attr(src)')
+        #xpath
+        l.add_xpath('spider_img', '//dl//dt//div[re:test(@class,"pic")]//img/@src')
+
         l.add_value('spider_imgs', '')
         l.add_value('thumbs', '')
 
@@ -84,10 +87,6 @@ class artsoArtronSpider(CrawlSpider):
         l.add_value('updatetime', int(time.time()))
         l.add_value('create_time',datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         l.add_value('update_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-
-        # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td')
-
-        # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//text()')
 
         d = l.load_item()
         yield d
