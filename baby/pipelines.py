@@ -145,6 +145,12 @@ class artPipeline(object):
                     tags.append(tag['name'])
         item['tags'] = " ".join(tags)
         # content
+        # print(item['content'])
+        # print('----------------------------------------')
+        del item['content'][0:2]
+        del item['content'][-3:]
+        # print(item['content'])
+
         item['content'] = "".join(item['content'])
 
         # sel = selector(text=item['content'])
@@ -346,12 +352,13 @@ class MyImagesPipeline(ImagesPipeline):
 
             if item['spider_img'] == image_url:
                 item['thumb'] = new_img_url
-
+                # item['thumb_src']=image_res
             if item['spider_userpic'] == image_url:
                 item['userpic'] = new_img_url
-
-            if item['spider_imgs'].count(image_url) > 0:
+                # item['userpic_src'] = image_res
+            if item['spider_imgs'].count(image_url) > 0 and item['thumbs'].count(new_img_url)==0:
                 item['thumbs'].append(new_img_url)
+                # item['thumbs_src'].append(image_res)
 
         return item
 

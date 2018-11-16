@@ -38,8 +38,8 @@ class artsoArtronSpider(CrawlSpider):
     }
     rules = (
         # 地址分页&page=2
-        Rule(LinkExtractor(allow=('?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated='), restrict_xpaths=('//div[@class="listJump"]')),
-             process_links=('page_link')),
+        # Rule(LinkExtractor(allow=('?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated='), restrict_xpaths=('//div[@class="listJump"]')),
+        #      process_links=('page_link')),
         # 详情页1
         # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528

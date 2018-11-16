@@ -30,16 +30,17 @@ class newsSohuSpider(CrawlSpider):
     status = 99
 
     # allowed_domains = ['artist.meishujia.cn']
-    start_urls = ["http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
+    start_urls = [
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=5",
                   ]
     # 设置下载延时
     download_delay = 10
