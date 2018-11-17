@@ -24,15 +24,6 @@ import pymongo
 from scrapy import selector
 
 
-class BabyPipeline(object):
-    def process_item(self, item, spider):
-        pass
-        # if float(item['shop_price']) > 10.0:
-        #     return item
-        # else:
-        #     raise DropItem("Missing price in %s" % item)
-
-
 class exhibitPipeline(object):
     # 在你的多少范围内有展览
     meta = ['展览名称：', '展览时间：', '展览地点：', '主办单位：', '参展艺术家：']
@@ -75,7 +66,63 @@ class exhibitPipeline(object):
         return item
 
 
-class artPipeline(object):
+class artsoPipeline(object):
+    def process_item(self, item, spider):
+        # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
+        # item['title'] = "".join(item['name'].split())
+
+        if 'spider_img' not in item:
+            item['spider_img'] = ''
+        if 'thumb' not in item:
+            item['thumb'] = ''
+
+        item['spider_imgs'] = []
+        item['spider_tags'] = []
+        item['thumbs'] = []
+
+        if 'keywords' not in item:
+            item['keywords'] = ''
+        if 'description' not in item:
+            item['description'] = ''
+
+        baseurls = urlparse(item['spider_link'])
+        url_scheme = ""
+        url_netloc = ""
+        # spider_img
+        if item['spider_img'] != '':
+            urls = urlparse(item['spider_img'])
+            url_netloc = urls.netloc.strip()
+            url_scheme = urls.scheme.strip()
+            if not url_netloc:
+                url_netloc = baseurls.netloc
+            if not url_scheme:
+                url_scheme = baseurls.scheme
+            item['spider_img'] = url_scheme + "://" + url_netloc + urls.path
+
+        # spider_userpic
+        if item['spider_userpic'] != '':
+            urls = urlparse(item['spider_userpic'])
+            url_netloc = urls.netloc.strip()
+            url_scheme = urls.scheme.strip()
+            if not url_netloc:
+                url_netloc = baseurls.netloc
+            if not url_scheme:
+                url_scheme = baseurls.scheme
+            item['spider_userpic'] = url_scheme + "://" + url_netloc + urls.path
+
+        #tags
+        item['tags'] = item['title']
+        #content
+        if item['spider_content'][1] is not None:
+            item['content'] = "".join(item['content'][1])
+        else:
+            item['content'] = "".join(item['content'][0])
+
+        # sel = selector(text=item['content'])
+        return item
+        # pass
+
+class newsSohuPipeline(object):
     def process_item(self, item, spider):
         # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
         # item['title'] = "".join(item['name'].split())
@@ -86,6 +133,8 @@ class artPipeline(object):
             item['spider_imgs'] = []
         if 'spider_tags' not in item:
             item['spider_tags'] = []
+        if 'spider_userpic' not in item:
+            item['spider_userpic'] = ''
 
         if 'thumb' not in item:
             item['thumb'] = ''
@@ -100,7 +149,6 @@ class artPipeline(object):
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
         url_netloc = ""
-
         # spider_img
         if item['spider_img'] != '':
             urls = urlparse(item['spider_img'])
@@ -144,20 +192,12 @@ class artPipeline(object):
                 if tag['name'] is not None:
                     tags.append(tag['name'])
         item['tags'] = " ".join(tags)
-        # content
-        # print(item['content'])
-        # print('----------------------------------------')
+        #content
         del item['content'][0:2]
         del item['content'][-3:]
-        # print(item['content'])
-
         item['content'] = "".join(item['content'])
-
         # sel = selector(text=item['content'])
-
         return item
-        # pass
-
 
 class phpcmsSpiderPipeline(object):
     # cur=''

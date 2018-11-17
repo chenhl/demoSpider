@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import artistMeishujiaItem,exhibitMeishujiaItem
+from baby.items import myBaseItem,exhibitMeishujiaItem
 
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader

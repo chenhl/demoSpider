@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import artistMeishujiaItem, newsSohuItem
+from baby.items import myBaseItem, newsSohuItem
 
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -46,7 +46,7 @@ class newsSohuSpider(CrawlSpider):
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
-            'baby.pipelines.artPipeline': 300,
+            'baby.pipelines.newsSohuPipeline': 300,
             'baby.pipelines.MyImagesPipeline': 400,
             'baby.pipelines.MysqlWriterPipeline': 500,
         },

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import artistMeishujiaItem
+from baby.items import myBaseItem
 
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -50,7 +50,7 @@ class MeishujiaSpider(CrawlSpider):
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
-        l = DefaultItemLoader(item=artistMeishujiaItem(),selector=response)
+        l = DefaultItemLoader(item=myBaseItem(), selector=response)
         l.add_value('spider_link', get_base_url(response))
         # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[2]/td)')

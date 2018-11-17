@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import artistMeishujiaItem,newsSohuItem
+from baby.items import myBaseItem,newsSohuItem
 
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -30,9 +30,9 @@ class artsoArtronSpider(CrawlSpider):
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
-                    'baby.pipelines.artPipeline': 300,
-                    # 'baby.pipelines.MyImagesPipeline': 400,
-                    # 'baby.pipelines.MysqlWriterPipeline': 500,
+                    'baby.pipelines.artsoPipeline': 300,
+                    'baby.pipelines.MyImagesPipeline': 400,
+                    'baby.pipelines.MysqlWriterPipeline': 500,
         },
 
     }
@@ -67,7 +67,7 @@ class artsoArtronSpider(CrawlSpider):
         #     content = content + sele.xpath('./text()').extract()
         # l.add_value('content',content)
         #可能没有 click，如果返回2个则取第2个，否则取第1个。
-        l.add_xpath('content', '//dd//div[re:test(@class,"artTxt")]//p//node()')
+        l.add_xpath('spider_content', '//dd//div[re:test(@class,"artTxt")]//p//node()')
         l.add_value('keywords', '')
         l.add_value('description', '')
 
@@ -75,7 +75,6 @@ class artsoArtronSpider(CrawlSpider):
         #l.add_css('spider_img', 'dl dt .pic img::attr(src)')
         #xpath
         l.add_xpath('spider_img', '//dl//dt//div[re:test(@class,"pic")]//img/@src')
-
         l.add_value('spider_imgs', '')
         l.add_value('thumbs', '')
 

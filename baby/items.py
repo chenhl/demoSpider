@@ -15,34 +15,7 @@ def myTakeFirst(value):
                 return val
     return value
 
-class BabyDetailItem(scrapy.Item):
-    # define the fields for your item here like:
-    name = scrapy.Field()
-    cur_link = scrapy.Field()
-    pass
-
-class BabyItem(scrapy.Item):
-    # define the fields for your item here like:
-    name = scrapy.Field(
-        output_processor=TakeFirst()
-    )
-    image_paths = scrapy.Field()
-    image_urls = scrapy.Field(
-        output_processor=TakeFirst()
-    )
-    cur_link = scrapy.Field()
-    image_urls = scrapy.Field(
-        output_processor=TakeFirst()
-    )
-    shop_price = scrapy.Field(
-        output_processor=TakeFirst()
-    )
-    market_price = scrapy.Field(
-        output_processor=TakeFirst()
-    )
-    pass
-
-class artistMeishujiaItem(scrapy.Item):
+class myBaseItem(scrapy.Item):
     catid = scrapy.Field(
         output_processor=TakeFirst()
     )
@@ -104,12 +77,15 @@ class artistMeishujiaItem(scrapy.Item):
     content = scrapy.Field(
         # output_processor=TakeFirst()
     )
+    spider_content = scrapy.Field(
+        # output_processor=TakeFirst()
+    )
     content_imgs = scrapy.Field(
         # input_processor=Identity()
         # output_processor=TakeFirst()
     )
 
-class newsSohuItem(artistMeishujiaItem):
+class newsSohuItem(myBaseItem):
     spider_img = scrapy.Field(
         output_processor=TakeFirst()
         # input_processor=Identity(),
@@ -138,7 +114,7 @@ class newsSohuItem(artistMeishujiaItem):
     aid = scrapy.Field(
         output_processor=TakeFirst()
     )
-class exhibitMeishujiaItem(artistMeishujiaItem):
+class exhibitMeishujiaItem(myBaseItem):
     attr = scrapy.Field(
         # output_processor=TakeFirst()
     )
