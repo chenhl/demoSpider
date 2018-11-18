@@ -73,12 +73,17 @@ class artsoPipeline(object):
 
         if 'spider_img' not in item:
             item['spider_img'] = ''
+        if 'spider_imgs' not in item:
+            item['spider_imgs'] = []
+        if 'spider_tags' not in item:
+            item['spider_tags'] = []
+        if 'spider_userpic' not in item:
+            item['spider_userpic'] = ''
+
         if 'thumb' not in item:
             item['thumb'] = ''
-
-        item['spider_imgs'] = []
-        item['spider_tags'] = []
-        item['thumbs'] = []
+        if 'thumbs' not in item:
+            item['thumbs'] = []
 
         if 'keywords' not in item:
             item['keywords'] = ''
@@ -99,19 +104,8 @@ class artsoPipeline(object):
                 url_scheme = baseurls.scheme
             item['spider_img'] = url_scheme + "://" + url_netloc + urls.path
 
-        # spider_userpic
-        if item['spider_userpic'] != '':
-            urls = urlparse(item['spider_userpic'])
-            url_netloc = urls.netloc.strip()
-            url_scheme = urls.scheme.strip()
-            if not url_netloc:
-                url_netloc = baseurls.netloc
-            if not url_scheme:
-                url_scheme = baseurls.scheme
-            item['spider_userpic'] = url_scheme + "://" + url_netloc + urls.path
-
         #tags
-        item['tags'] = item['title']
+        item['tags'] = [item['title']]
         #content
         if item['spider_content'][1] is not None:
             item['content'] = "".join(item['content'][1])
@@ -191,7 +185,7 @@ class newsSohuPipeline(object):
             for tag in item['spider_tags']:
                 if tag['name'] is not None:
                     tags.append(tag['name'])
-        item['tags'] = " ".join(tags)
+        item['tags'] = tags
         #content
         del item['content'][0:2]
         del item['content'][-3:]
@@ -244,6 +238,7 @@ class MysqlWriterPipeline(object):
         insert_data['spider_imgs']=json.dumps(insert_data['spider_imgs'])
         insert_data['thumbs'] = json.dumps(insert_data['thumbs'])
         insert_data['spider_tags'] = json.dumps(insert_data['spider_tags'])
+        insert_data['tags'] = json.dumps(insert_data['tags'])
 
         sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         print(sql)

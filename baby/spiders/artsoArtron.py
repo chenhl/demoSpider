@@ -42,7 +42,7 @@ class artsoArtronSpider(CrawlSpider):
         # 详情页1
         # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        Rule(LinkExtractor(restrict_xpaths=('//dl/dd/h4')),process_links='detail_link',callback='parse_item')
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl/dd/h4')),process_links='detail_link',callback='parse_item')
     )
     def page_link(self,links):
         print(links[0])
