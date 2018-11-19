@@ -86,7 +86,8 @@ class artsoPipeline(object):
             item['thumbs'] = []
         if 'userpic' not in item:
             item['userpic'] = ''
-
+        if 'uname' not in item:
+            item['uname'] = ''
         if 'keywords' not in item:
             item['keywords'] = ''
         if 'description' not in item:
@@ -139,6 +140,8 @@ class newsSohuPipeline(object):
             item['thumbs'] = []
         if 'userpic' not in item:
             item['userpic'] = ''
+        if 'uname' not in item:
+            item['uname'] = ''
 
         if 'keywords' not in item:
             item['keywords'] = ''

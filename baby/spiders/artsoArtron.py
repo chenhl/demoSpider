@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from baby.items import myBaseItem,newsSohuItem
-from baby.util import util
+from baby.util.util import util
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
 from scrapy.loader.processors import TakeFirst
@@ -54,7 +54,7 @@ class artsoArtronSpider(CrawlSpider):
         l = DefaultItemLoader(item=newsSohuItem(),selector=response)
         base_url = get_base_url(response)
         urls = urlparse(base_url)
-        query = parse_qs(urls.qurey)
+        query = parse_qs(urls.query)
 
         l.add_value('spider_link', base_url)
         # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
@@ -89,7 +89,7 @@ class artsoArtronSpider(CrawlSpider):
         l.add_value('uid', 0)
         l.add_value('uname', '')
         #生成文章id
-        l.add_value('aid', util.genId(type="artist",def_value=query['PersonCode'][0]))
+        l.add_value('aid', util.genId(type="artist",def_value=int(query['PersonCode'][0])))
 
         l.add_value('spider_name', self.name)
         l.add_value('catid',self.catid)
