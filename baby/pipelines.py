@@ -108,7 +108,14 @@ class artsoPipeline(object):
             item['spider_img'] = url_scheme + "://" + url_netloc + urls.path
 
         #tags
-        item['tags'] = [item['title']]
+        # item['tags'] = item['spider_tags'].append(item['title'])
+        tags = [item['title']]
+        tags_str = ''
+        if len(item['spider_tags']) > 0:
+            for tag in item['spider_tags']:
+                 tags.append(tag)
+        item['tags'] = tags
+
         #content
         # if item['spider_content'][1] is not None:
         # if len(item['spider_content']) == 2:

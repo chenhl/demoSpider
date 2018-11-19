@@ -25,6 +25,12 @@ class artsoArtronSpider(CrawlSpider):
     status=99
 
     # allowed_domains = ['artist.meishujia.cn'] 国画 书法 油画 雕塑 版画 水粉水彩 当代艺术 当代水墨 漆画
+    # cate = ['国画','书法','油画','雕塑','版画','水粉水彩','当代艺术','当代水墨','漆画']
+    # start_urls = []
+    # for cat in cate:
+    #     start_urls.append("http://artso.artron.net/artist/search_artist.php?keyword=&Class="+cat+"&BirthArea=&Graduated=&page=2131")
+
+    cate = '国画'
     start_urls = ["http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131"]
     # 设置下载延时
     download_delay = 10
@@ -45,9 +51,6 @@ class artsoArtronSpider(CrawlSpider):
         #process_links='detail_link',
         Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl/dd/h4/a[last()]')),callback='parse_item')
     )
-    def detail_link(self,links):
-        # print(links[0])
-        yield links[0]
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
@@ -84,12 +87,15 @@ class artsoArtronSpider(CrawlSpider):
         l.add_value('spider_imgs', [])
         l.add_value('thumbs', [])
         l.add_value('spider_userpic', '')
-        l.add_value('spider_tags', [])
+        l.add_value('spider_tags', [self.cate])
 
         l.add_value('uid', 0)
         l.add_value('uname', '')
         #生成文章id
         l.add_value('aid', util.genId(type="artist",def_value=int(query['PersonCode'][0])))
+
+        # tags = [self.cate]
+        # l.add_value('tags', tags)
 
         l.add_value('spider_name', self.name)
         l.add_value('catid',self.catid)
