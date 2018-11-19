@@ -94,8 +94,9 @@ ITEM_PIPELINES = {
 }
 # IMAGES_STORE='D:\\xampp71\\htdocs\\phpcms\\uploadfile'
 IMAGES_STORE='D:\\xampp7\\htdocs\\test.phpcms.cn\\uploadfile\\'
-IMAGES_MIN_WIDTH=100
-IMAGES_MIN_HEIGHT=100
+#都是精抓取，有图片都可以下载（有的用户头像很小）
+IMAGES_MIN_WIDTH=60
+IMAGES_MIN_HEIGHT=60
 # LOG_FILE='logs/log.txt'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

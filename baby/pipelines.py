@@ -84,6 +84,8 @@ class artsoPipeline(object):
             item['thumb'] = ''
         if 'thumbs' not in item:
             item['thumbs'] = []
+        if 'userpic' not in item:
+            item['userpic'] = ''
 
         if 'keywords' not in item:
             item['keywords'] = ''
@@ -107,11 +109,12 @@ class artsoPipeline(object):
         #tags
         item['tags'] = [item['title']]
         #content
-        if item['spider_content'][1] is not None:
-            item['content'] = "".join(item['content'][1])
-        else:
-            item['content'] = "".join(item['content'][0])
-
+        # if item['spider_content'][1] is not None:
+        # if len(item['spider_content']) == 2:
+        #     item['content'] = "".join(item['spider_content'][1])
+        # else:
+        #     item['content'] = "".join(item['spider_content'][0])
+        item['content'] = "".join(item['spider_content'])
         # sel = selector(text=item['content'])
         return item
         # pass
@@ -134,6 +137,8 @@ class newsSohuPipeline(object):
             item['thumb'] = ''
         if 'thumbs' not in item:
             item['thumbs'] = []
+        if 'userpic' not in item:
+            item['userpic'] = ''
 
         if 'keywords' not in item:
             item['keywords'] = ''
@@ -167,7 +172,7 @@ class newsSohuPipeline(object):
 
         # spider_imgs
         imgs = []
-        if item['spider_imgs']:
+        if len(item['spider_imgs']) > 0:
             for img in item['spider_imgs']:
                 parse_url = urlparse(img)
                 url_netloc = parse_url.netloc.strip()
@@ -181,7 +186,7 @@ class newsSohuPipeline(object):
         # spider_tags
         tags = []
         tags_str = ''
-        if item['spider_tags']:
+        if len(item['spider_tags']) > 0:
             for tag in item['spider_tags']:
                 if tag['name'] is not None:
                     tags.append(tag['name'])
@@ -239,12 +244,9 @@ class MysqlWriterPipeline(object):
         insert_data['thumbs'] = json.dumps(insert_data['thumbs'])
         insert_data['spider_tags'] = json.dumps(insert_data['spider_tags'])
         insert_data['tags'] = json.dumps(insert_data['tags'])
-
-        sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,spider_name,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         print(sql)
         try:
-            print(insert_data['catid'])
-            # 值为空的item给删除了？
             eret = self.cur.execute(sql, (
                 insert_data['aid'],
                 insert_data['catid'],
@@ -254,6 +256,7 @@ class MysqlWriterPipeline(object):
                 insert_data['uid'],
                 insert_data['uname'],
                 insert_data['userpic'],
+                insert_data['spider_name'],
                 insert_data['spider_tags'],
                 insert_data['tags'],
                 insert_data['spider_link'],
@@ -274,7 +277,6 @@ class MysqlWriterPipeline(object):
             sql_data = "insert into v9_news_data(id,content) values (%s,%s)"
             self.cur.execute(sql_data, (data[0], insert_data['content']))
             self.db.commit()
-            pass
         except Exception as e:
             print(str(e))
             self.db.rollback()
@@ -339,11 +341,11 @@ class MyImagesPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
         # for image_url in item['image_urls']:
-        if item['spider_imgs']:
+        if len(item['spider_imgs']) > 0:
             for img in item['spider_imgs']:
                 yield scrapy.Request(img)
 
-        if item['spider_img']:
+        if item['spider_img'] != '':
             yield scrapy.Request(item['spider_img'])
 
         if item['spider_userpic']:

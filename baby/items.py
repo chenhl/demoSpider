@@ -25,8 +25,10 @@ class myBaseItem(scrapy.Item):
     spider_link = scrapy.Field(
         output_processor=TakeFirst()
     )
+    spider_name = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     spider_img = scrapy.Field(
-        # output_processor=Identity()
         output_processor=TakeFirst()
     )
     spider_imgs = scrapy.Field(

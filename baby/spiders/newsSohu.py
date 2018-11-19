@@ -11,7 +11,8 @@ from urllib.parse import urlsplit, urlparse, urljoin
 import time
 import datetime
 import json
-
+import pymysql
+from scrapy.exceptions import DropItem
 
 # item loader
 class DefaultItemLoader(ItemLoader):
@@ -31,16 +32,16 @@ class newsSohuSpider(CrawlSpider):
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = [
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=5",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
                   ]
     # 设置下载延时
     download_delay = 10
@@ -59,12 +60,23 @@ class newsSohuSpider(CrawlSpider):
         js = json.loads(response.body_as_unicode())
         for item in js:
             id = item["id"]
-            print(id)
             aid = item["authorId"]
-            print(aid)
             url = base_url + str(id) + "_" + str(aid)
+            #查url是否已经抓取过
+            db = pymysql.connect(host='localhost', user='root', password='', db='phpcmsv9')
+            cur = db.cursor()
+            sel_sql = "select id from v9_news where spider_link = %s"
+            cur.execute(sel_sql, (url))
+            _data = cur.fetchone()
+            db.commit()
+            db.close()
+            print('----------')
+            print(_data)
             print(url)
-            yield scrapy.Request(url, callback=self.parse_item, meta=item)
+            if _data is None or len(_data) == 0:
+                yield scrapy.Request(url, callback=self.parse_item, meta=item, dont_filter=False)
+            # else:
+            #     raise DropItem("Duplicate item found: %s" % item)
         # pass
 
     def parse_item(self, response):
@@ -78,6 +90,7 @@ class newsSohuSpider(CrawlSpider):
         l.add_value('keywords', '')
         l.add_value('description', '')
         # imgs = json.dump(response.meta['images'])authorName authorPic
+        l.add_value('spider_name', self.name)
         l.add_value('spider_imgs', response.meta['images'])
         l.add_value('spider_userpic', response.meta['authorPic'])
         l.add_value('spider_img', response.meta['picUrl'])
