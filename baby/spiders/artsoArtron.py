@@ -30,8 +30,19 @@ class artsoArtronSpider(CrawlSpider):
     # for cat in cate:
     #     start_urls.append("http://artso.artron.net/artist/search_artist.php?keyword=&Class="+cat+"&BirthArea=&Graduated=&page=2131")
 
+    # 初始化，手动执行各个分类，增量时使用另一个spider
     cate = '国画'
-    start_urls = ["http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131"]
+    start_urls = [
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1122",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E9%9B%95%E5%A1%91&BirthArea=&Graduated=&page=244",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E7%89%88%E7%94%BB&BirthArea=&Graduated=&page=237",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B0%B4%E7%B2%89%E6%B0%B4%E5%BD%A9&BirthArea=&Graduated=&page=138",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E8%89%BA%E6%9C%AF&BirthArea=&Graduated=&page=123",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E6%B0%B4%E5%A2%A8&BirthArea=&Graduated=&page=53",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19",
+    ]
     # 设置下载延时
     download_delay = 10
     custom_settings = {
@@ -43,7 +54,9 @@ class artsoArtronSpider(CrawlSpider):
 
     }
     rules = (
-        # 地址分页&page=2 //div[@class="listJump"]/a[last()] xpath未定义first()方法，取第一个用[1]
+        #分类
+        # Rule(LinkExtractor(restrict_xpaths=('//div[@class="filtItem filt02"]//div[@class="base"]/a[1]'))),
+        # 地址分页&page=2 //div[@class="listJump"]/a[last()] xpath未定义first()方法，取第一个用[1] http://artso.artron.net/artist/search_artist.php
         Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]/a[1]'))),
         # 详情页1
         # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
@@ -51,6 +64,23 @@ class artsoArtronSpider(CrawlSpider):
         #process_links='detail_link',
         Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl/dd/h4/a[last()]')),callback='parse_item')
     )
+
+    # def start_requests(self):
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",self.parse)
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",self.parse)
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1122", self.parse)
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E9%9B%95%E5%A1%91&BirthArea=&Graduated=&page=244", self.parse)
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E7%89%88%E7%94%BB&BirthArea=&Graduated=&page=237", self.parse)
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B0%B4%E7%B2%89%E6%B0%B4%E5%BD%A9&BirthArea=&Graduated=&page=138", self.parse)
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E8%89%BA%E6%9C%AF&BirthArea=&Graduated=&page=123", self.parse)
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E6%B0%B4%E5%A2%A8&BirthArea=&Graduated=&page=53", self.parse)
+    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19", self.parse)
+    #
+    # def parse(self, response):
+    #     base_url = get_base_url(response)
+    #     url_parse = urlparse(base_url)
+    #     query = parse_qs(url_parse.query)
+    #     self.cate=query['Class'][0]
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031

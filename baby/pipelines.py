@@ -20,6 +20,7 @@ import shutil
 import os
 import time
 import pymongo
+import re
 
 from scrapy import selector
 
@@ -122,7 +123,7 @@ class artsoPipeline(object):
         #     item['content'] = "".join(item['spider_content'][1])
         # else:
         #     item['content'] = "".join(item['spider_content'][0])
-        item['content'] = "".join(item['spider_content'])
+        item['content'] = "<p>"+"".join(item['spider_content'])+"</p>"
         # sel = selector(text=item['content'])
         return item
         # pass
@@ -203,8 +204,23 @@ class newsSohuPipeline(object):
         item['tags'] = tags
         #content
         del item['content'][0:2]
-        del item['content'][-3:]
+        # del item['content'][-3:]
+        # item['content'] = "".join(item['content'])
+        if len(item['content']) > 0:
+            for i in range(len(item['content'])):
+                if re.search('点击进入搜狐首页', item['content'][i]) is not None or re.search('返回搜狐', item['content'][i]) is not None:
+                    del item['content'][i]
+
         item['content'] = "".join(item['content'])
+
+        # content = ''
+        # if len(item['content']) >0:
+        #     for tmp in item['content']:
+        #         if re.search('点击进入搜狐首页',tmp) is not None or re.search('返回搜狐',tmp) is not None:
+        #             pass
+        #         else:
+        #             content += tmp
+        # item['content'] = content
         # sel = selector(text=item['content'])
         return item
 
@@ -284,8 +300,8 @@ class MysqlWriterPipeline(object):
             print(eret)
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
-            sql_data = "insert into v9_news_data(id,content) values (%s,%s)"
-            self.cur.execute(sql_data, (data[0], insert_data['content']))
+            sql_data = "insert into v9_news_data(id,content,content_search) values (%s,%s,%s)"
+            self.cur.execute(sql_data, (data[0], insert_data['content'],''))
             self.db.commit()
         except Exception as e:
             print(str(e))
