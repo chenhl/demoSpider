@@ -10,7 +10,7 @@ from scrapy.exceptions import DropItem
 import scrapy
 from scrapy.pipelines.images import ImagesPipeline
 import hashlib
-from urllib.parse import quote, urlparse
+from urllib.parse import quote, urlparse,parse_qs,parse_qsl
 import pymysql
 # 导入项目设置
 from scrapy.utils.project import get_project_settings
@@ -123,8 +123,6 @@ class artsoPipeline(object):
 
 class artsoExhibitPipeline(object):
     def process_item(self, item, spider):
-        # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
-        # item['title'] = "".join(item['name'].split())
 
         if 'spider_img' not in item:
             item['spider_img'] = ''
@@ -135,6 +133,8 @@ class artsoExhibitPipeline(object):
         if 'spider_userpic' not in item:
             item['spider_userpic'] = ''
 
+        if 'tags' not in item:
+            item['tags'] = []
         if 'thumb' not in item:
             item['thumb'] = ''
         if 'thumbs' not in item:
@@ -151,25 +151,21 @@ class artsoExhibitPipeline(object):
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
         url_netloc = ""
-        # spider_img
-        if item['spider_img'] != '':
-            urls = urlparse(item['spider_img'])
-            url_netloc = urls.netloc.strip()
-            url_scheme = urls.scheme.strip()
-            if not url_netloc:
-                url_netloc = baseurls.netloc
-            if not url_scheme:
-                url_scheme = baseurls.scheme
-            item['spider_img'] = url_scheme + "://" + url_netloc + urls.path
-
-        #tags
-        # item['tags'] = item['spider_tags'].append(item['title'])
-        tags = [item['title']]
-        tags_str = ''
-        if len(item['spider_tags']) > 0:
-            for tag in item['spider_tags']:
-                 tags.append(tag)
-        item['tags'] = tags
+        # spider_imgs 和 text一一对应
+        imgs = []
+        imgs_text = []
+        if len(item['spider_imgs']) > 0:
+            for i in range(len(item['spider_imgs'])):
+                imgs_text.append(item['spider_imgs_text'][i])
+                parse_url = urlparse(item['spider_imgs'][i])
+                if parse_url.query != '':
+                    img_url=parse_qs(parse_url.query)['src'][0]
+                else:
+                    img_url = item['spider_imgs'][i]
+                imgs.append(img_url)
+        item['spider_imgs'] = imgs
+        if len(imgs) > 0:
+            item['spider_img'] = imgs[0]
 
         #content
         item['content'] = "<p>"+"".join(item['spider_content'])+"</p>"

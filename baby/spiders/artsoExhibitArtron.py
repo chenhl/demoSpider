@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import myBaseItem,newsSohuItem
+from baby.items import myBaseItem,newsSohuItem,exhibitArtronItem
 from baby.util.util import util
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -59,7 +59,7 @@ class artsoArtronSpider(CrawlSpider):
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
-        l = DefaultItemLoader(item=newsSohuItem(),selector=response)
+        l = DefaultItemLoader(item=exhibitArtronItem(),selector=response)
         base_url = get_base_url(response)
         urls = urlparse(base_url)
         query = parse_qs(urls.query)
@@ -75,7 +75,9 @@ class artsoArtronSpider(CrawlSpider):
         # for sele in response.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'):
         #     content = content + sele.xpath('./text()').extract()
         # l.add_value('content',content)
-
+        #attr
+        l.add_xpath('attr', '//div[re:test(@class,"exInfo")]/dl/dt/text()')
+        l.add_xpath('attr_value', '//div[re:test(@class,"exInfo")]/dl/dd/text()')
         #content
         l.add_xpath('spider_content', '//div[re:test(@class,"exText")]//node()')
         l.add_value('keywords', '')
@@ -85,8 +87,8 @@ class artsoArtronSpider(CrawlSpider):
         #l.add_css('spider_img', 'dl dt .pic img::attr(src)')
         #
         l.add_xpath('spider_img', '')
-        l.add_value('spider_imgs', '//div[re:test(@class,"imgnav")]//img/@src')
-        l.add_value('spider_imgs_text', 'normalize-space(//div[re:test(@class,"imgnav")]//span/text())')
+        l.add_value('spider_imgs', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li//img/@src')
+        l.add_value('spider_imgs_text', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li/span/text()')
         l.add_value('thumbs', [])
         l.add_value('spider_userpic', '')
         l.add_value('spider_tags', [])
@@ -94,7 +96,7 @@ class artsoArtronSpider(CrawlSpider):
         l.add_value('uid', 0)
         l.add_value('uname', '')
         #生成文章id
-        l.add_value('aid', util.genId(type="artist",def_value=int(query['PersonCode'][0])))
+        l.add_value('aid', util.genId(type="exhibit",def_value=int(base_url.split('-')[1].split('.')[0])))
 
         # tags = [self.cate]
         # l.add_value('tags', tags)
