@@ -25,7 +25,7 @@ class artsoArtronSpider(CrawlSpider):
     status=99
     # 初始化
     start_urls = [
-        "http://artso.artron.net/exhibit/search_exhibition.php?page=5675",
+        "http://artso.artron.net/exhibit/search_exhibition.php?page=5000",
     ]
     # 设置下载延时
     download_delay = 10
@@ -76,7 +76,7 @@ class artsoArtronSpider(CrawlSpider):
         # l.add_value('content',content)
         #attr
         l.add_xpath('attr', '//div[re:test(@class,"exInfo")]/dl/dt/text()')
-        l.add_xpath('attr_value', '//div[re:test(@class,"exInfo")]/dl/dd/text()')
+        l.add_xpath('attr_value', '//div[re:test(@class,"exInfo")]/dl/dd//text()')
         #content
         l.add_xpath('spider_content', '//div[re:test(@class,"exText")]//node()')
         l.add_value('keywords', '')
