@@ -25,7 +25,7 @@ class artsoArtronSpider(CrawlSpider):
     status=99
     # 初始化
     start_urls = [
-        "http://artso.artron.net/exhibit/search_exhibition.php?page=5674",
+        "http://artso.artron.net/exhibit/search_exhibition.php?page=5675",
     ]
     # 设置下载延时
     download_delay = 10
@@ -65,7 +65,6 @@ class artsoArtronSpider(CrawlSpider):
         query = parse_qs(urls.query)
 
         l.add_value('spider_link', base_url)
-        # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
         l.add_xpath('title', 'normalize-space(//div[re:test(@class,"pw fix exDetail")]//h1/text())')
         # normalize-space 去除 html \r\n\t
         # re 正则表达式，class只要包含theme_body_4656
@@ -86,9 +85,9 @@ class artsoArtronSpider(CrawlSpider):
         #css
         #l.add_css('spider_img', 'dl dt .pic img::attr(src)')
         #
-        l.add_xpath('spider_img', '')
-        l.add_value('spider_imgs', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li//img/@src')
-        l.add_value('spider_imgs_text', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li/span/text()')
+        l.add_value('spider_img', '')
+        l.add_xpath('spider_imgs', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li//img/@src')
+        l.add_xpath('spider_imgs_text', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li/span/text()')
         l.add_value('thumbs', [])
         l.add_value('spider_userpic', '')
         l.add_value('spider_tags', [])

@@ -116,7 +116,7 @@ class newsSohuItem(myBaseItem):
     aid = scrapy.Field(
         output_processor=TakeFirst()
     )
-class exhibitArtronItem(newsSohuItem):
+class exhibitArtronItem (newsSohuItem):
     attr = scrapy.Field()
     attr_value = scrapy.Field()
     spider_imgs_text = scrapy.Field()
