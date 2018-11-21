@@ -21,66 +21,28 @@ import os
 import time
 import pymongo
 import re
+from baby.util.util import util
 
 from scrapy import selector
 
 
-class exhibitPipeline(object):
+class baseItemPipeline(object):
     # 在你的多少范围内有展览
-    meta = ['展览名称：', '展览时间：', '展览地点：', '主办单位：', '参展艺术家：']
-    meta2 = [{'txt': '展览名称：', 'code': 'name'}, {'txt': '展览时间：', 'code': 'time'}, {'txt': '展览地点：', 'code': 'area'},
-             {'txt': '主办单位：', 'code': 'company'}, {'txt': '参展艺术家：', 'code': 'artists'}]
-
     def process_item(self, item, spider):
-        print(item['attr'])
-        print(type(item['attr']))
-        print(len(item['attr']))
-
-        i = 0
-        max = len(self.meta) - 1
-        res = []
-        for data_meta in self.meta2:
-            _index = item['attr'].index(data_meta['txt'])
-            if i < max:
-                _next_index = item['attr'].index(self.meta[i + 1])
-                _tmp = {'attr': data_meta['code'], 'attr_txt': data_meta['txt'],
-                        'value': item['attr'][_index + 1:_next_index]}
-            else:
-                _tmp = {'attr': data_meta['code'], 'attr_txt': data_meta['txt'],
-                        'value': item['attr'][_index + 1:_index + 2]}
-
-            # 时间范围处理
-            if data_meta['code'] == 'time':
-                _times = _tmp['value'].split('~')
-                time_struct_start = time.strptime(_times[0], '%Y%m/%d')
-                time_struct_end = time.strptime(_times[1], '%Y%m/%d')
-                str_time_start = time.strftime('%Y-%m-%d %H:%M:%S', time_struct_start)
-                str_time_end = time.strftime('%Y-%m-%d %H:%M:%S', time_struct_end)
-            # 地点处理
-            if data_meta['code'] == 'area':
-                pass
-
-            res.append(_tmp)
-            i = i + 1
-
-        item['attr_value'] = res
-        return item
-
-
-class artsoPipeline(object):
-    def process_item(self, item, spider):
-        # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
-        # item['title'] = "".join(item['name'].split())
-
         if 'spider_img' not in item:
             item['spider_img'] = ''
         if 'spider_imgs' not in item:
             item['spider_imgs'] = []
+        if 'spider_imgs_text' not in item:
+            item['spider_imgs_text'] = []
+
         if 'spider_tags' not in item:
             item['spider_tags'] = []
         if 'spider_userpic' not in item:
             item['spider_userpic'] = ''
 
+        if 'tags' not in item:
+            item['tags'] = []
         if 'thumb' not in item:
             item['thumb'] = ''
         if 'thumbs' not in item:
@@ -93,7 +55,20 @@ class artsoPipeline(object):
             item['keywords'] = ''
         if 'description' not in item:
             item['description'] = ''
+        if 'spider_content' not in item:
+            item['spider_content'] = ''
+        if 'content' not in item:
+            item['content'] = ''
 
+        return item
+
+
+
+
+class artsoPipeline(object):
+    def process_item(self, item, spider):
+        # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
+        # item['title'] = "".join(item['name'].split())
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
         url_netloc = ""
@@ -123,30 +98,23 @@ class artsoPipeline(object):
 
 class artsoExhibitPipeline(object):
     def process_item(self, item, spider):
+        #attr
+        metas = util.exhibitMeta(self)
+        meta_attr = {}
+        for meta in metas:
+            meta_attr[meta['txt']] = meta['code']
+        attr = {}
+        if len(item['attr']) > 0:
+            for i in range(len(item['attr'])):
+                k = item['attr'][i]
+                v = "".join(item['attr_value'][i])
 
-        if 'spider_img' not in item:
-            item['spider_img'] = ''
-        if 'spider_imgs' not in item:
-            item['spider_imgs'] = []
-        if 'spider_tags' not in item:
-            item['spider_tags'] = []
-        if 'spider_userpic' not in item:
-            item['spider_userpic'] = ''
+                if meta_attr.get(k) is not None:
+                    attr[meta_attr[k]] = v.strip()
+                else:
+                    continue
 
-        if 'tags' not in item:
-            item['tags'] = []
-        if 'thumb' not in item:
-            item['thumb'] = ''
-        if 'thumbs' not in item:
-            item['thumbs'] = []
-        if 'userpic' not in item:
-            item['userpic'] = ''
-        if 'uname' not in item:
-            item['uname'] = ''
-        if 'keywords' not in item:
-            item['keywords'] = ''
-        if 'description' not in item:
-            item['description'] = ''
+            item['attr'] = attr
 
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
@@ -154,7 +122,7 @@ class artsoExhibitPipeline(object):
         # spider_imgs 和 text一一对应
         imgs = []
         imgs_text = []
-        if len(item['spider_imgs']) > 0:
+        if len(item['spider_imgs']) > 1:
             for i in range(len(item['spider_imgs'])):
                 imgs_text.append(item['spider_imgs_text'][i])
                 parse_url = urlparse(item['spider_imgs'][i])
@@ -163,42 +131,19 @@ class artsoExhibitPipeline(object):
                 else:
                     img_url = item['spider_imgs'][i]
                 imgs.append(img_url)
+
         item['spider_imgs'] = imgs
         if len(imgs) > 0:
             item['spider_img'] = imgs[0]
 
         #content
-        item['content'] = "<p>"+"".join(item['spider_content'])+"</p>"
+        if item['spider_content'] != '':
+            item['content'] = "<p>"+"".join(item['spider_content'])+"</p>"
+
         return item
 
 class newsSohuPipeline(object):
     def process_item(self, item, spider):
-        # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
-        # item['title'] = "".join(item['name'].split())
-
-        if 'spider_img' not in item:
-            item['spider_img'] = ''
-        if 'spider_imgs' not in item:
-            item['spider_imgs'] = []
-        if 'spider_tags' not in item:
-            item['spider_tags'] = []
-        if 'spider_userpic' not in item:
-            item['spider_userpic'] = ''
-
-        if 'thumb' not in item:
-            item['thumb'] = ''
-        if 'thumbs' not in item:
-            item['thumbs'] = []
-        if 'userpic' not in item:
-            item['userpic'] = ''
-        if 'uname' not in item:
-            item['uname'] = ''
-
-        if 'keywords' not in item:
-            item['keywords'] = ''
-        if 'description' not in item:
-            item['description'] = ''
-
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
         url_netloc = ""
