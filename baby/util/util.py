@@ -12,3 +12,18 @@ class util:
             max = 9999999
             res += max
         return res
+
+    def exhibitMeta(self) :
+        meta = [{'txt': '展览名称：', 'code': 'name'},
+                {'txt': '展览时间：', 'code': 'times'},
+                {'txt': '开幕时间：', 'code': 'open_time'},
+                {'txt': '展览机构：', 'code': 'org'},
+                {'txt': '展览地址：', 'code': 'address'},
+                {'txt': '展览备注：', 'code': 'msg'},
+                {'txt': '展览城市：', 'code': 'area'},
+                {'txt': '主办单位：', 'code': 'org_main'},
+                {'txt': '承办单位：', 'code': 'org_manager'},
+                {'txt': '协办单位：', 'code': 'org_slave'},
+                {'txt': '参展艺术家：', 'code': 'artists'}]
+        # meta2 = {'展览名称：':'name','展览时间：':'time','展览地点：':'area'}
+        return meta

@@ -5,24 +5,28 @@ from baby.items import myBaseItem
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
 from scrapy.loader.processors import TakeFirst
-from scrapy.spiders import CrawlSpider,Rule
+from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
-from urllib.parse import urlsplit,urlparse,urljoin
+from urllib.parse import urlsplit, urlparse, urljoin
 import time
 import datetime
-#item loader
+
+
+# item loader
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
+
+
 class MeishujiaSpider(CrawlSpider):
-    #https://news.artron.net//morenews/list732/
+    # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
-    #艺术家（认证过的）修改自己的简介，可排名提前
+    # 艺术家（认证过的）修改自己的简介，可排名提前
     name = 'artist.artron'
-    catid=6
-    typeid=0
-    sysadd=1
-    status=99
+    catid = 6
+    typeid = 0
+    sysadd = 1
+    status = 99
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = ["http://artist.artron.net/class-0-2-1.html"]
@@ -30,9 +34,10 @@ class MeishujiaSpider(CrawlSpider):
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
-                    'baby.pipelines.artPipeline': 300,
-                    'baby.pipelines.MyImagesPipeline': 400,
-                    'baby.pipelines.MysqlWriterPipeline': 500,
+            'baby.pipelines.baseItemPipeline': 200,
+            'baby.pipelines.artPipeline': 300,
+            'baby.pipelines.MyImagesPipeline': 400,
+            'baby.pipelines.MysqlWriterPipeline': 500,
         },
 
     }
@@ -42,10 +47,11 @@ class MeishujiaSpider(CrawlSpider):
         # 详情页1
         Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        Rule(LinkExtractor(restrict_css=('.theme_title_4647 a')),process_links=('detail_link'),
-          callback='parse_item')
+        Rule(LinkExtractor(restrict_css=('.theme_title_4647 a')), process_links=('detail_link'),
+             callback='parse_item')
     )
-    def detail_lik(self,links):
+
+    def detail_lik(self, links):
         yield links[0]
 
     def parse_item(self, response):
@@ -71,13 +77,13 @@ class MeishujiaSpider(CrawlSpider):
         l.add_value('spider_imgs', '')
         l.add_value('thumbs', '')
 
-        l.add_value('catid',self.catid)
+        l.add_value('catid', self.catid)
         l.add_value('status', self.status)
         l.add_value('sysadd', self.sysadd)
         l.add_value('typeid', self.typeid)
-        l.add_value('inputtime',int(time.time()))
+        l.add_value('inputtime', int(time.time()))
         l.add_value('updatetime', int(time.time()))
-        l.add_value('create_time',datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        l.add_value('create_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         l.add_value('update_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
         # l.add_xpath('content', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td')
