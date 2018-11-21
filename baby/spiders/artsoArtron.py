@@ -66,7 +66,7 @@ class artsoArtronSpider(CrawlSpider):
         # 详情页1
         # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        # process_links='detail_link',
+        # process_links='detail_link', ,process_request='parse_request'
         Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl/dd/h4/a[last()]')), callback='parse_item')
     )
 
@@ -86,7 +86,9 @@ class artsoArtronSpider(CrawlSpider):
     #     url_parse = urlparse(base_url)
     #     query = parse_qs(url_parse.query)
     #     self.cate=query['Class'][0]
-
+    # def parse_request(self):
+    #     yield scrapy.Request(dont_filter=False)
+    #     pass
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=newsSohuItem(), selector=response)
