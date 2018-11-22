@@ -119,7 +119,9 @@ AUTOTHROTTLE_MAX_DELAY = 60
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-UPEFILTER_CLASS = 'baby.dupefilter.itemDupeFilter'
+#start_url列表发送的请求不会进行去重，而Request的发请求前会判断url之前是否已经爬取过，如果url已经爬过则会跳过这个请求
+#，跳过后如果没有其他要执行的代码，爬虫将会立即结束
+# UPEFILTER_CLASS = 'baby.dupefilter.itemDupeFilter'
 DUPEFILTER_DEBUG = False
 
 #https://scrapy-crawlera.readthedocs.io/en/latest/settings.html#crawlera-apikey

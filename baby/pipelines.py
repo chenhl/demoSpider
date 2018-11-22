@@ -51,14 +51,16 @@ class baseItemPipeline(object):
             item['userpic'] = ''
         if 'uname' not in item:
             item['uname'] = ''
+
         if 'keywords' not in item:
             item['keywords'] = ''
         if 'description' not in item:
             item['description'] = ''
+
         if 'spider_content' not in item:
-            item['spider_content'] = ''
+            item['spider_content'] = []
         if 'content' not in item:
-            item['content'] = ''
+            item['content'] = []
 
         return item
 
@@ -197,7 +199,7 @@ class newsSohuPipeline(object):
         if len(item['content']) > 0:
             for i in range(len(item['content'])):
                 if re.search('点击进入搜狐首页', item['content'][i]) is not None or re.search('返回搜狐', item['content'][i]) is not None:
-                    del item['content'][i]
+                    item['content'][i] = ''#直接del有错误 for的长度未变
 
         item['content'] = "".join(item['content'])
 

@@ -32,14 +32,14 @@ class newsSohuSpider(CrawlSpider):
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = [
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
+                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
                   "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
                   "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
                   ]
@@ -47,6 +47,7 @@ class newsSohuSpider(CrawlSpider):
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
+            'baby.pipelines.baseItemPipeline': 200,
             'baby.pipelines.newsSohuPipeline': 300,
             'baby.pipelines.MyImagesPipeline': 400,
             'baby.pipelines.MysqlWriterPipeline': 500,
@@ -71,10 +72,9 @@ class newsSohuSpider(CrawlSpider):
             db.commit()
             db.close()
             print('----------')
-            print(_data)
             print(url)
             if _data is None or len(_data) == 0:
-                yield scrapy.Request(url, callback=self.parse_item, meta=item, dont_filter=False)
+                yield scrapy.Request(url, callback=self.parse_item, meta=item, dont_filter=False) # dont_filter 默认就是False去重，scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu 启用持久化spider,jobdir保存了爬取过的url的hash
             # else:
             #     raise DropItem("Duplicate item found: %s" % item)
         # pass

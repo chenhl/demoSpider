@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import myBaseItem, newsSohuItem
+from baby.items import myBaseItem, newsSohuItem,artsoArtronItem
 from baby.util.util import util
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -56,18 +56,19 @@ class artsoArtronSpider(CrawlSpider):
             'baby.pipelines.MyImagesPipeline': 410,
             'baby.pipelines.MysqlWriterPipeline': 510,
         },
-
+        'DUPEFILTER_DEBUG':True,
     }
     rules = (
+        # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
+        # process_links='detail_link', ,process_request='parse_request'
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl/dd/h4/a[last()]')), callback='parse_item'),
         # 分类
         # Rule(LinkExtractor(restrict_xpaths=('//div[@class="filtItem filt02"]//div[@class="base"]/a[1]'))),
         # 地址分页&page=2 //div[@class="listJump"]/a[last()] xpath未定义first()方法，取第一个用[1] http://artso.artron.net/artist/search_artist.php
         Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]/a[1]'))),
         # 详情页1
         # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
-        # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        # process_links='detail_link', ,process_request='parse_request'
-        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl/dd/h4/a[last()]')), callback='parse_item')
+
     )
 
     # def start_requests(self):
@@ -86,12 +87,9 @@ class artsoArtronSpider(CrawlSpider):
     #     url_parse = urlparse(base_url)
     #     query = parse_qs(url_parse.query)
     #     self.cate=query['Class'][0]
-    # def parse_request(self):
-    #     yield scrapy.Request(dont_filter=False)
-    #     pass
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
-        l = DefaultItemLoader(item=newsSohuItem(), selector=response)
+        l = DefaultItemLoader(item=artsoArtronItem(), selector=response)
         base_url = get_base_url(response)
         urls = urlparse(base_url)
         query = parse_qs(urls.query)
