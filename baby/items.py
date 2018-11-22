@@ -6,14 +6,17 @@
 # https://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-from scrapy.loader.processors import TakeFirst,Identity,Join, MapCompose
+from scrapy.loader.processors import TakeFirst, Identity, Join, MapCompose
 from w3lib.html import remove_tags
+
+
 def myTakeFirst(value):
     if value:
         for val in value:
             if val is not None and val != '':
                 return val
     return value
+
 
 class myBaseItem(scrapy.Item):
     catid = scrapy.Field(
@@ -73,7 +76,7 @@ class myBaseItem(scrapy.Item):
     keywords = scrapy.Field(
         output_processor=TakeFirst()
     )
-    description =scrapy.Field(
+    description = scrapy.Field(
         output_processor=TakeFirst()
     )
     content = scrapy.Field(
@@ -86,46 +89,31 @@ class myBaseItem(scrapy.Item):
         # input_processor=Identity()
         # output_processor=TakeFirst()
     )
-
-class newsSohuItem(myBaseItem):
-    spider_img = scrapy.Field(
-        output_processor=TakeFirst()
-        # input_processor=Identity(),
-        # output_processor=MapCompose(myTakeFirst),
-    )
-    spider_imgs = scrapy.Field(
-        # input_processor=Identity()
-        # output_processor=TakeFirst()
-    )
     spider_userpic = scrapy.Field(
         output_processor=TakeFirst()
-        # input_processor=Identity(),
-        # output_processor=MapCompose(myTakeFirst),
     )
     userpic = scrapy.Field(
         output_processor=TakeFirst()
     )
-    spider_tags = scrapy.Field(
-        # input_processor=Identity()
-        # output_processor=TakeFirst()
-    )
-    tags = scrapy.Field(
-        # input_processor=Identity()
-        # output_processor=TakeFirst()
-    )
+    spider_tags = scrapy.Field()
+    tags = scrapy.Field()
     aid = scrapy.Field(
         output_processor=TakeFirst()
     )
-class exhibitArtronItem (newsSohuItem):
     attr = scrapy.Field()
     attr_value = scrapy.Field()
     spider_imgs_text = scrapy.Field()
 
+
+class newsSohuItem(myBaseItem):
+    pass
+
+
+class exhibitArtronItem(myBaseItem):
+    pass
+
+class artsoArtronItem(myBaseItem):
+    pass
+
 class exhibitMeishujiaItem(myBaseItem):
-    attr = scrapy.Field(
-        # output_processor=TakeFirst()
-    )
-    attr_value = scrapy.Field(
-        # output_processor=TakeFirst()
-    )
     pass
