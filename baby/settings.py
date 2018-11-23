@@ -123,7 +123,7 @@ AUTOTHROTTLE_MAX_DELAY = 60
 #，跳过后如果没有其他要执行的代码，爬虫将会立即结束
 # UPEFILTER_CLASS = 'baby.dupefilter.itemDupeFilter'
 DUPEFILTER_DEBUG = False
-
+SCHEDULER_DEBUG = True
 #https://scrapy-crawlera.readthedocs.io/en/latest/settings.html#crawlera-apikey
 #http://httpbin.org/ip
 #curl -vx proxy.crawlera.com:8010 -U 728032ed0fc84375974a5e499b7aeadc: http://httpbin.org/ip

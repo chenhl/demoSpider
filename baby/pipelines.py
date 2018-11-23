@@ -10,7 +10,7 @@ from scrapy.exceptions import DropItem
 import scrapy
 from scrapy.pipelines.images import ImagesPipeline
 import hashlib
-from urllib.parse import quote, urlparse,parse_qs,parse_qsl
+from urllib.parse import quote, urlparse, parse_qs, parse_qsl
 import pymysql
 # 导入项目设置
 from scrapy.utils.project import get_project_settings
@@ -24,6 +24,19 @@ import re
 from baby.util.util import util
 
 from scrapy import selector
+
+#无用
+class DuplicatesPipeline(object):
+
+    def __init__(self):
+        self.ids_seen = set()
+
+    def process_item(self, item, spider):
+        if item['aid'] in self.ids_seen:
+            raise DropItem("Duplicate item found: %s" % item)
+        else:
+            self.ids_seen.add(item['aid'])
+            return item
 
 
 class baseItemPipeline(object):
@@ -65,8 +78,6 @@ class baseItemPipeline(object):
         return item
 
 
-
-
 class artsoPipeline(object):
     def process_item(self, item, spider):
         # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
@@ -85,22 +96,23 @@ class artsoPipeline(object):
                 url_scheme = baseurls.scheme
             item['spider_img'] = url_scheme + "://" + url_netloc + urls.path
 
-        #tags
+        # tags
         # item['tags'] = item['spider_tags'].append(item['title'])
         tags = [item['title']]
         tags_str = ''
         if len(item['spider_tags']) > 0:
             for tag in item['spider_tags']:
-                 tags.append(tag)
+                tags.append(tag)
         item['tags'] = tags
 
-        #content
-        item['content'] = "<p>"+"".join(item['spider_content'])+"</p>"
+        # content
+        item['content'] = "<p>" + "".join(item['spider_content']) + "</p>"
         return item
+
 
 class artsoExhibitPipeline(object):
     def process_item(self, item, spider):
-        #attr
+        # attr
         metas = util.exhibitMeta(self)
         meta_attr = {}
         for meta in metas:
@@ -129,7 +141,7 @@ class artsoExhibitPipeline(object):
                 imgs_text.append(item['spider_imgs_text'][i])
                 parse_url = urlparse(item['spider_imgs'][i])
                 if parse_url.query != '':
-                    img_url=parse_qs(parse_url.query)['src'][0]
+                    img_url = parse_qs(parse_url.query)['src'][0]
                 else:
                     img_url = item['spider_imgs'][i]
                 imgs.append(img_url)
@@ -138,11 +150,12 @@ class artsoExhibitPipeline(object):
         if len(imgs) > 0:
             item['spider_img'] = imgs[0]
 
-        #content
+        # content
         if item['spider_content'] != '':
-            item['content'] = "<p>"+"".join(item['spider_content'])+"</p>"
+            item['content'] = "<p>" + "".join(item['spider_content']) + "</p>"
 
         return item
+
 
 class newsSohuPipeline(object):
     def process_item(self, item, spider):
@@ -192,14 +205,15 @@ class newsSohuPipeline(object):
                 if tag['name'] is not None:
                     tags.append(tag['name'])
         item['tags'] = tags
-        #content
+        # content
         del item['content'][0:2]
         # del item['content'][-3:]
         # item['content'] = "".join(item['content'])
         if len(item['content']) > 0:
             for i in range(len(item['content'])):
-                if re.search('点击进入搜狐首页', item['content'][i]) is not None or re.search('返回搜狐', item['content'][i]) is not None:
-                    item['content'][i] = ''#直接del有错误 for的长度未变
+                if re.search('点击进入搜狐首页', item['content'][i]) is not None or re.search('返回搜狐',
+                                                                                      item['content'][i]) is not None:
+                    item['content'][i] = ''  # 直接del有错误 for的长度未变
 
         item['content'] = "".join(item['content'])
 
@@ -213,6 +227,7 @@ class newsSohuPipeline(object):
         # item['content'] = content
         # sel = selector(text=item['content'])
         return item
+
 
 class phpcmsSpiderPipeline(object):
     # cur=''
@@ -256,7 +271,7 @@ class MysqlWriterPipeline(object):
 
     def process_item(self, item, spider):
         insert_data = item
-        insert_data['spider_imgs']=json.dumps(insert_data['spider_imgs'])
+        insert_data['spider_imgs'] = json.dumps(insert_data['spider_imgs'])
         insert_data['thumbs'] = json.dumps(insert_data['thumbs'])
         insert_data['spider_tags'] = json.dumps(insert_data['spider_tags'])
         insert_data['tags'] = json.dumps(insert_data['tags'])
@@ -291,7 +306,7 @@ class MysqlWriterPipeline(object):
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
             sql_data = "insert into v9_news_data(id,content,content_search) values (%s,%s,%s)"
-            self.cur.execute(sql_data, (data[0], insert_data['content'],''))
+            self.cur.execute(sql_data, (data[0], insert_data['content'], ''))
             self.db.commit()
         except Exception as e:
             print(str(e))
@@ -409,7 +424,7 @@ class MyImagesPipeline(ImagesPipeline):
             if item['spider_userpic'] == image_url:
                 item['userpic'] = new_img_url
                 # item['userpic_src'] = image_res
-            if item['spider_imgs'].count(image_url) > 0 and item['thumbs'].count(new_img_url)==0:
+            if item['spider_imgs'].count(image_url) > 0 and item['thumbs'].count(new_img_url) == 0:
                 item['thumbs'].append(new_img_url)
                 # item['thumbs_src'].append(image_res)
 

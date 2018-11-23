@@ -57,6 +57,7 @@ class artsoArtronSpider(CrawlSpider):
             'baby.pipelines.MysqlWriterPipeline': 510,
         },
         'DUPEFILTER_DEBUG':True,
+        'SCHEDULER_DEBUG':True,
     }
     rules = (
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
