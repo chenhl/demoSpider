@@ -14,3 +14,5 @@ items.jsonl
 __pycache__/*.pyc
 logs
 logs/*
+crawls
+crawls/*
