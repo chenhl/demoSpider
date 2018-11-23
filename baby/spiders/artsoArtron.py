@@ -88,6 +88,7 @@ class artsoArtronSpider(CrawlSpider):
     #     query = parse_qs(url_parse.query)
     #     self.cate=query['Class'][0]
     def parse_item(self, response):
+        self.state['items_count'] = self.state.get('items_count', 0) + 1
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=artsoArtronItem(), selector=response)
         base_url = get_base_url(response)
