@@ -14,7 +14,9 @@ BOT_NAME = 'baby'
 SPIDER_MODULES = ['baby.spiders']
 NEWSPIDER_MODULE = 'baby.spiders'
 
-
+# EXTENSIONS = {
+#     'scrapy_jsonrpc.webservice.WebService': 600,
+# }
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'baby (+http://www.yourdomain.com)'
 USER_AGENTS = [

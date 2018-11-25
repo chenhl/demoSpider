@@ -10,7 +10,7 @@ from scrapy.linkextractors import LinkExtractor
 from urllib.parse import urlsplit, urlparse, urljoin, parse_qs, parse_qsl
 import time
 import datetime
-
+import re
 
 # item loader
 class DefaultItemLoader(ItemLoader):
@@ -60,18 +60,26 @@ class artsoArtronSpider(CrawlSpider):
         'SCHEDULER_DEBUG':True,
     }
     rules = (
+        # 地址分页&page=2 //div[@class="listJump"]/a[last()] xpath未定义first()方法，取第一个用[1] http://artso.artron.net/artist/search_artist.php
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]'),allow=('\?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=[0-9]+'),process_value='parse_page')),
+
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
         # process_links='detail_link', ,process_request='parse_request'
-        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl/dd/h4/a[last()]')), callback='parse_item'),
+        # Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4//a[last()]')), callback='parse_item'),只能抓取到每页的最后一个
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4'),allow=('/artist/detail.php\?PersonCode=[0-9]+')), callback='parse_item'),
         # 分类
         # Rule(LinkExtractor(restrict_xpaths=('//div[@class="filtItem filt02"]//div[@class="base"]/a[1]'))),
-        # 地址分页&page=2 //div[@class="listJump"]/a[last()] xpath未定义first()方法，取第一个用[1] http://artso.artron.net/artist/search_artist.php
-        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]/a[1]'))),
+
         # 详情页1
         # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
 
     )
-
+    def parse_page(value):
+        # m = re.search("上一页", value)
+        # if m:
+        #     return m.group(1)
+        print(value)
+        pass
     # def start_requests(self):
     #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",self.parse)
     #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",self.parse)
