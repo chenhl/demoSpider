@@ -38,15 +38,16 @@ class artsoArtronSpider(CrawlSpider):
     # 初始化，手动执行各个分类，增量时使用另一个spider
     cate = '国画'
     start_urls = [
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1122",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E9%9B%95%E5%A1%91&BirthArea=&Graduated=&page=244",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E7%89%88%E7%94%BB&BirthArea=&Graduated=&page=237",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B0%B4%E7%B2%89%E6%B0%B4%E5%BD%A9&BirthArea=&Graduated=&page=138",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E8%89%BA%E6%9C%AF&BirthArea=&Graduated=&page=123",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E6%B0%B4%E5%A2%A8&BirthArea=&Graduated=&page=53",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=2131",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1122",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E9%9B%95%E5%A1%91&BirthArea=&Graduated=&page=244",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E7%89%88%E7%94%BB&BirthArea=&Graduated=&page=237",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B0%B4%E7%B2%89%E6%B0%B4%E5%BD%A9&BirthArea=&Graduated=&page=138",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E8%89%BA%E6%9C%AF&BirthArea=&Graduated=&page=123",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E6%B0%B4%E5%A2%A8&BirthArea=&Graduated=&page=53",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19",
     ]
     # 设置下载延时
     download_delay = 10
@@ -71,7 +72,7 @@ class artsoArtronSpider(CrawlSpider):
         # process_links='detail_link', ,process_request='parse_request'
         # Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4//a[last()]')), callback='parse_item'),只能抓取到每页的最后一个
         Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4'),
-                           allow=('/artist/detail.php\?PersonCode=[0-9]+')), callback='parse_item'),
+                           allow=('/artist/detail.php\?PersonCode=[0-9]+')),process_links='process_item_links',process_request='process_item_request', callback='parse_item'),
     )
     def process_links(self,links):
         # yield links[0]
@@ -85,6 +86,18 @@ class artsoArtronSpider(CrawlSpider):
         print('@@@@@@')
         return links
 
+    def process_item_request(self,request):
+        print('333333333333')
+        print(request)
+        print('4444444444444')
+        return request
+        pass
+    def process_item_links(self,links):
+        # yield links[0]
+        print('22222222######')
+        print(links)
+        print('22222222$$$$$$$')
+        return links
     def process_value(value):
         m = re.search("上一页", value)
         if m:
@@ -111,12 +124,6 @@ class artsoArtronSpider(CrawlSpider):
     #     query = parse_qs(url_parse.query)
     #     self.cate=query['Class'][0]
 
-    def parse_page(self, response):
-        print(response)
-        pages = response.xpath('./a/@href')[0].strip()
-        print(pages)
-        yield scrapy.Request(pages,callback=self.parse_item,dont_filter=False)
-        pass
     def parse_item(self, response):
         # self.state['items_count'] = self.state.get('items_count', 0) + 1
         # http://blog.51cto.com/pcliuyang/1543031
@@ -124,28 +131,18 @@ class artsoArtronSpider(CrawlSpider):
         base_url = get_base_url(response)
         urls = urlparse(base_url)
         query = parse_qs(urls.query)
-        print(base_url)
+        # print(base_url)
         l.add_value('spider_link', base_url)
-        # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"poR")]//h3/text())')
-        # normalize-space 去除 html \r\n\t
-        # re 正则表达式，class只要包含theme_body_4656
-        # l.add_xpath('content', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td)')
-        # content=""for selector in sel.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'): content=content+ selector.xpath("/text()").extract()
 
-        # for sele in response.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'):
-        #     content = content + sele.xpath('./text()').extract()
-        # l.add_value('content',content)
         # 可能没有 click，如果返回2个则取第2个，否则取第1个。
         content = response.xpath('//dd//div[re:test(@class,"artTxt click")]//p//node()')
         if len(content) > 0:
             l.add_xpath('spider_content', '//dd//div[re:test(@class,"artTxt click")]//p//node()')
         else:
             l.add_xpath('spider_content', '//dd//div[re:test(@class,"artTxt")]//p//node()')
-
         l.add_value('keywords', '')
         l.add_value('description', '')
-
         # css
         # l.add_css('spider_img', 'dl dt .pic img::attr(src)')
         # xpath
@@ -154,15 +151,10 @@ class artsoArtronSpider(CrawlSpider):
         l.add_value('thumbs', [])
         l.add_value('spider_userpic', '')
         l.add_value('spider_tags', [self.cate])
-
         l.add_value('uid', 0)
         l.add_value('uname', '')
         # 生成文章id
         l.add_value('aid', util.genId(type="artist", def_value=int(query['PersonCode'][0])))
-
-        # tags = [self.cate]
-        # l.add_value('tags', tags)
-
         l.add_value('spider_name', self.name)
         l.add_value('catid', self.catid)
         l.add_value('status', self.status)
