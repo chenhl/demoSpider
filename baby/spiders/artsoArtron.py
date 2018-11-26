@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import myBaseItem, newsSohuItem,artsoArtronItem
+from baby.items import myBaseItem, newsSohuItem, artsoArtronItem
 from baby.util.util import util
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -11,6 +11,7 @@ from urllib.parse import urlsplit, urlparse, urljoin, parse_qs, parse_qsl
 import time
 import datetime
 import re
+
 
 # item loader
 class DefaultItemLoader(ItemLoader):
@@ -53,33 +54,46 @@ class artsoArtronSpider(CrawlSpider):
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 210,
             'baby.pipelines.artsoPipeline': 310,
-            'baby.pipelines.MyImagesPipeline': 410,
-            'baby.pipelines.MysqlWriterPipeline': 510,
+            # 'baby.pipelines.MyImagesPipeline': 410,
+            # 'baby.pipelines.MysqlWriterPipeline': 510,
         },
-        'DUPEFILTER_DEBUG':True,
-        'SCHEDULER_DEBUG':True,
+        'DUPEFILTER_DEBUG': True,
+        'SCHEDULER_DEBUG': True,
     }
+    #不同的start_urls也有不同的rules，
+    #从最后一页开始抓，最后一页只能抓一个？
     rules = (
         # 地址分页&page=2 //div[@class="listJump"]/a[last()] xpath未定义first()方法，取第一个用[1] http://artso.artron.net/artist/search_artist.php
-        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]'),allow=('\?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=[0-9]+'),process_value='parse_page')),
-
+        #process_value='process_value'
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]'),
+                           allow=('\?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=[0-9]+'),),process_links='process_links',follow=True),
         # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
         # process_links='detail_link', ,process_request='parse_request'
         # Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4//a[last()]')), callback='parse_item'),只能抓取到每页的最后一个
-        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4'),allow=('/artist/detail.php\?PersonCode=[0-9]+')), callback='parse_item'),
-        # 分类
-        # Rule(LinkExtractor(restrict_xpaths=('//div[@class="filtItem filt02"]//div[@class="base"]/a[1]'))),
-
-        # 详情页1
-        # Rule(LinkExtractor(restrict_xpaths=('//li[@class="i42c"]/div[@class="i42ck"]'))),
-
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4'),
+                           allow=('/artist/detail.php\?PersonCode=[0-9]+')), callback='parse_item'),
     )
-    def parse_page(value):
-        # m = re.search("上一页", value)
-        # if m:
-        #     return m.group(1)
+    def process_links(self,links):
+        # yield links[0]
+        print('######')
+        print(links)
+        print('$$$$$$$')
+        for i in range(len(links)-1,-1,-1):
+            if links[i].text != '上一页':
+                del links[i]
+        print(links)
+        print('@@@@@@')
+        return links
+
+    def process_value(value):
+        m = re.search("上一页", value)
+        if m:
+            m1 = re.search('<a href="(.+?)">',value)
+            if m1:
+                return m1.group(1)
         print(value)
         pass
+
     # def start_requests(self):
     #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",self.parse)
     #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",self.parse)
@@ -96,14 +110,21 @@ class artsoArtronSpider(CrawlSpider):
     #     url_parse = urlparse(base_url)
     #     query = parse_qs(url_parse.query)
     #     self.cate=query['Class'][0]
+
+    def parse_page(self, response):
+        print(response)
+        pages = response.xpath('./a/@href')[0].strip()
+        print(pages)
+        yield scrapy.Request(pages,callback=self.parse_item,dont_filter=False)
+        pass
     def parse_item(self, response):
-        self.state['items_count'] = self.state.get('items_count', 0) + 1
+        # self.state['items_count'] = self.state.get('items_count', 0) + 1
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=artsoArtronItem(), selector=response)
         base_url = get_base_url(response)
         urls = urlparse(base_url)
         query = parse_qs(urls.query)
-
+        print(base_url)
         l.add_value('spider_link', base_url)
         # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"poR")]//h3/text())')
