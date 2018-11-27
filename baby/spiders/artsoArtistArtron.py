@@ -62,17 +62,16 @@ class artsoArtistArtronSpider(CrawlSpider):
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
-            # 'baby.pipelines.baseItemPipeline': 210,
-            # 'baby.pipelines.artsoPipeline': 310,
-            # 'baby.pipelines.MyImagesPipeline': 410,
-            # 'baby.pipelines.MysqlWriterPipeline': 510,
+            'baby.pipelines.baseItemPipeline': 210,
+            'baby.pipelines.artsoPipeline': 310,
+            'baby.pipelines.MyImagesPipeline': 410,
+            'baby.pipelines.MysqlUpdatePipeline': 510,
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
     }
     #不同的start_urls也有不同的rules，
-    # 精抓取，详情页需要列表页的参数（self.cate），不适合用rules
-
+    # 精抓取，详情页需要列表页的参数（self.cate），没有找到好的方法，不用rules
     # rules = (
     #     # 地址分页
     #     Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]'),
@@ -91,22 +90,20 @@ class artsoArtistArtronSpider(CrawlSpider):
         sels_url_query = parse_qs(sels_url_parse.query)
         print(sels_url)
         #next page
-        pages = response.xpath('//div[@class="listJump"]')
+        # pages = response.xpath('//div[@class="listJump"]')
         page = int(sels_url_query['page'][0])-1
         if page > 0:
             # query = {'keyword':'','Class':sels_url_query['Class'][0],'Graduated':'','page':page}
             query = 'keyword=&Class=' + sels_url_query['Class'][0] + '&BirthArea=&Graduated=&page=' + str(page)
             page_url = base_url + '/artist/search_artist.php?' + query
-            print('0000000000000')
-            print(page_url)
-            print('1111111111111')
+            # print(page_url)
             yield scrapy.Request(page_url, dont_filter=False)
 
         for sel in sels:
             url = base_url+sel.xpath('./@href').extract()[0]
             meta = {'cate': sels_url_query['Class'][0]}
             yield scrapy.Request(url, callback=self.parse_item, meta=meta, dont_filter=False)
-            print(url+'&cate='+meta['cate'])
+            # print(url+'&cate='+meta['cate'])
 
     #https://github.com/aleonsan/newspaper-scraper-couchbase/blob/master/newspaper_crawler.py
     # def __init__(self, *args, **kwargs):

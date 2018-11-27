@@ -326,13 +326,38 @@ class MysqlDB(object):
             self.db.rollback()
             return False
 
+    def select_db(self, items):
+        insert_data = items
+        sql = "select id from v9_news where spider_link = %s"
+        print(sql)
+        try:
+            self.cur.execute(sql, (insert_data['spider_link']))
+            self.db.commit()
+            _data = self.cur.fetchone()
+            if _data is not None:
+                return True
+            else:
+                return False
+
+        except Exception as e:
+            print(str(e))
+            self.db.rollback()
+            return False
+
+# item是否抓取过
+class itemExistsPipeline(MysqlDB):
+    def process_item(self, item, spider):
+        res = self.select_db(item)
+        if res:
+            raise DropItem("Item "+item['id']+" exists")
+        else:
+            return item
 
 # 直接insert
 class MysqlWriterPipeline(MysqlDB):
     def process_item(self, item, spider):
         self.insert_db(item)
         return item
-
 
 # insert 或 update
 class MysqlUpdatePipeline(MysqlDB):
@@ -342,6 +367,7 @@ class MysqlUpdatePipeline(MysqlDB):
         # 查询名称是否存在
         sel_sql = "select id,aid,title,tags from v9_news where title = %s"
         self.cur.execute(sel_sql, (insert_data['title']))
+        self.db.commit()
         _data = self.cur.fetchone()
         if _data is not None:
             data_tags = json.loads(_data[3])

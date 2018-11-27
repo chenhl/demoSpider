@@ -48,6 +48,7 @@ class newsSohuSpider(CrawlSpider):
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 200,
+            'baby.pipelines.itemExistsPipeline': 260,
             'baby.pipelines.newsSohuPipeline': 300,
             'baby.pipelines.MyImagesPipeline': 400,
             'baby.pipelines.MysqlWriterPipeline': 500,
@@ -63,18 +64,7 @@ class newsSohuSpider(CrawlSpider):
             id = item["id"]
             aid = item["authorId"]
             url = base_url + str(id) + "_" + str(aid)
-            #查url是否已经抓取过
-            db = pymysql.connect(host='localhost', user='root', password='', db='phpcmsv9')
-            cur = db.cursor()
-            sel_sql = "select id from v9_news where spider_link = %s"
-            cur.execute(sel_sql, (url))
-            _data = cur.fetchone()
-            db.commit()
-            db.close()
-            print('----------')
-            print(url)
-            if _data is None or len(_data) == 0:
-                yield scrapy.Request(url, callback=self.parse_item, meta=item, dont_filter=False) # dont_filter 默认就是False去重，scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu 启用持久化spider,jobdir保存了爬取过的url的hash
+            yield scrapy.Request(url, callback=self.parse_item, meta=item, dont_filter=False) # dont_filter 默认就是False去重，scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu 启用持久化spider,jobdir保存了爬取过的url的hash
             # else:
             #     raise DropItem("Duplicate item found: %s" % item)
         # pass
