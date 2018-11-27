@@ -18,7 +18,7 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 
-
+#scrapy crawl artist.artron -s JOBDIR=crawls/artist_artron
 class artsoArtistArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
