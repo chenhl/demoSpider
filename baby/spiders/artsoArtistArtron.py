@@ -113,40 +113,6 @@ class artsoArtistArtronSpider(CrawlSpider):
     # def parse_start_url(self,response):
     #     return []
 
-    #列表页上一页的url
-    def process_links(self,links):
-        print('######')
-        print(links)
-        print('$$$$$$$')
-        for i in range(len(links)-1,-1,-1):
-            if links[i].text != '上一页':
-                del links[i]
-        print(links)
-        print('@@@@@@')
-        return links
-
-    def process_value(value):
-        m = re.search("上一页", value)
-        if m:
-            m1 = re.search('<a href="(.+?)">',value)
-            if m1:
-                return m1.group(1)
-        print(value)
-
-    def process_item_request(self,request):
-        print('333333333333')
-        print(request)
-        print('4444444444444')
-        return request
-
-    def process_item_links(self,links):
-        # yield links[0]
-        print('22222222######')
-        print(links)
-        print('22222222$$$$$$$')
-        return links
-    
-
     def parse_item(self, response):
         # self.state['items_count'] = self.state.get('items_count', 0) + 1
         # http://blog.51cto.com/pcliuyang/1543031

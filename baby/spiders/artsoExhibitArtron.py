@@ -10,6 +10,7 @@ from scrapy.linkextractors import LinkExtractor
 from urllib.parse import urlsplit, urlparse, urljoin, parse_qs, parse_qsl
 import time
 import datetime
+import re
 
 
 # item loader
@@ -35,34 +36,61 @@ class artsoExhibitArtronSpider(CrawlSpider):
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
-            'baby.pipelines.baseItemPipeline': 220,
-            'baby.pipelines.artsoExhibitPipeline': 320,
+            # 'baby.pipelines.baseItemPipeline': 220,
+            # 'baby.pipelines.artsoExhibitPipeline': 320,
             # 'baby.pipelines.MyImagesPipeline': 420,
             # 'baby.pipelines.MysqlWriterPipeline': 520,
         },
     }
+    # rules = (
+    #     # 分页
+    #     # Rule(LinkExtractor(restrict_xpaths=('//div[@class="result-page"]/a[2]'))),
+    #     # 详情页
+    #     # process_links='detail_link',
+    #     Rule(LinkExtractor(restrict_xpaths=('//div[@class="show_list"]//dl/dt/a[1]')), cb_kwargs={},
+    #          process_links='parse_links', callback='parse_item'),
+    # )
+
     rules = (
-        # 分页
-        # Rule(LinkExtractor(restrict_xpaths=('//div[@class="result-page"]/a[2]'))),
+        # 地址分页
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="result-page"]'),
+                           allow=('/exhibit/search_exhibition.php\?page=[0-9]+'), ), process_links='process_links',
+             follow=True),
         # 详情页
-        # process_links='detail_link',
-        Rule(LinkExtractor(restrict_xpaths=('//div[@class="show_list"]//dl/dt/a[1]')), cb_kwargs={},
-             process_links='parse_links', callback='parse_item'),
+        Rule(LinkExtractor(restrict_xpaths=('//div[@class="show_list"]//dl//dt'), ), process_links='process_item_links',
+             callback='parse_item'),
     )
 
-    def parse_links(self, links):
-        # ret = []
-        for link in links:
-            u = urlparse(link.url)
-            qs = parse_qs(u.query)
-            link.url = qs['url'][0]
-            yield link
+    # 列表页上一页的url
+    def process_links(self, links):
+        print('######')
+        print(links)
+        print('$$$$$$$')
+        for i in range(len(links) - 1, -1, -1):
+            if links[i].text != '< 上一页':
+                del links[i]
+        print(links)
+        print('@@@@@@')
+        return links
 
-    # def parse(self, response):
-    #     base_url = get_base_url(response)
-    #     url_parse = urlparse(base_url)
-    #     query = parse_qs(url_parse.query)
-    #     self.cate=query['Class'][0]
+    def process_item_request(self, request):
+        print('333333333333')
+        print(request)
+        print('4444444444444')
+        return request
+
+    def process_item_links(self, links):
+        # yield links[0]
+        print('22222222######')
+        print(links)
+        print('22222222$$$$$$$')
+        for i in range(len(links)):
+            u = urlparse(links[i].url)
+            qs = parse_qs(u.query)
+            links[i].url = qs['url'][0]
+        print(links)
+        print('333333333$$$$$$$')
+        return links
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
@@ -88,19 +116,12 @@ class artsoExhibitArtronSpider(CrawlSpider):
         # attr
         l.add_value('attr', attr)
         l.add_value('attr_value', value)
-
-        # l.add_xpath('attr', '//div[re:test(@class,"exInfo")]/dl/dt/text()')
-        # l.add_xpath('attr_value', '//div[re:test(@class,"exInfo")]/dl/dd/text()')
         # content
         l.add_xpath('spider_content', '//div[re:test(@class,"exText")]//node()')
         l.add_value('keywords', '')
         l.add_value('description', '')
 
-        # css
-        # l.add_css('spider_img', 'dl dt .pic img::attr(src)')
-        #
         l.add_value('spider_img', '')
-
         l.add_xpath('spider_imgs', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li//img/@src')
         l.add_xpath('spider_imgs_text', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li/span/text()')
         l.add_value('thumbs', [])
@@ -111,10 +132,6 @@ class artsoExhibitArtronSpider(CrawlSpider):
         l.add_value('uname', '')
         # 生成文章id
         l.add_value('aid', util.genId(type="exhibit", def_value=int(base_url.split('-')[1].split('.')[0])))
-
-        # tags = [self.cate]
-        # l.add_value('tags', tags)
-
         l.add_value('spider_name', self.name)
         l.add_value('catid', self.catid)
         l.add_value('status', self.status)
