@@ -19,11 +19,11 @@ class DefaultItemLoader(ItemLoader):
     pass
 
 
-class artsoArtronSpider(CrawlSpider):
+class artsoArtistArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
     # 艺术家（认证过的）修改自己的简介，可排名提前
-    name = 'artso.artron'
+    name = 'artist.artron'
     catid = 9
     typeid = 0
     sysadd = 1
@@ -39,22 +39,31 @@ class artsoArtronSpider(CrawlSpider):
     cate = '国画'
     start_urls = [
         "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=2131",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=952",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=1122",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=雕塑&BirthArea=&Graduated=&page=244",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=版画&BirthArea=&Graduated=&page=237",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=水粉水彩&BirthArea=&Graduated=&page=138",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=当代艺术&BirthArea=&Graduated=&page=123",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=当代水墨&BirthArea=&Graduated=&page=53",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=漆画&BirthArea=&Graduated=&page=19",
+
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1122",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E9%9B%95%E5%A1%91&BirthArea=&Graduated=&page=244",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E7%89%88%E7%94%BB&BirthArea=&Graduated=&page=237",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B0%B4%E7%B2%89%E6%B0%B4%E5%BD%A9&BirthArea=&Graduated=&page=138",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E8%89%BA%E6%9C%AF&BirthArea=&Graduated=&page=123",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E6%B0%B4%E5%A2%A8&BirthArea=&Graduated=&page=53",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1122",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E9%9B%95%E5%A1%91&BirthArea=&Graduated=&page=244",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E7%89%88%E7%94%BB&BirthArea=&Graduated=&page=237",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B0%B4%E7%B2%89%E6%B0%B4%E5%BD%A9&BirthArea=&Graduated=&page=138",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E8%89%BA%E6%9C%AF&BirthArea=&Graduated=&page=123",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E6%B0%B4%E5%A2%A8&BirthArea=&Graduated=&page=53",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19",
     ]
     # 设置下载延时
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
-            'baby.pipelines.baseItemPipeline': 210,
-            'baby.pipelines.artsoPipeline': 310,
+            # 'baby.pipelines.baseItemPipeline': 210,
+            # 'baby.pipelines.artsoPipeline': 310,
             # 'baby.pipelines.MyImagesPipeline': 410,
             # 'baby.pipelines.MysqlWriterPipeline': 510,
         },
@@ -62,20 +71,53 @@ class artsoArtronSpider(CrawlSpider):
         'SCHEDULER_DEBUG': True,
     }
     #不同的start_urls也有不同的rules，
-    #从最后一页开始抓，最后一页只能抓一个？
-    rules = (
-        # 地址分页&page=2 //div[@class="listJump"]/a[last()] xpath未定义first()方法，取第一个用[1] http://artso.artron.net/artist/search_artist.php
-        #process_value='process_value'
-        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]'),
-                           allow=('\?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=[0-9]+'),),process_links='process_links',follow=True),
-        # 详情页 2 /?act=usite&usid=[0-9]{1,10}&inview=[a-z-0-9-]+&said=528  /?act=usite&usid=8646&inview=appid-241-mid-619&said=528
-        # process_links='detail_link', ,process_request='parse_request'
-        # Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4//a[last()]')), callback='parse_item'),只能抓取到每页的最后一个
-        Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4'),
-                           allow=('/artist/detail.php\?PersonCode=[0-9]+')),process_links='process_item_links',process_request='process_item_request', callback='parse_item'),
-    )
+    # 精抓取，详情页需要列表页的参数（self.cate），不适合用rules
+
+    # rules = (
+    #     # 地址分页
+    #     Rule(LinkExtractor(restrict_xpaths=('//div[@class="listJump"]'),
+    #                        allow=('\?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=[0-9]+'),),process_links='process_links',follow=True),
+    #     # 详情页
+    #     Rule(LinkExtractor(restrict_xpaths=('//div[@class="listWrap"]//dl//dd//h4'),
+    #                        allow=('/artist/detail.php\?PersonCode=[0-9]+')),process_links='process_item_links',process_request='process_item_request', callback='parse_item'),
+    # )
+
+    def parse(self, response):
+        base_url = 'http://artso.artron.net'
+        #item
+        sels = response.xpath('//div[@class="listWrap"]//dl//dd//h4//a[last()]')
+        sels_url = get_base_url(response)
+        sels_url_parse = urlparse(sels_url)
+        sels_url_query = parse_qs(sels_url_parse.query)
+        print(sels_url)
+        #next page
+        pages = response.xpath('//div[@class="listJump"]')
+        page = int(sels_url_query['page'][0])-1
+        if page > 0:
+            # query = {'keyword':'','Class':sels_url_query['Class'][0],'Graduated':'','page':page}
+            query = 'keyword=&Class=' + sels_url_query['Class'][0] + '&BirthArea=&Graduated=&page=' + str(page)
+            page_url = base_url + '/artist/search_artist.php?' + query
+            print('0000000000000')
+            print(page_url)
+            print('1111111111111')
+            yield scrapy.Request(page_url, dont_filter=False)
+
+        for sel in sels:
+            url = base_url+sel.xpath('./@href').extract()[0]
+            meta = {'cate': sels_url_query['Class'][0]}
+            yield scrapy.Request(url, callback=self.parse_item, meta=meta, dont_filter=False)
+            print(url+'&cate='+meta['cate'])
+
+    #https://github.com/aleonsan/newspaper-scraper-couchbase/blob/master/newspaper_crawler.py
+    # def __init__(self, *args, **kwargs):
+    #
+    #     pass
+
+    # def parse_start_url(self,response):
+    #     return []
+
+    #列表页上一页的url
     def process_links(self,links):
-        # yield links[0]
         print('######')
         print(links)
         print('$$$$$$$')
@@ -86,19 +128,6 @@ class artsoArtronSpider(CrawlSpider):
         print('@@@@@@')
         return links
 
-    def process_item_request(self,request):
-        print('333333333333')
-        print(request)
-        print('4444444444444')
-        return request
-        pass
-    def process_item_links(self,links):
-        # yield links[0]
-        print('22222222######')
-        print(links)
-        print('22222222$$$$$$$')
-        return links
-
     def process_value(value):
         m = re.search("上一页", value)
         if m:
@@ -106,24 +135,20 @@ class artsoArtronSpider(CrawlSpider):
             if m1:
                 return m1.group(1)
         print(value)
-        pass
 
-    # def start_requests(self):
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",self.parse)
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",self.parse)
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1122", self.parse)
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E9%9B%95%E5%A1%91&BirthArea=&Graduated=&page=244", self.parse)
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E7%89%88%E7%94%BB&BirthArea=&Graduated=&page=237", self.parse)
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B0%B4%E7%B2%89%E6%B0%B4%E5%BD%A9&BirthArea=&Graduated=&page=138", self.parse)
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E8%89%BA%E6%9C%AF&BirthArea=&Graduated=&page=123", self.parse)
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%BD%93%E4%BB%A3%E6%B0%B4%E5%A2%A8&BirthArea=&Graduated=&page=53", self.parse)
-    #     yield scrapy.Request("http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19", self.parse)
-    #
-    # def parse(self, response):
-    #     base_url = get_base_url(response)
-    #     url_parse = urlparse(base_url)
-    #     query = parse_qs(url_parse.query)
-    #     self.cate=query['Class'][0]
+    def process_item_request(self,request):
+        print('333333333333')
+        print(request)
+        print('4444444444444')
+        return request
+
+    def process_item_links(self,links):
+        # yield links[0]
+        print('22222222######')
+        print(links)
+        print('22222222$$$$$$$')
+        return links
+    
 
     def parse_item(self, response):
         # self.state['items_count'] = self.state.get('items_count', 0) + 1
@@ -135,6 +160,7 @@ class artsoArtronSpider(CrawlSpider):
         # print(base_url)
         l.add_value('spider_link', base_url)
         l.add_xpath('title', 'normalize-space(//dd[re:test(@class,"poR")]//h3/text())')
+        l.add_value('spider_tags', [response.meta['cate']])
 
         # 可能没有 click，如果返回2个则取第2个，否则取第1个。
         content = response.xpath('//dd//div[re:test(@class,"artTxt click")]//p//node()')
@@ -151,7 +177,6 @@ class artsoArtronSpider(CrawlSpider):
         l.add_value('spider_imgs', [])
         l.add_value('thumbs', [])
         l.add_value('spider_userpic', '')
-        l.add_value('spider_tags', [self.cate])
         l.add_value('uid', 0)
         l.add_value('uname', '')
         # 生成文章id

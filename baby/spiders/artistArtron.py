@@ -18,11 +18,11 @@ class DefaultItemLoader(ItemLoader):
     pass
 
 
-class MeishujiaSpider(CrawlSpider):
+class MeishujiafSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
     # 艺术家（认证过的）修改自己的简介，可排名提前
-    name = 'artist.artron'
+    name = 'artist.fq.artron'
     catid = 6
     typeid = 0
     sysadd = 1

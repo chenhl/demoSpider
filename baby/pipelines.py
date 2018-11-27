@@ -25,7 +25,8 @@ from baby.util.util import util
 
 from scrapy import selector
 
-#无用
+
+# 无用
 class DuplicatesPipeline(object):
 
     def __init__(self):
@@ -257,20 +258,18 @@ class phpcmsSpiderPipeline(object):
         return item
 
 
-class MysqlWriterPipeline(object):
-    # cur=''
+class MysqlDB(object):
+
     def open_spider(self, spider):
         self.db = pymysql.connect(host='localhost', user='root', password='', db='phpcmsv9')
         self.cur = self.db.cursor()
-
         # self.file = open('../data/items.jl', 'w')
 
     def close_spider(self, spider):
         self.db.close()
-        # self.file.close()
 
-    def process_item(self, item, spider):
-        insert_data = item
+    def insert_db(self, items):
+        insert_data = items
         insert_data['spider_imgs'] = json.dumps(insert_data['spider_imgs'])
         insert_data['thumbs'] = json.dumps(insert_data['thumbs'])
         insert_data['spider_tags'] = json.dumps(insert_data['spider_tags'])
@@ -302,18 +301,59 @@ class MysqlWriterPipeline(object):
                 insert_data['inputtime'],
                 insert_data['updatetime'],
                 insert_data['create_time']))
-            print(eret)
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
             sql_data = "insert into v9_news_data(id,content,content_search) values (%s,%s,%s)"
             self.cur.execute(sql_data, (data[0], insert_data['content'], ''))
             self.db.commit()
+            return True
         except Exception as e:
             print(str(e))
             self.db.rollback()
+            return False
+
+    def update_db(self, items):
+        insert_data = items
+        insert_data['tags'] = json.dumps(insert_data['tags'])
+        sql = "update v9_news set tags = %s where id = %s"
+        print(sql)
+        try:
+            self.cur.execute(sql, (insert_data['tags'], insert_data['id']))
+            self.db.commit()
+            return True
+        except Exception as e:
+            print(str(e))
+            self.db.rollback()
+            return False
+
+
+# 直接insert
+class MysqlWriterPipeline(MysqlDB):
+    def process_item(self, item, spider):
+        self.insert_db(item)
+        return item
+
+
+# insert 或 update
+class MysqlUpdatePipeline(MysqlDB):
+    # self.file.close()
+    def process_item(self, item, spider):
+        insert_data = item
+        # 查询名称是否存在
+        sel_sql = "select id,aid,title,tags from v9_news where title = %s"
+        self.cur.execute(sel_sql, (insert_data['title']))
+        _data = self.cur.fetchone()
+        if _data is not None:
+            data_tags = json.loads(_data[3])
+            item_tags = insert_data['spider_tags'][0]
+            if item_tags not in data_tags:
+                insert_data['tags'].append(item_tags)
+                insert_data['auto_id'] = _data[0]
+                self.update_db(insert_data)
+        else:
+            self.insert_db(insert_data)
         # finally:
         #     self.db.close()
-
         return item
 
 
