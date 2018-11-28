@@ -36,10 +36,10 @@ class artsoExhibitArtronSpider(CrawlSpider):
     download_delay = 10
     custom_settings = {
         'ITEM_PIPELINES': {
-            # 'baby.pipelines.baseItemPipeline': 220,
-            # 'baby.pipelines.artsoExhibitPipeline': 320,
-            # 'baby.pipelines.MyImagesPipeline': 420,
-            # 'baby.pipelines.MysqlWriterPipeline': 520,
+            'baby.pipelines.baseItemPipeline': 220,
+            'baby.pipelines.artsoExhibitPipeline': 320,
+            'baby.pipelines.MyImagesPipeline': 420,
+            'baby.pipelines.MysqlWriterPipeline': 520,
         },
     }
     # rules = (
@@ -143,7 +143,6 @@ class artsoExhibitArtronSpider(CrawlSpider):
         l.add_value('update_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
         d = l.load_item()
-        print(d)
         yield d
 
     def parse_content_item(self, selector):
