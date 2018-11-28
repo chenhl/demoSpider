@@ -18,7 +18,7 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 
-
+#scrapy crawl exhibit.artron -s JOBDIR=crawls/exhibit_artron
 class artsoExhibitArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -41,6 +41,10 @@ class artsoExhibitArtronSpider(CrawlSpider):
             'baby.pipelines.MyImagesPipeline': 420,
             'baby.pipelines.MysqlWriterPipeline': 520,
         },
+        'DUPEFILTER_DEBUG': True,
+        'SCHEDULER_DEBUG': True,
+        'LOG_FILE':'logs/log-exhibit.txt',
+        'LOG_LEVEL':'INFO',
     }
     # rules = (
     #     # 分页
@@ -63,33 +67,24 @@ class artsoExhibitArtronSpider(CrawlSpider):
 
     # 列表页上一页的url
     def process_links(self, links):
-        print('######')
-        print(links)
-        print('$$$$$$$')
         for i in range(len(links) - 1, -1, -1):
             if links[i].text != '< 上一页':
                 del links[i]
-        print(links)
-        print('@@@@@@')
+        self.logger.info(links)
         return links
 
-    def process_item_request(self, request):
-        print('333333333333')
-        print(request)
-        print('4444444444444')
-        return request
+    # def process_item_request(self, request):
+    #     return request
 
     def process_item_links(self, links):
         # yield links[0]
-        print('22222222######')
-        print(links)
-        print('22222222$$$$$$$')
         for i in range(len(links)):
             u = urlparse(links[i].url)
             qs = parse_qs(u.query)
             links[i].url = qs['url'][0]
-        print(links)
-        print('333333333$$$$$$$')
+
+        self.logger.info(links)
+
         return links
 
     def parse_item(self, response):
