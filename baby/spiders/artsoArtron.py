@@ -54,7 +54,7 @@ class artsoArtronSpider(CrawlSpider):
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 210,
-            'baby.pipelines.artsoPipeline': 310,
+            'baby.pipelines.artsoArtistPipeline': 310,
             # 'baby.pipelines.MyImagesPipeline': 410,
             # 'baby.pipelines.MysqlWriterPipeline': 510,
         },

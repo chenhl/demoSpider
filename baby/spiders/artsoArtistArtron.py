@@ -63,7 +63,7 @@ class artsoArtistArtronSpider(CrawlSpider):
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 210,
-            'baby.pipelines.artsoPipeline': 310,
+            'baby.pipelines.artsoArtistPipeline': 310,
             'baby.pipelines.MyImagesPipeline': 410,
             'baby.pipelines.MysqlUpdatePipeline': 510,
         },
@@ -81,14 +81,13 @@ class artsoArtistArtronSpider(CrawlSpider):
     #                        allow=('/artist/detail.php\?PersonCode=[0-9]+')),process_links='process_item_links',process_request='process_item_request', callback='parse_item'),
     # )
 
+    #start_urls parse
     def parse(self, response):
         base_url = 'http://artso.artron.net'
-        #item
-        sels = response.xpath('//div[@class="listWrap"]//dl//dd//h4//a[last()]')
+        #list url
         sels_url = get_base_url(response)
         sels_url_parse = urlparse(sels_url)
         sels_url_query = parse_qs(sels_url_parse.query)
-        print(sels_url)
         #next page
         # pages = response.xpath('//div[@class="listJump"]')
         page = int(sels_url_query['page'][0])-1
@@ -97,11 +96,15 @@ class artsoArtistArtronSpider(CrawlSpider):
             query = 'keyword=&Class=' + sels_url_query['Class'][0] + '&BirthArea=&Graduated=&page=' + str(page)
             page_url = base_url + '/artist/search_artist.php?' + query
             # print(page_url)
+            self.logger.info(page_url)
             yield scrapy.Request(page_url, dont_filter=False)
 
+        # item
+        sels = response.xpath('//div[@class="listWrap"]//dl//dd//h4//a[last()]')
         for sel in sels:
             url = base_url+sel.xpath('./@href').extract()[0]
             meta = {'cate': sels_url_query['Class'][0]}
+            self.logger.info(url+',meta='+meta['cate'])
             yield scrapy.Request(url, callback=self.parse_item, meta=meta, dont_filter=False)
             # print(url+'&cate='+meta['cate'])
 

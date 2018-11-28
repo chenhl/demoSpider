@@ -41,7 +41,7 @@ class DuplicatesPipeline(object):
 
 
 class baseItemPipeline(object):
-    # 在你的多少范围内有展览
+    # 在你的多少范围内有展览 geo
     def process_item(self, item, spider):
         if 'spider_img' not in item:
             item['spider_img'] = ''
@@ -79,7 +79,7 @@ class baseItemPipeline(object):
         return item
 
 
-class artsoPipeline(object):
+class artsoArtistPipeline(object):
     def process_item(self, item, spider):
         # item['name']=item['name'].strip(' ').strip('\r').strip('\n').strip('\t').rstrip(' ').rstrip('\n').rstrip('\t').rstrip('\r')
         # item['title'] = "".join(item['name'].split())
@@ -217,53 +217,13 @@ class newsSohuPipeline(object):
                     item['content'][i] = ''  # 直接del有错误 for的长度未变
 
         item['content'] = "".join(item['content'])
-
-        # content = ''
-        # if len(item['content']) >0:
-        #     for tmp in item['content']:
-        #         if re.search('点击进入搜狐首页',tmp) is not None or re.search('返回搜狐',tmp) is not None:
-        #             pass
-        #         else:
-        #             content += tmp
-        # item['content'] = content
-        # sel = selector(text=item['content'])
         return item
-
-
-class phpcmsSpiderPipeline(object):
-    # cur=''
-    def open_spider(self, spider):
-        self.db = pymysql.connect(host='localhost', user='root', password='', db='phpcmsv9')
-        self.cur = self.db.cursor()
-
-        # self.file = open('../data/items.jl', 'w')
-
-    def close_spider(self, spider):
-        self.db.close()
-        # self.file.close()
-
-    def process_item(self, item, spider):
-        insert_data = item
-        sql = "insert into v9_collection_content (url,title,data) values (%s,%s,%s)"
-        try:
-            self.cur.execute(sql, (insert_data['url'], insert_data['title'], insert_data['data']))
-            self.db.commit()
-            pass
-        except Exception as e:
-            print(str(e))
-            self.db.rollback()
-        # finally:
-        #     self.db.close()
-
-        return item
-
 
 class MysqlDB(object):
 
     def open_spider(self, spider):
         self.db = pymysql.connect(host='localhost', user='root', password='', db='phpcmsv9')
         self.cur = self.db.cursor()
-        # self.file = open('../data/items.jl', 'w')
 
     def close_spider(self, spider):
         self.db.close()
@@ -275,7 +235,6 @@ class MysqlDB(object):
         insert_data['spider_tags'] = json.dumps(insert_data['spider_tags'])
         insert_data['tags'] = json.dumps(insert_data['tags'])
         sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,spider_name,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-        print(sql)
         try:
             eret = self.cur.execute(sql, (
                 insert_data['aid'],
@@ -316,7 +275,7 @@ class MysqlDB(object):
         insert_data = items
         insert_data['tags'] = json.dumps(insert_data['tags'])
         sql = "update v9_news set tags = %s where id = %s"
-        print(sql)
+        logging.info(sql+'tags:'+items['tags']+',id='+insert_data['id'])
         try:
             self.cur.execute(sql, (insert_data['tags'], insert_data['id']))
             self.db.commit()
@@ -329,7 +288,6 @@ class MysqlDB(object):
     def select_db(self, items):
         insert_data = items
         sql = "select id from v9_news where spider_link = %s"
-        print(sql)
         try:
             self.cur.execute(sql, (insert_data['spider_link']))
             self.db.commit()
@@ -366,6 +324,8 @@ class MysqlUpdatePipeline(MysqlDB):
         insert_data = item
         # 查询名称是否存在
         sel_sql = "select id,aid,title,tags from v9_news where title = %s"
+        print(sel_sql+' s='+insert_data['title'])
+        logging.info(sel_sql+' s='+insert_data['title'])
         self.cur.execute(sel_sql, (insert_data['title']))
         self.db.commit()
         _data = self.cur.fetchone()

@@ -35,7 +35,7 @@ class MeishujiafSpider(CrawlSpider):
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 200,
-            'baby.pipelines.artPipeline': 300,
+            'baby.pipelines.artsoArtistPipeline': 300,
             'baby.pipelines.MyImagesPipeline': 400,
             'baby.pipelines.MysqlWriterPipeline': 500,
         },
