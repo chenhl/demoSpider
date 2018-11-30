@@ -100,8 +100,8 @@ IMAGES_STORE='D:\\xampp7\\htdocs\\test.phpcms.cn\\uploadfile\\'
 IMAGES_MIN_WIDTH=60
 IMAGES_MIN_HEIGHT=60
 #可以放到spider里，每个spider独立
-LOG_FILE='logs/log.txt'
-LOG_LEVEL='INFO'
+# LOG_FILE='logs/log.txt'
+# LOG_LEVEL='INFO'
 # LOG_LEVEL='ERROR'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

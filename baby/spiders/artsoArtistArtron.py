@@ -69,6 +69,8 @@ class artsoArtistArtronSpider(CrawlSpider):
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
+        'LOG_FILE': 'logs/log-artist.txt',
+        'LOG_LEVEL': 'INFO',
     }
     #不同的start_urls也有不同的rules，
     # 精抓取，详情页需要列表页的参数（self.cate），没有找到好的方法，不用rules

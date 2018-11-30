@@ -100,7 +100,9 @@ class myBaseItem(scrapy.Item):
     aid = scrapy.Field(
         output_processor=TakeFirst()
     )
-    attr = scrapy.Field()
+    attr = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     attr_value = scrapy.Field()
     spider_imgs_text = scrapy.Field()
 
@@ -116,4 +118,8 @@ class artsoArtronItem(myBaseItem):
     pass
 
 class exhibitMeishujiaItem(myBaseItem):
+    pass
+
+class galleryArtronItem(myBaseItem):
+    linkus = scrapy.Field()
     pass

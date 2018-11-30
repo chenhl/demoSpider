@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from baby.items import myBaseItem, newsSohuItem, exhibitArtronItem
+from baby.items import galleryArtronItem
 from baby.util.util import util
 from scrapy.utils.response import get_base_url
 from scrapy.loader import ItemLoader
@@ -18,13 +18,13 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 
-#scrapy crawl gallery.artron -s JOBDIR=crawls/gallery_artron
+
+# scrapy crawl gallery.artron -s JOBDIR=crawls/gallery_artron
 class galleryArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
-    # 艺术家（认证过的）修改自己的简介，可排名提前
     name = 'gallery.artron'
-    catid = 10
+    catid = 11
     typeid = 0
     sysadd = 1
     status = 99
@@ -37,14 +37,14 @@ class galleryArtronSpider(CrawlSpider):
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 220,
-            # 'baby.pipelines.artsoExhibitPipeline': 320,
-            # 'baby.pipelines.MyImagesPipeline': 420,
-            # 'baby.pipelines.MysqlWriterPipeline': 520,
+            'baby.pipelines.galleryPipeline': 320,
+            'baby.pipelines.MyImagesPipeline': 420,
+            'baby.pipelines.MysqlWriterPipeline': 520,
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE':'logs/log-gallery.txt',
-        'LOG_LEVEL':'INFO',
+        'LOG_FILE': 'logs/log-gallery.txt',
+        'LOG_LEVEL': 'INFO',
     }
 
     # start_urls parse
@@ -55,9 +55,8 @@ class galleryArtronSpider(CrawlSpider):
         sels_url_parse = urlparse(sels_url)
         sels_url_path = sels_url_parse.path
         # next page
-        # pages = response.xpath('//div[@class="listJump"]')
         page = int(sels_url_path.split('-')[-1].split('.')[0]) + 1
-        page_url = base_url + '/class/0-0-0-' + str(page)+'.html?order=4'
+        page_url = base_url + '/class/0-0-0-' + str(page) + '.html?order=4'
         # print(page_url)
         self.logger.info(page_url)
         yield scrapy.Request(page_url, dont_filter=False)
@@ -65,46 +64,71 @@ class galleryArtronSpider(CrawlSpider):
         # item
         sels = response.xpath('//div[@class="shop"]//div[@class="shopList"]')
         for sel in sels:
-            url = base_url + sel.xpath('./h3/a/@href').extract()[0]
+            # +'/g_infor1584.html'
+            url = sel.xpath('./h3/a/@href').extract()[0]
+            p = urlparse(url)
+            # id
+            item_id = p.path.strip('/')
+            # url
+            item_url = url + '/g_infor' + item_id + '.html'
+            # 名称
             title = sel.xpath('./h3/a/text()').extract()[0]
-            img = sel.xpath('./dl/dt/img/@src').extract()[0]
-            meta = {'cate': ''}
-            self.logger.info(url + ',meta=' + meta['cate'])
-            yield scrapy.Request(url, callback=self.parse_item, meta=meta, dont_filter=False)
-            # print(url+'&cate='+meta['cate'])
+            # 属性
+            attrs = sel.xpath('./dl//dd//td[2]')
+            attr_key = {}
+            for attr in attrs:
+                _tmp = attr.xpath('./p')
+                #所在城市
+                _tmp_attr = _tmp[0].xpath('./span/text()').extract()[0]
+                _tmp_value = _tmp[0].xpath('./b/text()').extract()
+                attr_key[_tmp_attr] = _tmp_value
+                #主营项目
+                _tmp_attr = _tmp[1].xpath('./span/text()').extract()[0]
+                _tmp_value = _tmp[1].xpath('./b/text()').extract()
+                attr_key[_tmp_attr] = _tmp_value
+
+            meta = {'item_id': item_id, 'item_url': item_url, 'title': title, 'attr': attr_key}
+            self.logger.info(item_url)
+            self.logger.info(meta)
+            yield scrapy.Request(item_url, callback=self.parse_item, meta=meta, dont_filter=False)
 
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
-        l = DefaultItemLoader(item=exhibitArtronItem(), selector=response)
+        l = DefaultItemLoader(item=galleryArtronItem(), selector=response)
         base_url = get_base_url(response)
         urls = urlparse(base_url)
         query = parse_qs(urls.query)
-
         l.add_value('spider_link', base_url)
-        # l.add_xpath('spider_img', '//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[1]/td/img::attr(src)')
-        l.add_xpath('title', 'normalize-space(//div[re:test(@class,"pw fix exDetail")]//h1/text())')
-        # normalize-space 去除 html \r\n\t
-        # re 正则表达式，class只要包含theme_body_4656
-        # l.add_xpath('content', 'normalize-space(//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td)')
-        # content=""for selector in sel.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'): content=content+ selector.xpath("/text()").extract()
+        l.add_value('title', response.meta['title'])
 
-        # list 索引顺序
-        attr = []
-        value = []
-        for sele in response.xpath('//div[re:test(@class,"exInfo")]/dl'):
-            attr.append(sele.xpath('./dt//text()').extract()[0])
-            value.append(sele.xpath('./dd//text()').extract())
         # attr
-        l.add_value('attr', attr)
-        l.add_value('attr_value', value)
+        l.add_value('attr', response.meta['attr'])
+        l.add_value('attr_value', [])
         # content
-        l.add_xpath('spider_content', '//div[re:test(@class,"exText")]//node()')
+        # 简介
+        contents1 = response.xpath('//div[re:test(@class,"tabsCont")]')[0].xpath('./node()').extract()
+        # 风采
+        contents2 = response.xpath('//div[re:test(@class,"tabsCont")]')[2].xpath('./node()').extract()
+        # 联系
+        contents3 = response.xpath('//div[re:test(@class,"tabsCont")]')[4].xpath('./node()').extract()
+        l.add_value('spider_content', contents1 + contents2 + contents3)
+
+        contents_linkus = response.xpath('//div[re:test(@class,"tabsCont")]//div[re:test(@class,"contact")]//span')
+        linkus = {}
+        if len(contents_linkus) == 5:
+            linkus['man'] = contents_linkus[0].xpath('./text()').extract()
+            linkus['address'] = contents_linkus[1].xpath('./text()').extract()
+            linkus['phone'] = contents_linkus[2].xpath('./text()').extract()
+            linkus['phone1'] = contents_linkus[3].xpath('./text()').extract()
+            linkus['email'] = contents_linkus[4].xpath('./text()').extract()
+        l.add_value('linkus', linkus)
+
         l.add_value('keywords', '')
         l.add_value('description', '')
 
-        l.add_value('spider_img', '')
-        l.add_xpath('spider_imgs', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li//img/@src')
-        l.add_xpath('spider_imgs_text', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li/span/text()')
+        l.add_xpath('spider_img', '//div[re:test(@class,"imgWrap")]//img/@src')
+        l.add_value('spider_imgs', [])
+        l.add_value('spider_imgs_text', [])
         l.add_value('thumbs', [])
         l.add_value('spider_userpic', '')
         l.add_value('spider_tags', [])
@@ -112,7 +136,7 @@ class galleryArtronSpider(CrawlSpider):
         l.add_value('uid', 0)
         l.add_value('uname', '')
         # 生成文章id
-        l.add_value('aid', util.genId(type="exhibit", def_value=int(base_url.split('-')[1].split('.')[0])))
+        l.add_value('aid', util.genId(type="gallery", def_value=int(response.meta['item_id'])))
         l.add_value('spider_name', self.name)
         l.add_value('catid', self.catid)
         l.add_value('status', self.status)

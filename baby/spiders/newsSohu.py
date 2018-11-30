@@ -19,7 +19,7 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 
-
+#scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu
 class newsSohuSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -55,6 +55,10 @@ class newsSohuSpider(CrawlSpider):
         },
         'COOKIES_ENABLED': False,
         # 'REFERER_ENABLED': True, #默认为True
+        'DUPEFILTER_DEBUG': True,
+        'SCHEDULER_DEBUG': True,
+        'LOG_FILE': 'logs/log-news.txt',
+        'LOG_LEVEL': 'INFO',
     }
 
     def parse(self, response):

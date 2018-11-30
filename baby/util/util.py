@@ -11,6 +11,10 @@ class util:
             #7 9
             max = 9999999
             res += max
+        elif type == 'gallery':
+            #5 9
+            max = 99999
+            res += max
         return res
 
     def exhibitMeta(self) :
@@ -25,5 +29,12 @@ class util:
                 {'txt': '承办单位：', 'code': 'org_manager'},
                 {'txt': '协办单位：', 'code': 'org_slave'},
                 {'txt': '参展艺术家：', 'code': 'artists'}]
+        # meta2 = {'展览名称：':'name','展览时间：':'time','展览地点：':'area'}
+        return meta
+
+    def galleryMeta(self) :
+        meta = [{'txt': '所在城市：', 'code': 'area'},
+                {'txt': '主营项目：', 'code': 'main_item'},
+                ]
         # meta2 = {'展览名称：':'name','展览时间：':'time','展览地点：':'area'}
         return meta
