@@ -18,7 +18,8 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 
-#scrapy crawl exhibit.artron -s JOBDIR=crawls/exhibit_artron
+#f:/baby/scrapy/demoSpider/baby
+#scrapy crawl exhibit.artron -s JOBDIR=D:/xampp7/scrapy/crawls/exhibit_artron
 class artsoExhibitArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -28,6 +29,8 @@ class artsoExhibitArtronSpider(CrawlSpider):
     typeid = 0
     sysadd = 1
     status = 99
+    uid = 95636
+    uname = '艺术展览'
     # 初始化
     start_urls = [
         "http://artso.artron.net/exhibit/search_exhibition.php?page=5674",

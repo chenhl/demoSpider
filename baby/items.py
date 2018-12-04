@@ -105,7 +105,7 @@ class myBaseItem(scrapy.Item):
     )
     attr_value = scrapy.Field()
     spider_imgs_text = scrapy.Field()
-
+    linkus = scrapy.Field()
 
 class newsSohuItem(myBaseItem):
     pass
@@ -121,5 +121,4 @@ class exhibitMeishujiaItem(myBaseItem):
     pass
 
 class galleryArtronItem(myBaseItem):
-    linkus = scrapy.Field()
     pass

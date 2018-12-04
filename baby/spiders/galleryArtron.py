@@ -18,8 +18,8 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 
-
-# scrapy crawl gallery.artron -s JOBDIR=crawls/gallery_artron
+#f:/baby/scrapy/demoSpider/baby
+# scrapy crawl gallery.artron -s JOBDIR=D:/xampp7/scrapy/crawls/gallery_artron
 class galleryArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -29,7 +29,7 @@ class galleryArtronSpider(CrawlSpider):
     sysadd = 1
     status = 99
     uid = 98657
-    uname = '艺术运营'
+    uname = '艺术画廊'
     # 初始化
     start_urls = [
         "http://gallery.artron.net/class/0-0-0-1.html?order=4",

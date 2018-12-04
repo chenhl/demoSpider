@@ -18,7 +18,8 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 
-#scrapy crawl artist.artron -s JOBDIR=crawls/artist_artron
+#f:/baby/scrapy/demoSpider/baby
+#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron
 class artsoArtistArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -28,7 +29,8 @@ class artsoArtistArtronSpider(CrawlSpider):
     typeid = 0
     sysadd = 1
     status = 99
-
+    uid = 91636
+    uname = '艺术人物'
     # allowed_domains = ['artist.meishujia.cn'] 国画 书法 油画 雕塑 版画 水粉水彩 当代艺术 当代水墨 漆画
     # cate = ['国画','书法','油画','雕塑','版画','水粉水彩','当代艺术','当代水墨','漆画']
     # start_urls = []

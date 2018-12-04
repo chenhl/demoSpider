@@ -257,7 +257,7 @@ class newsSohuPipeline(object):
 class MysqlDB(object):
 
     def open_spider(self, spider):
-        self.db = pymysql.connect(host='localhost', user='root', password='', db='phpcmsv9')
+        self.db = pymysql.connect(host='120.24.186.4',port=3307, user='root', password='1q2w3e', db='nutch-test')
         self.cur = self.db.cursor()
 
     def close_spider(self, spider):

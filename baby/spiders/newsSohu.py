@@ -19,7 +19,8 @@ class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
 
-#scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu
+#f:/baby/scrapy/demoSpider/baby
+#scrapy crawl news.sohu -s JOBDIR=D:/xampp7/scrapy/crawls/news_sohu
 class newsSohuSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
