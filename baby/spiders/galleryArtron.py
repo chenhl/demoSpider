@@ -28,6 +28,8 @@ class galleryArtronSpider(CrawlSpider):
     typeid = 0
     sysadd = 1
     status = 99
+    uid = 98657
+    uname = '艺术运营'
     # 初始化
     start_urls = [
         "http://gallery.artron.net/class/0-0-0-1.html?order=4",
@@ -133,8 +135,8 @@ class galleryArtronSpider(CrawlSpider):
         l.add_value('spider_userpic', '')
         l.add_value('spider_tags', [])
 
-        l.add_value('uid', 0)
-        l.add_value('uname', '')
+        l.add_value('uid', self.uid)
+        l.add_value('uname', self.uname)
         # 生成文章id
         l.add_value('aid', util.genId(type="gallery", def_value=int(response.meta['item_id'])))
         l.add_value('spider_name', self.name)
