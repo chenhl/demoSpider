@@ -441,7 +441,7 @@ class MyImagesPipeline(ImagesPipeline):
             yield scrapy.Request(item['spider_userpic'])
 
         return None
-
+    #resulsts是当前item的所有图片下载结果
     def item_completed(self, results, item, info):
         # for ok, x in results:
         #     if ok:
@@ -453,40 +453,41 @@ class MyImagesPipeline(ImagesPipeline):
         item['thumbs'] = []
         image_res = [x for ok, x in results if ok]
         # 当程序出现错误，python会自动引发异常，也可以通过raise显示地引发异常。一旦执行了raise语句，raise后面的语句将不能执行。
-        if not image_res:
-            raise DropItem("Item contains no images")
+        # if not image_res:
+        #     raise DropItem("Item contains no images")
+        #
+        if len(image_res)>0:
+            for img in image_res:
+                image_path = img['path']
+                image_url = img['url']
+                # 定义分类保存的路径
+                _path = image_path.lstrip("full/")
+                _path1 = _path[0:2]
+                _path2 = _path[2:4]
 
-        for img in image_res:
-            image_path = img['path']
-            image_url = img['url']
-            # 定义分类保存的路径
-            _path = image_path.lstrip("full/")
-            _path1 = _path[0:2]
-            _path2 = _path[2:4]
+                # 目录不存在则创建目录
+                img_target_path = "%s\\%s\\%s" % (self.img_store, _path1, _path2)
+                if os.path.exists(img_target_path) == False:
+                    os.makedirs(img_target_path)
 
-            # 目录不存在则创建目录
-            img_target_path = "%s\\%s\\%s" % (self.img_store, _path1, _path2)
-            if os.path.exists(img_target_path) == False:
-                os.makedirs(img_target_path)
+                # 将文件从默认下路路径移动到指定路径下
+                img_target = img_target_path + "\\" + _path
+                img_source = self.img_store + image_path
+                if os.path.exists(img_source) == True:
+                    shutil.move(img_source, img_target)
 
-            # 将文件从默认下路路径移动到指定路径下
-            img_target = img_target_path + "\\" + _path
-            img_source = self.img_store + image_path
-            if os.path.exists(img_source) == True:
-                shutil.move(img_source, img_target)
+                # 根据url判断是放到thumb 还是thumbs
+                new_img_url = _path1 + '/' + _path2 + '/' + _path
 
-            # 根据url判断是放到thumb 还是thumbs
-            new_img_url = _path1 + '/' + _path2 + '/' + _path
-
-            if item['spider_img'] == image_url:
-                item['thumb'] = new_img_url
-                # item['thumb_src']=image_res
-            if item['spider_userpic'] == image_url:
-                item['userpic'] = new_img_url
-                # item['userpic_src'] = image_res
-            if item['spider_imgs'].count(image_url) > 0 and item['thumbs'].count(new_img_url) == 0:
-                item['thumbs'].append(new_img_url)
-                # item['thumbs_src'].append(image_res)
+                if item['spider_img'] == image_url:
+                    item['thumb'] = new_img_url
+                    # item['thumb_src']=image_res
+                if item['spider_userpic'] == image_url:
+                    item['userpic'] = new_img_url
+                    # item['userpic_src'] = image_res
+                if item['spider_imgs'].count(image_url) > 0 and item['thumbs'].count(new_img_url) == 0:
+                    item['thumbs'].append(new_img_url)
+                    # item['thumbs_src'].append(image_res)
 
         return item
 

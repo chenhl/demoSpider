@@ -17,7 +17,7 @@ import re
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
-
+#D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
 #scrapy crawl exhibit.artron -s JOBDIR=D:/xampp7/scrapy/crawls/exhibit_artron
 class artsoExhibitArtronSpider(CrawlSpider):
@@ -42,7 +42,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
             'baby.pipelines.baseItemPipeline': 220,
             'baby.pipelines.artsoExhibitPipeline': 320,
             'baby.pipelines.MyImagesPipeline': 420,
-            'baby.pipelines.MysqlWriterPipeline': 520,
+            # 'baby.pipelines.MysqlWriterPipeline': 520,
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,

@@ -17,7 +17,7 @@ import re
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
-
+#D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
 #scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron
 class artsoArtistArtronSpider(CrawlSpider):
@@ -108,6 +108,8 @@ class artsoArtistArtronSpider(CrawlSpider):
         for sel in sels:
             url = base_url+sel.xpath('./@href').extract()[0]
             meta = {'cate': sels_url_query['Class'][0]}
+            #scrapy 默认使用url去重，artist可能属于多个分类，在此url加上分类信息可以多次爬取合并多个分类信息
+            url = url + '&cate='+meta['cate']
             self.logger.info(url+',meta='+meta['cate'])
             yield scrapy.Request(url, callback=self.parse_item, meta=meta, dont_filter=False)
             # print(url+'&cate='+meta['cate'])

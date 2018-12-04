@@ -17,7 +17,7 @@ import re
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
-
+#D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
 # scrapy crawl gallery.artron -s JOBDIR=D:/xampp7/scrapy/crawls/gallery_artron
 class galleryArtronSpider(CrawlSpider):

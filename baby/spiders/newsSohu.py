@@ -18,7 +18,7 @@ from scrapy.exceptions import DropItem
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
-
+#D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
 #scrapy crawl news.sohu -s JOBDIR=D:/xampp7/scrapy/crawls/news_sohu
 class newsSohuSpider(CrawlSpider):
