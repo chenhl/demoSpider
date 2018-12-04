@@ -115,6 +115,9 @@ class exhibitArtronItem(myBaseItem):
     pass
 
 class artsoArtronItem(myBaseItem):
+    auto_id = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     pass
 
 class exhibitMeishujiaItem(myBaseItem):
