@@ -149,38 +149,30 @@ class galleryPipeline(object):
 
 class artsoExhibitPipeline(object):
     def process_item(self, item, spider):
-        # attr
+        #attr
         metas = util.exhibitMeta(self)
         meta_attr = {}
         for meta in metas:
             meta_attr[meta['txt']] = meta['code']
+        logging.info(metas)
+        logging.info(meta_attr)
+        logging.info(item['attr'])
         attr = {}
         if len(item['attr']) > 0:
-            for i in range(len(item['attr'])):
-                k = item['attr'][i]
-                v = "".join(item['attr_value'][i])
-
-                if meta_attr.get(k) is not None:
-                    attr[meta_attr[k]] = v.strip()
-                else:
-                    continue
+            for key in item['attr']:
+                if meta_attr[key] is not None:
+                    attr[meta_attr[key]] =item['attr'][key]
             item['attr'] = attr
+
 
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
         url_netloc = ""
         # spider_imgs 和 text一一对应
         imgs = []
-        imgs_text = []
-        if len(item['spider_imgs']) > 1:
-            for i in range(len(item['spider_imgs'])):
-                imgs_text.append(item['spider_imgs_text'][i])
-                parse_url = urlparse(item['spider_imgs'][i])
-                if parse_url.query != '':
-                    img_url = parse_qs(parse_url.query)['src'][0]
-                else:
-                    img_url = item['spider_imgs'][i]
-                imgs.append(img_url)
+        if len(item['spider_imgs_text']) > 1:
+            for img in item['spider_imgs_text']:
+                imgs.append(img['img'])
 
         item['spider_imgs'] = imgs
         if len(imgs) > 0:
@@ -447,6 +439,8 @@ class MyImagesPipeline(ImagesPipeline):
 
         if item['spider_userpic'] != '':
             yield scrapy.Request(item['spider_userpic'])
+
+        return None
 
     def item_completed(self, results, item, info):
         # for ok, x in results:

@@ -106,22 +106,40 @@ class artsoExhibitArtronSpider(CrawlSpider):
         # content=""for selector in sel.xpath('//dd[re:test(@class,"theme_body_4656")]//table[2]//tr[3]/td//p'): content=content+ selector.xpath("/text()").extract()
 
         # list 索引顺序
-        attr = []
-        value = []
+        # attr = []
+        # value = []
+        # for sele in response.xpath('//div[re:test(@class,"exInfo")]/dl'):
+        #     attr.append(sele.xpath('./dt//text()').extract()[0])
+        #     value.append(sele.xpath('./dd//text()').extract())
+        attr = {}
+        # value = []
         for sele in response.xpath('//div[re:test(@class,"exInfo")]/dl'):
-            attr.append(sele.xpath('./dt//text()').extract()[0])
-            value.append(sele.xpath('./dd//text()').extract())
+            _attr = sele.xpath('./dt//text()').extract()[0]
+            _val = sele.xpath('./dd//text()').extract()
+            attr[_attr]=_val
         # attr
         l.add_value('attr', attr)
-        l.add_value('attr_value', value)
+        l.add_value('attr_value', [])
         # content
         l.add_xpath('spider_content', '//div[re:test(@class,"exText")]//node()')
         l.add_value('keywords', '')
         l.add_value('description', '')
 
         l.add_value('spider_img', '')
-        l.add_xpath('spider_imgs', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li//img/@src')
-        l.add_xpath('spider_imgs_text', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li/span/text()')
+        #images
+        images = []
+        for sele in response.xpath('//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li'):
+            img = {}
+            _img = sele.xpath('.//img/@src').extract()[0]
+            _txt = sele.xpath('./span/text()').extract()
+            img['img'] = _img
+            img['txt'] = _txt
+            images.append(img)
+            pass
+        l.add_value('spider_imgs', [])
+        l.add_value('spider_imgs_text', images)
+        # l.add_xpath('spider_imgs', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li//img/@src')
+        # l.add_xpath('spider_imgs_text', '//div[re:test(@class,"imgnav")]//div[re:test(@id,"img")]//ul/li/span/text()')
         l.add_value('thumbs', [])
         l.add_value('spider_userpic', '')
         l.add_value('spider_tags', [])
