@@ -181,7 +181,7 @@ class artsoExhibitPipeline(object):
         imgs = []
         if len(item['spider_imgs_text']) > 0:
             for img in item['spider_imgs_text']:
-                if re.search('/off.jpg',img['img']) is not None:
+                if re.search('/off.jpg',img['img']) is None:
                     imgs.append(img['img'])
 
         item['spider_imgs'] = imgs
