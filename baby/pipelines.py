@@ -277,8 +277,8 @@ class MysqlDB(object):
 
         insert_data['attr'] = json.dumps(insert_data['attr'])
         insert_data['linkus'] = json.dumps(insert_data['linkus'])
-        insert_data['spider_attr'] = json.dumps(insert_data['attr'])
-        insert_data['spider_linkus'] = json.dumps(insert_data['linkus'])
+        insert_data['spider_attr'] = json.dumps(insert_data['spider_attr'])
+        insert_data['spider_linkus'] = json.dumps(insert_data['spider_linkus'])
 
         sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,attr,linkus,spider_attr,spider_linkus,spider_name,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,spider_imgs_text,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         try:
