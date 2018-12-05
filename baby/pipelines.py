@@ -307,6 +307,7 @@ class MysqlDB(object):
             return True
         except Exception as e:
             print(str(e))
+            logging.info(items['spider_link']+' '+items['title'])
             self.db.rollback()
             return False
 

@@ -33,14 +33,14 @@ class newsSohuSpider(CrawlSpider):
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = [
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
+                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
                   "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
                   "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
                   ]
@@ -69,6 +69,7 @@ class newsSohuSpider(CrawlSpider):
             id = item["id"]
             aid = item["authorId"]
             url = base_url + str(id) + "_" + str(aid)
+            self.logger.info(url)
             yield scrapy.Request(url, callback=self.parse_item, meta=item, dont_filter=False) # dont_filter 默认就是False去重，scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu 启用持久化spider,jobdir保存了爬取过的url的hash
             # else:
             #     raise DropItem("Duplicate item found: %s" % item)
