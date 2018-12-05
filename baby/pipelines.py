@@ -327,13 +327,14 @@ class MysqlDB(object):
         insert_data = items
         insert_data['tags'] = json.dumps(insert_data['tags'])
         sql = "update v9_news set tags = %s where id = %s"
-        logging.info(sql+'tags:'+items['tags']+',id='+insert_data['auto_id'])
+        logging.info(sql+'tags:'+items['tags']+',id='+str(insert_data['auto_id']))
         try:
             self.cur.execute(sql, (insert_data['tags'], insert_data['auto_id']))
             self.db.commit()
             return True
         except Exception as e:
             print(str(e))
+            logging.info(str(e))
             self.db.rollback()
             return False
 
