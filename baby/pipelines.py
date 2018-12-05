@@ -43,6 +43,10 @@ class DuplicatesPipeline(object):
 class baseItemPipeline(object):
     # 在你的多少范围内有展览 geo
     def process_item(self, item, spider):
+
+        if 'title' not in item:
+            raise DropItem('Item title is None')
+
         if 'spider_img' not in item:
             item['spider_img'] = ''
         if 'spider_imgs' not in item:
@@ -54,10 +58,12 @@ class baseItemPipeline(object):
             item['spider_tags'] = []
         if 'spider_userpic' not in item:
             item['spider_userpic'] = ''
-
+        if 'spider_attr' not in item:
+            item['spider_attr'] = {}
         if 'attr' not in item:
             item['attr'] = {}
-
+        if 'spider_linkus' not in item:
+            item['spider_linkus'] = {}
         if 'linkus' not in item:
             item['linkus'] = {}
 
@@ -125,7 +131,7 @@ class galleryPipeline(object):
             if re.search('logo_default',item['spider_img']) is not None:
                 raise DropItem('Item img is default')
 
-        # attr
+        # attr 这儿可以不转换，etl时再转
         metas = util.galleryMeta(self)
         meta_attr = {}
         for meta in metas:
@@ -133,14 +139,14 @@ class galleryPipeline(object):
 
         logging.info(metas)
         logging.info(meta_attr)
-        logging.info(item['attr'])
+        logging.info(item['spider_attr'])
         attr = {}
-        if len(item['attr']) > 0:
-            for key in item['attr']:
+        if len(item['spider_attr']) > 0:
+            for key in item['spider_attr']:
                 if key not in meta_attr:
                     logging.info(key+'not exists')
                 else:
-                    attr[meta_attr[key]] =item['attr'][key]
+                    attr[meta_attr[key]] =item['spider_attr'][key]
             item['attr'] = attr
 
         # content
@@ -151,24 +157,22 @@ class galleryPipeline(object):
 
 class artsoExhibitPipeline(object):
     def process_item(self, item, spider):
-        #attr
+        #attr 这儿可以不转换，etl时再转
         metas = util.exhibitMeta(self)
         meta_attr = {}
         for meta in metas:
             meta_attr[meta['txt']] = meta['code']
         logging.info(metas)
         logging.info(meta_attr)
-        logging.info(item['attr'])
+        logging.info(item['spider_attr'])
         attr = {}
-        if len(item['attr']) > 0:
-            for key in item['attr']:
+        if len(item['spider_attr']) > 0:
+            for key in item['spider_attr']:
                 if key not in meta_attr:
                     logging.info(key+'not exists')
                 else:
-                    attr[meta_attr[key]] =item['attr'][key]
-
+                    attr[meta_attr[key]] =item['spider_attr'][key]
             item['attr'] = attr
-
 
         baseurls = urlparse(item['spider_link'])
         url_scheme = ""
@@ -265,13 +269,17 @@ class MysqlDB(object):
     def insert_db(self, items):
         insert_data = items
         insert_data['spider_imgs'] = json.dumps(insert_data['spider_imgs'])
+        insert_data['spider_imgs_text'] = json.dumps(insert_data['spider_imgs_text'])
         insert_data['thumbs'] = json.dumps(insert_data['thumbs'])
         insert_data['spider_tags'] = json.dumps(insert_data['spider_tags'])
         insert_data['tags'] = json.dumps(insert_data['tags'])
 
         insert_data['attr'] = json.dumps(insert_data['attr'])
         insert_data['linkus'] = json.dumps(insert_data['linkus'])
-        sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,attr,linkus,spider_name,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        insert_data['spider_attr'] = json.dumps(insert_data['attr'])
+        insert_data['spider_linkus'] = json.dumps(insert_data['linkus'])
+
+        sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,attr,linkus,spider_attr,spider_linkus,spider_name,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,spider_imgs_text,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         try:
             eret = self.cur.execute(sql, (
                 insert_data['aid'],
@@ -284,6 +292,8 @@ class MysqlDB(object):
                 insert_data['userpic'],
                 insert_data['attr'],
                 insert_data['linkus'],
+                insert_data['spider_attr'],
+                insert_data['spider_linkus'],
                 insert_data['spider_name'],
                 insert_data['spider_tags'],
                 insert_data['tags'],
@@ -291,6 +301,7 @@ class MysqlDB(object):
                 insert_data['spider_img'],
                 insert_data['spider_userpic'],
                 insert_data['spider_imgs'],
+                insert_data['spider_imgs_text'],
                 insert_data['thumb'],
                 insert_data['thumbs'],
                 insert_data['title'],

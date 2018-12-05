@@ -103,6 +103,12 @@ class myBaseItem(scrapy.Item):
     attr = scrapy.Field(
         output_processor=TakeFirst()
     )
+    spider_attr = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    spider_linkus = scrapy.Field(
+        output_processor=TakeFirst()
+    )
     attr_value = scrapy.Field()
     spider_imgs_text = scrapy.Field()
     linkus = scrapy.Field()

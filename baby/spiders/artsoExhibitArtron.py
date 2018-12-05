@@ -118,7 +118,8 @@ class artsoExhibitArtronSpider(CrawlSpider):
             _val = sele.xpath('./dd//text()').extract()
             attr[_attr]=_val
         # attr
-        l.add_value('attr', attr)
+        l.add_value('spider_attr', attr)
+        l.add_value('attr', {})
         l.add_value('attr_value', [])
         # content
         l.add_xpath('spider_content', '//div[re:test(@class,"exText")]//node()')

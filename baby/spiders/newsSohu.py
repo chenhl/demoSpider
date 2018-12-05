@@ -70,6 +70,7 @@ class newsSohuSpider(CrawlSpider):
             aid = item["authorId"]
             url = base_url + str(id) + "_" + str(aid)
             self.logger.info(url)
+            #发现有的会跳转（图片频道https://www.sohu.com/picture/278665624，目前先不支持）
             yield scrapy.Request(url, callback=self.parse_item, meta=item, dont_filter=False) # dont_filter 默认就是False去重，scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu 启用持久化spider,jobdir保存了爬取过的url的hash
             # else:
             #     raise DropItem("Duplicate item found: %s" % item)
