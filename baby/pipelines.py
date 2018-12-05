@@ -179,9 +179,10 @@ class artsoExhibitPipeline(object):
         url_netloc = ""
         # spider_imgs 和 text一一对应
         imgs = []
-        if len(item['spider_imgs_text']) > 1:
+        if len(item['spider_imgs_text']) > 0:
             for img in item['spider_imgs_text']:
-                imgs.append(img['img'])
+                if re.search('/off.jpg',img['img']) is not None:
+                    imgs.append(img['img'])
 
         item['spider_imgs'] = imgs
         if len(imgs) > 0:
