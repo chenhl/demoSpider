@@ -42,7 +42,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
             'baby.pipelines.baseItemPipeline': 220,
             'baby.pipelines.artsoExhibitPipeline': 320,
             'baby.pipelines.MyImagesPipeline': 420,
-            # 'baby.pipelines.MysqlWriterPipeline': 520,
+            'baby.pipelines.MysqlWriterPipeline': 520,
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,

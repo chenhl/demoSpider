@@ -137,7 +137,9 @@ class galleryPipeline(object):
         attr = {}
         if len(item['attr']) > 0:
             for key in item['attr']:
-                if meta_attr[key] is not None:
+                if key not in meta_attr:
+                    logging.info(key+'not exists')
+                else:
                     attr[meta_attr[key]] =item['attr'][key]
             item['attr'] = attr
 
@@ -160,8 +162,11 @@ class artsoExhibitPipeline(object):
         attr = {}
         if len(item['attr']) > 0:
             for key in item['attr']:
-                if meta_attr[key] is not None:
+                if key not in meta_attr:
+                    logging.info(key+'not exists')
+                else:
                     attr[meta_attr[key]] =item['attr'][key]
+
             item['attr'] = attr
 
 

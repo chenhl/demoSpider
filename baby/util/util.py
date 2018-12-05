@@ -28,8 +28,10 @@ class util:
                 {'txt': '主办单位：', 'code': 'org_main'},
                 {'txt': '承办单位：', 'code': 'org_manager'},
                 {'txt': '协办单位：', 'code': 'org_slave'},
+                {'txt': '策 展 人：', 'code': 'plan'},
+                {'txt': '展览咨询：', 'code': 'consultation'},
                 {'txt': '参展艺术家：', 'code': 'artists'}]
-        # meta2 = {'展览名称：':'name','展览时间：':'time','展览地点：':'area'}
+        # meta2 = {'展览名称：':'name','展览时间：':'time','展览地点：':'area'}策 展 人：
         return meta
 
     def galleryMeta(self) :
