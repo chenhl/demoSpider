@@ -16,3 +16,4 @@ logs
 logs/*
 crawls
 crawls/*
+geckodriver.log
