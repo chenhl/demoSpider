@@ -11,7 +11,10 @@ from urllib.parse import urlsplit, urlparse, urljoin, parse_qs, parse_qsl
 import time
 import datetime
 import re
-
+from selenium import webdriver
+from scrapy import signals
+#弃用
+# from scrapy.xlib.pydispatch import dispatcher
 
 # item loader
 class DefaultItemLoader(ItemLoader):
@@ -31,13 +34,19 @@ class artsoExhibitArtronSpider(CrawlSpider):
     status = 99
     uid = 95636
     uname = '艺术展览'
+
     # 初始化
     start_urls = [
-        "http://artso.artron.net/exhibit/search_exhibition.php?page=5674",
+        "http://artso.artron.net/exhibit/search_exhibition.php?page=5000",
     ]
     # 设置下载延时
     download_delay = 10
     custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            # 'baby.middlewares.artsoExhibitSeleniumMiddleware': 10,
+            'scrapy_crawlera.CrawleraMiddleware': 50,
+            'baby.middlewares.RandomUserAgent': 100,
+        },
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 220,
             'baby.pipelines.artsoExhibitPipeline': 320,
@@ -49,21 +58,41 @@ class artsoExhibitArtronSpider(CrawlSpider):
         'LOG_FILE':'logs/log-exhibit.txt',
         'LOG_LEVEL':'INFO',
     }
-    # rules = (
-    #     # 分页
-    #     # Rule(LinkExtractor(restrict_xpaths=('//div[@class="result-page"]/a[2]'))),
-    #     # 详情页
-    #     # process_links='detail_link',
-    #     Rule(LinkExtractor(restrict_xpaths=('//div[@class="show_list"]//dl/dt/a[1]')), cb_kwargs={},
-    #          process_links='parse_links', callback='parse_item'),
-    # )
 
+    # @classmethod
+    # def from_crawler(cls,crawler, *args, **kwargs):
+    #     spider = super(artsoExhibitArtronSpider, cls).from_crawler(crawler, *args, **kwargs)
+    #     # spider启动信号和spider_opened函数绑定
+    #     crawler.signals.connect(spider.spider_opened, signals.spider_opened)
+    #     # spider关闭信号和spider_spider_closed函数绑定
+    #     crawler.signals.connect(spider.spider_closed, signals.spider_closed)
+    #     return spider
+    #
+    # def spider_opened(self, spider):
+    #     print("spider opened")
+    #     self.browser = webdriver.Firefox()
+    #     self.browser.set_page_load_timeout(30)
+    #
+    # def spider_closed(self, spider):
+    #     print("spider closed")
+    #     self.browser.close()
+
+    # def __init__(self, *args, **kwargs):
+    #     print("spider opened")
+    #     self.browser = webdriver.Firefox("D:/firefox/")
+    #     self.browser.set_page_load_timeout(30)
+    #
+    # def closed(self, spider):
+    #     print("spider closed")
+    #     self.browser.close()
+
+    # list_arg = {}
     rules = (
-        # 地址分页
+        # 地址分页,callback='parse_list'
         Rule(LinkExtractor(restrict_xpaths=('//div[@class="result-page"]'),
                            allow=('/exhibit/search_exhibition.php\?page=[0-9]+'), ), process_links='process_links',
              follow=True),
-        # 详情页
+        # 详情页 ,cb_kwargs={}
         Rule(LinkExtractor(restrict_xpaths=('//div[@class="show_list"]//dl//dt'), ), process_links='process_item_links',
              callback='parse_item'),
     )
@@ -90,10 +119,14 @@ class artsoExhibitArtronSpider(CrawlSpider):
 
         return links
 
+    # def parse_list(self, response):
+    #     list_imgs = response.xpath('//div[@class="show_list"]//dl//dt//img/@src')
+    #     pass
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=exhibitArtronItem(), selector=response)
         base_url = get_base_url(response)
+        self.logger.info(base_url)
         urls = urlparse(base_url)
         query = parse_qs(urls.query)
 
