@@ -136,10 +136,6 @@ class galleryPipeline(object):
         meta_attr = {}
         for meta in metas:
             meta_attr[meta['txt']] = meta['code']
-
-        logging.info(metas)
-        logging.info(meta_attr)
-        logging.info(item['spider_attr'])
         attr = {}
         if len(item['spider_attr']) > 0:
             for key in item['spider_attr']:

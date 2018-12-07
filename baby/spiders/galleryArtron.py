@@ -91,7 +91,6 @@ class galleryArtronSpider(CrawlSpider):
 
             meta = {'item_id': item_id, 'item_url': item_url, 'title': title, 'attr': attr_key}
             self.logger.info(item_url)
-            self.logger.info(meta)
             yield scrapy.Request(item_url, callback=self.parse_item, meta=meta, dont_filter=False)
 
     def parse_item(self, response):
@@ -104,7 +103,8 @@ class galleryArtronSpider(CrawlSpider):
         l.add_value('title', response.meta['title'])
 
         # attr
-        l.add_value('attr', response.meta['attr'])
+        l.add_value('spider_attr', response.meta['attr'])
+        l.add_value('attr', {})
         l.add_value('attr_value', [])
         # content
         # 简介
