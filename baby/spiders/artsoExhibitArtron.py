@@ -22,7 +22,7 @@ class DefaultItemLoader(ItemLoader):
     pass
 #D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
-#scrapy crawl exhibit.artron -s JOBDIR=D:/xampp7/scrapy/crawls/exhibit_artron
+#scrapy crawl exhibit.artron -s JOBDIR=D:/xampp7/scrapy/crawls/exhibit_artron2
 class artsoExhibitArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -37,7 +37,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
 
     # 初始化
     start_urls = [
-        "http://artso.artron.net/exhibit/search_exhibition.php?page=5000",
+        "http://artso.artron.net/exhibit/search_exhibition.php?page=4931",
     ]
     # 设置下载延时
     download_delay = 10
@@ -55,7 +55,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE':'logs/log-exhibit.txt',
+        'LOG_FILE':'logs/log-exhibit2.txt',
         'LOG_LEVEL':'INFO',
     }
 
