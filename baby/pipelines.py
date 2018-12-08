@@ -398,7 +398,8 @@ class MysqlUpdatePipeline(MysqlDB):
             print(insert_data['tags'])
             print('----------')
             if item_tags not in data_tags:
-                insert_data['tags'] = data_tags.append(item_tags)
+                data_tags.append(item_tags)
+                insert_data['tags'] = data_tags
                 insert_data['auto_id'] = _data[0]
                 self.update_db(insert_data)
         else:
