@@ -79,12 +79,12 @@ class myBaseItem(scrapy.Item):
     description = scrapy.Field(
         output_processor=TakeFirst()
     )
-    content = scrapy.Field(
-        # output_processor=TakeFirst()
-    )
-    spider_content = scrapy.Field(
-        # output_processor=TakeFirst()
-    )
+
+    spider_content = scrapy.Field()
+    content = scrapy.Field()
+    spider_content2 = scrapy.Field()
+    content2 = scrapy.Field()
+
     content_imgs = scrapy.Field(
         # input_processor=Identity()
         # output_processor=TakeFirst()

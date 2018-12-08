@@ -28,7 +28,6 @@ from scrapy import selector
 
 # 无用
 class DuplicatesPipeline(object):
-
     def __init__(self):
         self.ids_seen = set()
 
@@ -86,7 +85,11 @@ class baseItemPipeline(object):
         if 'spider_content' not in item:
             item['spider_content'] = []
         if 'content' not in item:
-            item['content'] = []
+            item['content'] = ''
+        if 'spider_content2' not in item:
+            item['spider_content2'] = []
+        if 'content2' not in item:
+            item['content2'] = ''
 
         return item
 
@@ -122,13 +125,14 @@ class artsoArtistPipeline(object):
         item['content'] = "<p>" + "".join(item['spider_content']) + "</p>"
         return item
 
+
 class galleryPipeline(object):
     def process_item(self, item, spider):
-        #img 过滤无图的item
+        # img 过滤无图的item
         item['spider_img'] = item['spider_img'].strip(' ')
 
         if item['spider_img'] != '':
-            if re.search('logo_default',item['spider_img']) is not None:
+            if re.search('logo_default', item['spider_img']) is not None:
                 raise DropItem('Item img is default')
 
         # attr 这儿可以不转换，etl时再转
@@ -140,20 +144,22 @@ class galleryPipeline(object):
         if len(item['spider_attr']) > 0:
             for key in item['spider_attr']:
                 if key not in meta_attr:
-                    logging.info(key+'not exists')
+                    logging.info(key + 'not exists')
                 else:
-                    attr[meta_attr[key]] =item['spider_attr'][key]
+                    attr[meta_attr[key]] = item['spider_attr'][key]
             item['attr'] = attr
 
         # content
-        if item['spider_content'] != '':
+        if len(item['spider_content']) > 0:
             item['content'] = "<p>" + "".join(item['spider_content']) + "</p>"
-
+        if len(item['spider_content2']) > 0:
+            item['content2'] = "<p>" + "".join(item['spider_content2']) + "</p>"
         return item
+
 
 class artsoExhibitPipeline(object):
     def process_item(self, item, spider):
-        #attr 这儿可以不转换，etl时再转
+        # attr 这儿可以不转换，etl时再转
         metas = util.exhibitMeta(self)
         meta_attr = {}
         for meta in metas:
@@ -165,9 +171,9 @@ class artsoExhibitPipeline(object):
         if len(item['spider_attr']) > 0:
             for key in item['spider_attr']:
                 if key not in meta_attr:
-                    logging.info(key+'not exists')
+                    logging.info(key + 'not exists')
                 else:
-                    attr[meta_attr[key]] =item['spider_attr'][key]
+                    attr[meta_attr[key]] = item['spider_attr'][key]
             item['attr'] = attr
 
         baseurls = urlparse(item['spider_link'])
@@ -177,7 +183,7 @@ class artsoExhibitPipeline(object):
         imgs = []
         if len(item['spider_imgs_text']) > 0:
             for img in item['spider_imgs_text']:
-                if re.search('/off.jpg',img['img']) is None:
+                if re.search('/off.jpg', img['img']) is None:
                     imgs.append(img['img'])
 
         item['spider_imgs'] = imgs
@@ -185,7 +191,7 @@ class artsoExhibitPipeline(object):
             item['spider_img'] = imgs[0]
 
         # content
-        if item['spider_content'] != '':
+        if len(item['spider_content']) > 0:
             item['content'] = "<p>" + "".join(item['spider_content']) + "</p>"
 
         return item
@@ -252,12 +258,13 @@ class newsSohuPipeline(object):
         item['content'] = "".join(item['content'])
         return item
 
-class MysqlDB(object):
 
+class MysqlDB(object):
     def open_spider(self, spider):
         env = os.environ
 
-        self.db = pymysql.connect(host=env['MYSQL_HOST'],port=int(env['MYSQL_PORT']), user=env['MYSQL_USERNAME'], password=env['MYSQL_PASSWORD'], db=env['MYSQL_DATABASE'])
+        self.db = pymysql.connect(host=env['MYSQL_HOST'], port=int(env['MYSQL_PORT']), user=env['MYSQL_USERNAME'],
+                                  password=env['MYSQL_PASSWORD'], db=env['MYSQL_DATABASE'])
         self.cur = self.db.cursor()
 
     def close_spider(self, spider):
@@ -309,13 +316,13 @@ class MysqlDB(object):
                 insert_data['create_time']))
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
-            sql_data = "insert into v9_news_data(id,content,content_search) values (%s,%s,%s)"
-            self.cur.execute(sql_data, (data[0], insert_data['content'], ''))
+            sql_data = "insert into v9_news_data(id,content,content2) values (%s,%s,%s)"
+            self.cur.execute(sql_data, (data[0], insert_data['content'], insert_data['content2']))
             self.db.commit()
             return True
         except Exception as e:
             print(str(e))
-            logging.info(items['spider_link']+' '+items['title'])
+            logging.info(items['spider_link'] + ' ' + items['title'])
             self.db.rollback()
             return False
 
@@ -323,7 +330,7 @@ class MysqlDB(object):
         insert_data = items
         insert_data['tags'] = json.dumps(insert_data['tags'])
         sql = "update v9_news set tags = %s where id = %s"
-        logging.info(sql+'tags:'+items['tags']+',id='+str(insert_data['auto_id']))
+        logging.info(sql + 'tags:' + items['tags'] + ',id=' + str(insert_data['auto_id']))
         try:
             self.cur.execute(sql, (insert_data['tags'], insert_data['auto_id']))
             self.db.commit()
@@ -351,20 +358,23 @@ class MysqlDB(object):
             self.db.rollback()
             return False
 
+
 # item是否抓取过
 class itemExistsPipeline(MysqlDB):
     def process_item(self, item, spider):
         res = self.select_db(item)
         if res:
-            raise DropItem("Item "+item['id']+" exists")
+            raise DropItem("Item " + item['id'] + " exists")
         else:
             return item
+
 
 # 直接insert
 class MysqlWriterPipeline(MysqlDB):
     def process_item(self, item, spider):
         self.insert_db(item)
         return item
+
 
 # insert 或 update
 class MysqlUpdatePipeline(MysqlDB):
@@ -373,16 +383,22 @@ class MysqlUpdatePipeline(MysqlDB):
         insert_data = item
         # 查询名称是否存在
         sel_sql = "select id,aid,title,tags from v9_news where title = %s"
-        print(sel_sql+' s='+insert_data['title'])
-        logging.info(sel_sql+' s='+insert_data['title'])
+        # print(sel_sql+' s='+insert_data['title'])
+        logging.info(sel_sql + ' s=' + insert_data['title'])
         self.cur.execute(sel_sql, (insert_data['title']))
         self.db.commit()
         _data = self.cur.fetchone()
         if _data is not None:
             data_tags = json.loads(_data[3])
+            logging.info(data_tags)
             item_tags = insert_data['spider_tags'][0]
+            logging.info(item_tags)
+            print(data_tags)
+            print(item_tags)
+            print(insert_data['tags'])
+            print('----------')
             if item_tags not in data_tags:
-                insert_data['tags'].append(item_tags)
+                insert_data['tags'] = data_tags.append(item_tags)
                 insert_data['auto_id'] = _data[0]
                 self.update_db(insert_data)
         else:
@@ -458,7 +474,8 @@ class MyImagesPipeline(ImagesPipeline):
             yield scrapy.Request(item['spider_userpic'])
 
         return None
-    #resulsts是当前item的所有图片下载结果
+
+    # resulsts是当前item的所有图片下载结果
     def item_completed(self, results, item, info):
         # for ok, x in results:
         #     if ok:
@@ -473,7 +490,7 @@ class MyImagesPipeline(ImagesPipeline):
         # if not image_res:
         #     raise DropItem("Item contains no images")
         #
-        if len(image_res)>0:
+        if len(image_res) > 0:
             for img in image_res:
                 image_path = img['path']
                 image_url = img['url']

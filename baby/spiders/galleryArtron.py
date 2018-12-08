@@ -113,7 +113,8 @@ class galleryArtronSpider(CrawlSpider):
         contents2 = response.xpath('//div[re:test(@class,"tabsCont")]')[2].xpath('./node()').extract()
         # 联系
         contents3 = response.xpath('//div[re:test(@class,"tabsCont")]')[4].xpath('./node()').extract()
-        l.add_value('spider_content', contents1 + contents2 + contents3)
+        l.add_value('spider_content', contents1)
+        l.add_value('spider_content2', contents2)
 
         contents_linkus = response.xpath('//div[re:test(@class,"tabsCont")]//div[re:test(@class,"contact")]//span')
         linkus = {}
