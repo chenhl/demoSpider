@@ -262,9 +262,16 @@ class newsSohuPipeline(object):
 class MysqlDB(object):
     def open_spider(self, spider):
         env = os.environ
-
-        self.db = pymysql.connect(host=env['MYSQL_HOST'], port=int(env['MYSQL_PORT']), user=env['MYSQL_USERNAME'],
+        try:
+            self.db = pymysql.connect(host=env['MYSQL_HOST'], port=int(env['MYSQL_PORT']), user=env['MYSQL_USERNAME'],
                                   password=env['MYSQL_PASSWORD'], db=env['MYSQL_DATABASE'])
+        except Exception as e:
+            #关闭spider
+            print(e)
+            logging.info(e)
+            spider.crawler.engine.close_spider('mysql error')
+            pass
+
         self.cur = self.db.cursor()
 
     def close_spider(self, spider):
