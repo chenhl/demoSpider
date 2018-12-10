@@ -269,7 +269,7 @@ class MysqlDB(object):
             #关闭spider
             print(e)
             logging.info(e)
-            spider.crawler.engine.close_spider('mysql error')
+            spider.crawler.engine.close_spider('mysql connect error')
             pass
 
         self.cur = self.db.cursor()
