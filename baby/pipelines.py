@@ -331,6 +331,7 @@ class MysqlDB(object):
             print(str(e))
             logging.info(items['spider_link'] + ' ' + items['title'])
             self.db.rollback()
+            scrapy.exceptions.CloseSpider('mysql insert error')
             return False
 
     def update_db(self, items):
@@ -346,6 +347,7 @@ class MysqlDB(object):
             print(str(e))
             logging.info(str(e))
             self.db.rollback()
+            scrapy.exceptions.CloseSpider('mysql update error')
             return False
 
     def select_db(self, items):
@@ -363,6 +365,7 @@ class MysqlDB(object):
         except Exception as e:
             print(str(e))
             self.db.rollback()
+            scrapy.exceptions.CloseSpider('mysql select error')
             return False
 
 
