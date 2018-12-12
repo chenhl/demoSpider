@@ -31,6 +31,7 @@ class util:
                 {'txt': '策 展 人：', 'code': 'plan'},
                 {'txt': '展览咨询：', 'code': 'consultation'},
                 {'txt': '艺术总监：', 'code': 'art_chief'},
+                {'txt': '学术主持：', 'code': 'art_academic'},
                 {'txt': '参展人员：', 'code': 'artists'},
                 {'txt': '参展艺术家：', 'code': 'artists'}]
         # meta2 = {'展览名称：':'name','展览时间：':'time','展览地点：':'area'}策 展 人：
