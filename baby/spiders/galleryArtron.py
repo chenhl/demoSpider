@@ -35,7 +35,7 @@ class galleryArtronSpider(CrawlSpider):
         "http://gallery.artron.net/class/0-0-0-1.html?order=4",
     ]
     # 设置下载延时
-    download_delay = 10
+    download_delay = 12
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 220,
