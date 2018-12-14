@@ -128,12 +128,14 @@ class artsoArtistPipeline(object):
 
 class galleryPipeline(object):
     def process_item(self, item, spider):
+        # baseurls = urlparse(item['spider_link'])
         # img 过滤无图的item
         item['spider_img'] = item['spider_img'].strip(' ')
-
         if item['spider_img'] != '':
             if re.search('logo_default', item['spider_img']) is not None:
-                raise DropItem('Item img is default')
+                # raise DropItem('Item img is default')
+                item['spider_img'] = ''
+                pass
 
         # attr 这儿可以不转换，etl时再转
         metas = util.galleryMeta(self)

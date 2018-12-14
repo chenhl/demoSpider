@@ -40,7 +40,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
         "http://artso.artron.net/exhibit/search_exhibition.php?page=4440",
     ]
     # 设置下载延时
-    download_delay = 6
+    download_delay = 12
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
             # 'baby.middlewares.artsoExhibitSeleniumMiddleware': 10,
