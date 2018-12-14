@@ -397,9 +397,16 @@ class MysqlUpdatePipeline(MysqlDB):
         sel_sql = "select id,aid,title,tags from v9_news where title = %s"
         # print(sel_sql+' s='+insert_data['title'])
         logging.info(sel_sql + ' s=' + insert_data['title'])
-        self.cur.execute(sel_sql, (insert_data['title']))
-        self.db.commit()
-        _data = self.cur.fetchone()
+        try:
+            self.cur.execute(sel_sql, (insert_data['title']))
+            self.db.commit()
+            _data = self.cur.fetchone()
+            pass
+        except Exception as e:
+            scrapy.exceptions.CloseSpider('mysql select error2')
+            pass
+
+
         if _data is not None:
             data_tags = json.loads(_data[3])
             logging.info(data_tags)
