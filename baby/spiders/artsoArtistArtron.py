@@ -71,7 +71,7 @@ class artsoArtistArtronSpider(CrawlSpider):
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE': 'logs/log-artist2.txt',
+        'LOG_FILE': 'logs/log-artist3.txt',
         'LOG_LEVEL': 'INFO',
     }
     #不同的start_urls也有不同的rules，
