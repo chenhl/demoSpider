@@ -61,7 +61,7 @@ class artsoArtistArtronSpider(CrawlSpider):
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19",
     ]
     # 设置下载延时
-    download_delay = 6
+    download_delay = 12
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 210,
@@ -71,7 +71,7 @@ class artsoArtistArtronSpider(CrawlSpider):
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE': 'logs/log-artist3.txt',
+        'LOG_FILE': 'logs/log-artist4.txt',
         'LOG_LEVEL': 'INFO',
     }
     #不同的start_urls也有不同的rules，
