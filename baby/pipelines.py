@@ -338,7 +338,7 @@ class MysqlDB(object):
                 insert_data['create_time']))
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
-            sql_data = "insert into v9_news_data(id,content,content2,content_pic,spider_content_pic) values (%s,%s,%s,%s,%s)"
+            sql_data = "insert into v9_news_data(id,content,content2,pictureurls,spider_content_pic) values (%s,%s,%s,%s,%s)"
             self.cur.execute(sql_data, (data[0], insert_data['content'], insert_data['content2'], insert_data['content_pic'], insert_data['spider_content_pic']))
             self.db.commit()
             return True
