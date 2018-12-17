@@ -79,7 +79,8 @@ class newsSohuSpider(CrawlSpider):
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=newsSohuItem(), selector=response)
-
+        base_url = get_base_url(response)
+        l.add_value('spider_link', base_url)
         title = response.xpath('normalize-space(//div[re:test(@class,"text-title")]//h1)').extract()
         if title is None:
             title_pic = response.xpath('normalize-space(//div[re:test(@class,"article-title")]//h1)').extract()
@@ -92,6 +93,9 @@ class newsSohuSpider(CrawlSpider):
                 pic['txt'] = content_pic_txt[i]
                 pics.append(pic)
 
+            self.logger.info(base_url)
+            self.logger.info(pics)
+
             l.add_value('title',title_pic)
             l.add_value('content_pic',pics)
             l.add_value('spider_content_pic', pics)
@@ -102,7 +106,7 @@ class newsSohuSpider(CrawlSpider):
             l.add_value('spider_content_pic', '')
             l.add_xpath('content', '//article/node()')
 
-        l.add_value('spider_link', get_base_url(response))
+
         # l.add_xpath('title', 'normalize-space(//div[re:test(@class,"text-title")]//h1)')
         # l.add_xpath('content', '//article/node()')
         # l.add_value('content', 'abc')
