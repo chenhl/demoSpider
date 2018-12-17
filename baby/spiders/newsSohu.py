@@ -96,6 +96,7 @@ class newsSohuSpider(CrawlSpider):
             self.logger.info(base_url)
             self.logger.info(pics)
 
+            self.catid = 8
             l.add_value('title',title_pic)
             l.add_value('content_pic',pics)
             l.add_value('spider_content_pic', pics)
