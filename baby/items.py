@@ -84,6 +84,8 @@ class myBaseItem(scrapy.Item):
     content = scrapy.Field()
     spider_content2 = scrapy.Field()
     content2 = scrapy.Field()
+    content_pic = scrapy.Field()
+    spider_content_pic = scrapy.Field()
 
     content_imgs = scrapy.Field(
         # input_processor=Identity()

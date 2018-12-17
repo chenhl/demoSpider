@@ -79,9 +79,32 @@ class newsSohuSpider(CrawlSpider):
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=newsSohuItem(), selector=response)
+
+        title = response.xpath('normalize-space(//div[re:test(@class,"text-title")]//h1)').extract()
+        if title is None:
+            title_pic = response.xpath('normalize-space(//div[re:test(@class,"article-title")]//h1)').extract()
+            pics = []
+            content_pic = response.xpath('//div[re:test(@class,"pic-area")]//img/@src').extract()
+            content_pic_txt = response.xpath('//div[re:test(@class,"explain")]//div[re:test(@class,"txt")]//p').extract()
+            for i in range(len(content_pic)):
+                pic = {}
+                pic['img'] = content_pic[i]
+                pic['txt'] = content_pic_txt[i]
+                pics.append(pic)
+
+            l.add_value('title',title_pic)
+            l.add_value('content_pic',pics)
+            l.add_value('spider_content_pic', pics)
+            l.add_value('content', '')
+        else:
+            l.add_value('title',title)
+            l.add_value('content_pic', '')
+            l.add_value('spider_content_pic', '')
+            l.add_xpath('content', '//article/node()')
+
         l.add_value('spider_link', get_base_url(response))
-        l.add_xpath('title', 'normalize-space(//div[re:test(@class,"text-title")]//h1)')
-        l.add_xpath('content', '//article/node()')
+        # l.add_xpath('title', 'normalize-space(//div[re:test(@class,"text-title")]//h1)')
+        # l.add_xpath('content', '//article/node()')
         # l.add_value('content', 'abc')
         # // *[ @ id = "mp-editor"]
         l.add_value('keywords', '')
@@ -112,5 +135,9 @@ class newsSohuSpider(CrawlSpider):
         d = l.load_item()
         yield d
 
+    def parse_pic_item(self,response):
+        pass
+    def parse_article_item(self,response):
+        pass
     def parse_content_item(self, selector):
         pass

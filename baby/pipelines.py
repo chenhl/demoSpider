@@ -90,7 +90,11 @@ class baseItemPipeline(object):
             item['spider_content2'] = []
         if 'content2' not in item:
             item['content2'] = ''
-
+        #pics
+        if 'content_pic' not in item:
+            item['content_pic'] = ''
+        if 'spider_content_pic' not in item:
+            item['spider_content_pic'] = ''
         return item
 
 
@@ -260,6 +264,11 @@ class newsSohuPipeline(object):
         item['content'] = "".join(item['content'])
         return item
 
+#文章内容图片处理
+class contentImagesPipeline(object):
+    def process_item(self, item, spider):
+        pass
+
 
 class MysqlDB(object):
     def open_spider(self, spider):
@@ -291,6 +300,10 @@ class MysqlDB(object):
         insert_data['linkus'] = json.dumps(insert_data['linkus'])
         insert_data['spider_attr'] = json.dumps(insert_data['spider_attr'])
         insert_data['spider_linkus'] = json.dumps(insert_data['spider_linkus'])
+        if insert_data['content_pic'] != '':
+            insert_data['content_pic'] = json.dumps(insert_data['content_pic'])
+        if insert_data['spider_content_pic'] != '':
+            insert_data['spider_content_pic'] = json.dumps(insert_data['spider_content_pic'])
 
         sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,attr,linkus,spider_attr,spider_linkus,spider_name,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,spider_imgs_text,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         try:
@@ -325,8 +338,8 @@ class MysqlDB(object):
                 insert_data['create_time']))
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
-            sql_data = "insert into v9_news_data(id,content,content2) values (%s,%s,%s)"
-            self.cur.execute(sql_data, (data[0], insert_data['content'], insert_data['content2']))
+            sql_data = "insert into v9_news_data(id,content,content2,content_pic,spider_content_pic) values (%s,%s,%s,%s,%s)"
+            self.cur.execute(sql_data, (data[0], insert_data['content'], insert_data['content2'], insert_data['content_pic'], insert_data['spider_content_pic']))
             self.db.commit()
             return True
         except Exception as e:
@@ -401,30 +414,29 @@ class MysqlUpdatePipeline(MysqlDB):
             self.cur.execute(sel_sql, (insert_data['title']))
             self.db.commit()
             _data = self.cur.fetchone()
-            pass
+            if _data is not None:
+                data_tags = json.loads(_data[3])
+                logging.info(data_tags)
+                item_tags = insert_data['spider_tags'][0]
+                logging.info(item_tags)
+                print(data_tags)
+                print(item_tags)
+                print(insert_data['tags'])
+                print('----------')
+                if item_tags not in data_tags:
+                    data_tags.append(item_tags)
+                    insert_data['tags'] = data_tags
+                    insert_data['auto_id'] = _data[0]
+                    self.update_db(insert_data)
+            else:
+                self.insert_db(insert_data)
         except Exception as e:
             scrapy.exceptions.CloseSpider('mysql select error2')
             pass
 
 
-        if _data is not None:
-            data_tags = json.loads(_data[3])
-            logging.info(data_tags)
-            item_tags = insert_data['spider_tags'][0]
-            logging.info(item_tags)
-            print(data_tags)
-            print(item_tags)
-            print(insert_data['tags'])
-            print('----------')
-            if item_tags not in data_tags:
-                data_tags.append(item_tags)
-                insert_data['tags'] = data_tags
-                insert_data['auto_id'] = _data[0]
-                self.update_db(insert_data)
-        else:
-            self.insert_db(insert_data)
-        # finally:
-        #     self.db.close()
+
+
         return item
 
 
@@ -487,6 +499,10 @@ class MyImagesPipeline(ImagesPipeline):
             for img in item['spider_imgs']:
                 yield scrapy.Request(img)
 
+        if len(item['content_pic']) > 0:
+            for img in item['content_pic']:
+                yield scrapy.Request(img['img'])
+
         if item['spider_img'] != '':
             yield scrapy.Request(item['spider_img'])
 
@@ -541,6 +557,13 @@ class MyImagesPipeline(ImagesPipeline):
                     # item['userpic_src'] = image_res
                 if item['spider_imgs'].count(image_url) > 0 and item['thumbs'].count(new_img_url) == 0:
                     item['thumbs'].append(new_img_url)
+
+                if len(item['content_pic']) > 0:
+                    for i in range(len(item['content_pic'])):
+                        if item['content_pic'][i]['img'] == image_url:
+                            item['content_pic'][i]['img'] == new_img_url
+
+
                     # item['thumbs_src'].append(image_res)
 
         return item
