@@ -40,7 +40,7 @@ class artsoArtistArtronSpider(CrawlSpider):
     # 初始化，手动执行各个分类，增量时使用另一个spider
     cate = '国画'
     start_urls = [
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=2033",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=2018",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=953",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=1126",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=雕塑&BirthArea=&Graduated=&page=244",
@@ -61,7 +61,7 @@ class artsoArtistArtronSpider(CrawlSpider):
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19",
     ]
     # 设置下载延时
-    download_delay = 6
+    download_delay = 12
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 210,
