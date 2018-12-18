@@ -103,8 +103,8 @@ class newsSohuSpider(CrawlSpider):
             l.add_value('content', '')
         else:
             l.add_value('title',title)
-            l.add_value('content_pic', '')
-            l.add_value('spider_content_pic', '')
+            l.add_value('content_pic', [])
+            l.add_value('spider_content_pic', [])
             l.add_xpath('content', '//article/node()')
 
 

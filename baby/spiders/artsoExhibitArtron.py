@@ -40,7 +40,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
         "http://artso.artron.net/exhibit/search_exhibition.php?page=4440",
     ]
     # 设置下载延时
-    download_delay = 6
+    download_delay = 10
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
             # 'baby.middlewares.artsoExhibitSeleniumMiddleware': 10,
@@ -55,7 +55,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE':'logs/log-exhibit3.txt',
+        'LOG_FILE':'logs/log-exhibit4.txt',
         'LOG_LEVEL':'INFO',
     }
 

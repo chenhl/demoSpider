@@ -92,9 +92,9 @@ class baseItemPipeline(object):
             item['content2'] = ''
         #pics
         if 'content_pic' not in item:
-            item['content_pic'] = ''
+            item['content_pic'] = []
         if 'spider_content_pic' not in item:
-            item['spider_content_pic'] = ''
+            item['spider_content_pic'] = []
         return item
 
 
@@ -300,10 +300,15 @@ class MysqlDB(object):
         insert_data['linkus'] = json.dumps(insert_data['linkus'])
         insert_data['spider_attr'] = json.dumps(insert_data['spider_attr'])
         insert_data['spider_linkus'] = json.dumps(insert_data['spider_linkus'])
-        if insert_data['content_pic'] != '':
+        if len(insert_data['content_pic']) > 0:
             insert_data['content_pic'] = json.dumps(insert_data['content_pic'])
-        if insert_data['spider_content_pic'] != '':
+        else:
+            insert_data['content_pic'] = ''
+
+        if len(insert_data['spider_content_pic']) > 0:
             insert_data['spider_content_pic'] = json.dumps(insert_data['spider_content_pic'])
+        else:
+            insert_data['spider_content_pic'] = ''
 
         sql = "insert into v9_news (aid,catid,typeid,status,sysadd,uid,uname,userpic,attr,linkus,spider_attr,spider_linkus,spider_name,spider_tags,tags,spider_link,spider_img,spider_userpic,spider_imgs,spider_imgs_text,thumb,thumbs,title,keywords,description,inputtime,updatetime,create_time) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         try:
