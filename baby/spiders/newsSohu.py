@@ -11,7 +11,7 @@ from urllib.parse import urlsplit, urlparse, urljoin
 import time
 import datetime
 import json
-import pymysql
+import re
 from scrapy.exceptions import DropItem
 
 # item loader
@@ -79,10 +79,10 @@ class newsSohuSpider(CrawlSpider):
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=newsSohuItem(), selector=response)
+        #https://www.sohu.com/picture/282481910
         base_url = get_base_url(response)
         l.add_value('spider_link', base_url)
-        title = response.xpath('normalize-space(//div[re:test(@class,"text-title")]//h1)').extract()
-        if title is None:
+        if re.search('picture', base_url) is not None:
             title_pic = response.xpath('normalize-space(//div[re:test(@class,"article-title")]//h1)').extract()
             pics = []
             content_pic = response.xpath('//div[re:test(@class,"pic-area")]//img/@src').extract()
@@ -102,6 +102,7 @@ class newsSohuSpider(CrawlSpider):
             l.add_value('spider_content_pic', pics)
             l.add_value('content', '')
         else:
+            title = response.xpath('normalize-space(//div[re:test(@class,"text-title")]//h1)').extract()
             l.add_value('title',title)
             l.add_value('content_pic', [])
             l.add_value('spider_content_pic', [])
