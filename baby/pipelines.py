@@ -421,19 +421,21 @@ class MysqlUpdatePipeline(MysqlDB):
             _data = self.cur.fetchone()
             if _data is not None:
                 data_tags = json.loads(_data[3])
-                logging.info(data_tags)
+                # logging.info(data_tags)
                 item_tags = insert_data['spider_tags'][0]
-                logging.info(item_tags)
-                print(data_tags)
-                print(item_tags)
-                print(insert_data['tags'])
-                print('----------')
+                # logging.info(item_tags)
+                # print(data_tags)
+                # print(item_tags)
+                # print(insert_data['tags'])
+                # print('----------')
                 if item_tags not in data_tags:
                     data_tags.append(item_tags)
                     insert_data['tags'] = data_tags
                     insert_data['auto_id'] = _data[0]
                     self.update_db(insert_data)
             else:
+                print(insert_data['title'])
+                logging.info('insert:'+insert_data['title'])
                 self.insert_db(insert_data)
         except Exception as e:
             scrapy.exceptions.CloseSpider('mysql select error2')
