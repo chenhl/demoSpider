@@ -32,7 +32,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
     typeid = 0
     sysadd = 1
     status = 99
-    uid = 95636
+    uid = 70
     uname = '艺术展览'
 
     # 初始化
@@ -40,7 +40,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
         "http://artso.artron.net/exhibit/search_exhibition.php?page=4440",
     ]
     # 设置下载延时
-    download_delay = 10
+    download_delay = 18
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
             # 'baby.middlewares.artsoExhibitSeleniumMiddleware': 10,
@@ -178,8 +178,8 @@ class artsoExhibitArtronSpider(CrawlSpider):
         l.add_value('spider_userpic', '')
         l.add_value('spider_tags', [])
 
-        l.add_value('uid', 0)
-        l.add_value('uname', '')
+        l.add_value('uid', self.uid)
+        l.add_value('uname', self.uname)
         # 生成文章id
         l.add_value('aid', util.genId(type="exhibit", def_value=int(base_url.split('-')[1].split('.')[0])))
         l.add_value('spider_name', self.name)

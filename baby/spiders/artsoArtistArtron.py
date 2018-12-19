@@ -29,7 +29,7 @@ class artsoArtistArtronSpider(CrawlSpider):
     typeid = 0
     sysadd = 1
     status = 99
-    uid = 91636
+    uid = 80
     uname = '艺术人物'
     # allowed_domains = ['artist.meishujia.cn'] 国画 书法 油画 雕塑 版画 水粉水彩 当代艺术 当代水墨 漆画
     # cate = ['国画','书法','油画','雕塑','版画','水粉水彩','当代艺术','当代水墨','漆画']
@@ -61,7 +61,7 @@ class artsoArtistArtronSpider(CrawlSpider):
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%BC%86%E7%94%BB&BirthArea=&Graduated=&page=19",
     ]
     # 设置下载延时
-    download_delay = 12
+    download_delay = 18
     custom_settings = {
         'ITEM_PIPELINES': {
             'baby.pipelines.baseItemPipeline': 210,
@@ -149,8 +149,8 @@ class artsoArtistArtronSpider(CrawlSpider):
         l.add_value('spider_imgs', [])
         l.add_value('thumbs', [])
         l.add_value('spider_userpic', '')
-        l.add_value('uid', 0)
-        l.add_value('uname', '')
+        l.add_value('uid', self.uid)
+        l.add_value('uname', self.uname)
         # 生成文章id
         l.add_value('aid', util.genId(type="artist", def_value=int(query['PersonCode'][0])))
         l.add_value('spider_name', self.name)

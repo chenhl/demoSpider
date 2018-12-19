@@ -28,7 +28,7 @@ class galleryArtronSpider(CrawlSpider):
     typeid = 0
     sysadd = 1
     status = 99
-    uid = 98657
+    uid = 60
     uname = '艺术画廊'
     # 初始化
     start_urls = [
