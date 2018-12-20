@@ -90,8 +90,7 @@ class newsSohuSpider(CrawlSpider):
             title_pic = response.xpath('normalize-space(//div[re:test(@class,"article-title")]//h1)').extract()
             pics = []
             content_pic = response.xpath('//div[re:test(@class,"pic-area")]//img/@src').extract()
-            content_pic_txt = response.xpath(
-                '//div[re:test(@class,"explain")]//div[re:test(@class,"txt")]//p').extract()
+            content_pic_txt = response.xpath('//div[re:test(@class,"explain")]//div[re:test(@class,"txt")]//p/text()').extract()
             for i in range(len(content_pic)):
                 pic = {}
                 pic['img'] = content_pic[i]

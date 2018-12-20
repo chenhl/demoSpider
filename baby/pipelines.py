@@ -581,7 +581,7 @@ class MyImagesPipeline(ImagesPipeline):
                 if len(item['content_pic']) > 0:
                     for i in range(len(item['content_pic'])):
                         if item['content_pic'][i]['img'] == image_url:
-                            item['content_pic'][i]['img'] == new_img_url
+                            item['content_pic'][i]['img'] = new_img_url
 
                     # item['thumbs_src'].append(image_res)
 
