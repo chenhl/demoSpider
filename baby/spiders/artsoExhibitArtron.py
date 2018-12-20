@@ -37,10 +37,10 @@ class artsoExhibitArtronSpider(CrawlSpider):
 
     # 初始化
     start_urls = [
-        "http://artso.artron.net/exhibit/search_exhibition.php?page=2660",
+        "http://artso.artron.net/exhibit/search_exhibition.php?page=2590",
     ]
     # 设置下载延时
-    download_delay = 12
+    download_delay = 18
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
             # 'baby.middlewares.artsoExhibitSeleniumMiddleware': 10,
