@@ -14,13 +14,16 @@ import json
 import re
 from scrapy.exceptions import DropItem
 
+
 # item loader
 class DefaultItemLoader(ItemLoader):
     # default_output_processor = TakeFirst()
     pass
-#D:/apps/baby/baby
-#f:/baby/scrapy/demoSpider/baby
-#scrapy crawl news.sohu -s JOBDIR=D:/xampp7/scrapy/crawls/news_sohu
+
+
+# D:/apps/baby/baby
+# f:/baby/scrapy/demoSpider/baby
+# scrapy crawl news.sohu -s JOBDIR=D:/xampp7/scrapy/crawls/news_sohu
 class newsSohuSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -33,17 +36,17 @@ class newsSohuSpider(CrawlSpider):
 
     # allowed_domains = ['artist.meishujia.cn']
     start_urls = [
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
-                  # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
-                  "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
-                  ]
+        # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=10&size=20",
+        # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=9&size=20",
+        # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=8&size=20",
+        # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=7&size=20",
+        # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=6&size=20",
+        # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=5&size=20",
+        # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=4&size=20",
+        # "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=3&size=20",
+        "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=2&size=20",
+        "http://v2.sohu.com/public-api/feed?scene=TAG&sceneId=57132&page=1&size=20",
+    ]
     # 设置下载延时
     download_delay = 10
     custom_settings = {
@@ -70,8 +73,9 @@ class newsSohuSpider(CrawlSpider):
             aid = item["authorId"]
             url = base_url + str(id) + "_" + str(aid)
             self.logger.info(url)
-            #发现有的会跳转（图片频道https://www.sohu.com/picture/278665624，目前先不支持）
-            yield scrapy.Request(url, callback=self.parse_item, meta=item, dont_filter=False) # dont_filter 默认就是False去重，scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu 启用持久化spider,jobdir保存了爬取过的url的hash
+            # 发现有的会跳转（图片频道https://www.sohu.com/picture/278665624，目前先不支持）
+            yield scrapy.Request(url, callback=self.parse_item, meta=item,
+                                 dont_filter=False)  # dont_filter 默认就是False去重，scrapy crawl news.sohu -s JOBDIR=crawls/news_sohu 启用持久化spider,jobdir保存了爬取过的url的hash
             # else:
             #     raise DropItem("Duplicate item found: %s" % item)
         # pass
@@ -79,14 +83,15 @@ class newsSohuSpider(CrawlSpider):
     def parse_item(self, response):
         # http://blog.51cto.com/pcliuyang/1543031
         l = DefaultItemLoader(item=newsSohuItem(), selector=response)
-        #https://www.sohu.com/picture/282481910
+        # https://www.sohu.com/picture/282481910
         base_url = get_base_url(response)
         l.add_value('spider_link', base_url)
         if re.search('picture', base_url) is not None:
             title_pic = response.xpath('normalize-space(//div[re:test(@class,"article-title")]//h1)').extract()
             pics = []
             content_pic = response.xpath('//div[re:test(@class,"pic-area")]//img/@src').extract()
-            content_pic_txt = response.xpath('//div[re:test(@class,"explain")]//div[re:test(@class,"txt")]//p').extract()
+            content_pic_txt = response.xpath(
+                '//div[re:test(@class,"explain")]//div[re:test(@class,"txt")]//p').extract()
             for i in range(len(content_pic)):
                 pic = {}
                 pic['img'] = content_pic[i]
@@ -97,17 +102,16 @@ class newsSohuSpider(CrawlSpider):
             self.logger.info(pics)
 
             self.catid = 8
-            l.add_value('title',title_pic)
-            l.add_value('content_pic',pics)
+            l.add_value('title', title_pic)
+            l.add_value('content_pic', pics)
             l.add_value('spider_content_pic', pics)
             l.add_value('content', '')
         else:
             title = response.xpath('normalize-space(//div[re:test(@class,"text-title")]//h1)').extract()
-            l.add_value('title',title)
+            l.add_value('title', title)
             l.add_value('content_pic', [])
             l.add_value('spider_content_pic', [])
             l.add_xpath('content', '//article/node()')
-
 
         # l.add_xpath('title', 'normalize-space(//div[re:test(@class,"text-title")]//h1)')
         # l.add_xpath('content', '//article/node()')
@@ -126,7 +130,6 @@ class newsSohuSpider(CrawlSpider):
         l.add_value('uname', response.meta['authorName'])
         l.add_value('aid', response.meta['id'])
 
-
         l.add_value('catid', self.catid)
         l.add_value('status', self.status)
         l.add_value('sysadd', self.sysadd)
@@ -141,9 +144,11 @@ class newsSohuSpider(CrawlSpider):
         d = l.load_item()
         yield d
 
-    def parse_pic_item(self,response):
+    def parse_pic_item(self, response):
         pass
-    def parse_article_item(self,response):
+
+    def parse_article_item(self, response):
         pass
+
     def parse_content_item(self, selector):
         pass

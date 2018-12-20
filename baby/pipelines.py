@@ -90,7 +90,7 @@ class baseItemPipeline(object):
             item['spider_content2'] = []
         if 'content2' not in item:
             item['content2'] = ''
-        #pics
+        # pics
         if 'content_pic' not in item:
             item['content_pic'] = []
         if 'spider_content_pic' not in item:
@@ -243,6 +243,19 @@ class newsSohuPipeline(object):
                     url_scheme = baseurls.scheme
                 imgs.append(url_scheme + "://" + url_netloc + parse_url.path)
         item['spider_imgs'] = imgs
+
+        # content_pic
+        if len(item['content_pic']) > 0:
+            for i in range(len(item['content_pic'])):
+                parse_url = urlparse(item['content_pic'][i]['img'])
+                url_netloc = parse_url.netloc.strip()
+                url_scheme = parse_url.scheme.strip()
+                if not url_netloc:
+                    url_netloc = baseurls.netloc
+                if not url_scheme:
+                    url_scheme = baseurls.scheme
+                item['content_pic'][i]['img'] = url_scheme + "://" + url_netloc + parse_url.path
+
         # spider_tags
         tags = []
         tags_str = ''
@@ -264,7 +277,8 @@ class newsSohuPipeline(object):
         item['content'] = "".join(item['content'])
         return item
 
-#文章内容图片处理
+
+# 文章内容图片处理
 class contentImagesPipeline(object):
     def process_item(self, item, spider):
         pass
@@ -275,9 +289,9 @@ class MysqlDB(object):
         env = os.environ
         try:
             self.db = pymysql.connect(host=env['MYSQL_HOST'], port=int(env['MYSQL_PORT']), user=env['MYSQL_USERNAME'],
-                                  password=env['MYSQL_PASSWORD'], db=env['MYSQL_DATABASE'])
+                                      password=env['MYSQL_PASSWORD'], db=env['MYSQL_DATABASE'])
         except Exception as e:
-            #关闭spider
+            # 关闭spider
             print(e)
             logging.info(e)
             spider.crawler.engine.close_spider('mysql connect error')
@@ -344,7 +358,9 @@ class MysqlDB(object):
             self.cur.execute("select last_insert_id()")
             data = self.cur.fetchone()
             sql_data = "insert into v9_news_data(id,content,content2,pictureurls,spider_content_pic) values (%s,%s,%s,%s,%s)"
-            self.cur.execute(sql_data, (data[0], insert_data['content'], insert_data['content2'], insert_data['content_pic'], insert_data['spider_content_pic']))
+            self.cur.execute(sql_data, (
+            data[0], insert_data['content'], insert_data['content2'], insert_data['content_pic'],
+            insert_data['spider_content_pic']))
             self.db.commit()
             return True
         except Exception as e:
@@ -435,14 +451,11 @@ class MysqlUpdatePipeline(MysqlDB):
                     self.update_db(insert_data)
             else:
                 print(insert_data['title'])
-                logging.info('insert:'+insert_data['title'])
+                logging.info('insert:' + insert_data['title'])
                 self.insert_db(insert_data)
         except Exception as e:
             scrapy.exceptions.CloseSpider('mysql select error2')
             pass
-
-
-
 
         return item
 
@@ -569,7 +582,6 @@ class MyImagesPipeline(ImagesPipeline):
                     for i in range(len(item['content_pic'])):
                         if item['content_pic'][i]['img'] == image_url:
                             item['content_pic'][i]['img'] == new_img_url
-
 
                     # item['thumbs_src'].append(image_res)
 
