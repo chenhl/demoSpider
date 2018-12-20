@@ -107,6 +107,7 @@ class newsSohuSpider(CrawlSpider):
             l.add_value('spider_content_pic', pics)
             l.add_value('content', '')
         else:
+            self.catid = 6
             title = response.xpath('normalize-space(//div[re:test(@class,"text-title")]//h1)').extract()
             l.add_value('title', title)
             l.add_value('content_pic', [])
