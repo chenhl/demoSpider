@@ -394,7 +394,7 @@ class itemExistsPipeline(MysqlDB):
     def process_item(self, item, spider):
         res = self.select_db(item)
         if res:
-            raise DropItem("Item " + item['id'] + " exists")
+            raise DropItem("Item " + item['spider_link'] + " exists")
         else:
             return item
 
