@@ -37,7 +37,7 @@ class artsoExhibitArtronSpider(CrawlSpider):
 
     # 初始化
     start_urls = [
-        "http://artso.artron.net/exhibit/search_exhibition.php?page=2580",
+        "http://artso.artron.net/exhibit/search_exhibition.php?page=2584",
     ]
     # 设置下载延时
     download_delay = 18
