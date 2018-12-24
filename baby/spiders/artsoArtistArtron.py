@@ -40,7 +40,7 @@ class artsoArtistArtronSpider(CrawlSpider):
     # 初始化，手动执行各个分类，增量时使用另一个spider
     cate = '国画'
     start_urls = [
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=196",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=198",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=953",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=1126",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=雕塑&BirthArea=&Graduated=&page=244",
