@@ -19,7 +19,7 @@ class DefaultItemLoader(ItemLoader):
     pass
 #D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
-#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron7
+#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron8
 class artsoArtistArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -40,7 +40,7 @@ class artsoArtistArtronSpider(CrawlSpider):
     # 初始化，手动执行各个分类，增量时使用另一个spider
     cate = '国画'
     start_urls = [
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=1210",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=196",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=953",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=1126",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=雕塑&BirthArea=&Graduated=&page=244",
@@ -71,7 +71,7 @@ class artsoArtistArtronSpider(CrawlSpider):
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE': 'logs/log-artist7.txt',
+        'LOG_FILE': 'logs/log-artist8.txt',
         'LOG_LEVEL': 'INFO',
     }
     #不同的start_urls也有不同的rules，
