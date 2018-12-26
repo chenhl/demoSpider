@@ -58,6 +58,8 @@ class artsoExhibitArtronSpider(CrawlSpider):
         'SCHEDULER_DEBUG': True,
         'LOG_FILE':'logs/log-exhibit6.txt',
         'LOG_LEVEL':'INFO',
+        'IMAGES_MIN_WIDTH':20,
+        'IMAGES_MIN_HEIGHT':20,
     }
 
     # @classmethod
