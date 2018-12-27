@@ -19,7 +19,7 @@ class DefaultItemLoader(ItemLoader):
     pass
 #D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
-#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron8
+#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron9
 class artsoArtistArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -41,8 +41,8 @@ class artsoArtistArtronSpider(CrawlSpider):
     # cate = '国画'
     start_urls = [
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=198",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=853",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=1126",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=853",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=1136",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=雕塑&BirthArea=&Graduated=&page=244",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=版画&BirthArea=&Graduated=&page=237",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=水粉水彩&BirthArea=&Graduated=&page=138",
@@ -52,7 +52,7 @@ class artsoArtistArtronSpider(CrawlSpider):
 
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1122",
+        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B2%B9%E7%94%BB&BirthArea=&Graduated=&page=1136",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E9%9B%95%E5%A1%91&BirthArea=&Graduated=&page=244",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E7%89%88%E7%94%BB&BirthArea=&Graduated=&page=237",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E6%B0%B4%E7%B2%89%E6%B0%B4%E5%BD%A9&BirthArea=&Graduated=&page=138",
@@ -71,7 +71,7 @@ class artsoArtistArtronSpider(CrawlSpider):
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE': 'logs/log-artist8.txt',
+        'LOG_FILE': 'logs/log-artist9.txt',
         'LOG_LEVEL': 'INFO',
     }
     #不同的start_urls也有不同的rules，
