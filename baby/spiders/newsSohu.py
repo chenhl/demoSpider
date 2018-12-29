@@ -56,6 +56,7 @@ class newsSohuSpider(CrawlSpider):
             'baby.pipelines.newsSohuPipeline': 300,
             'baby.pipelines.MyImagesPipeline': 400,
             'baby.pipelines.MysqlWriterPipeline': 500,
+            'baby.pipelines.MysqlMemberPipeline': 510,
         },
         'COOKIES_ENABLED': False,
         # 'REFERER_ENABLED': True, #默认为True

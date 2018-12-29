@@ -302,6 +302,53 @@ class MysqlDB(object):
     def close_spider(self, spider):
         self.db.close()
 
+    def update_member(self, items):
+        # insert_data = items
+        sql = "select id from v9_member where uid = %s"
+        try:
+            self.cur.execute(sql, (items['uid']))
+            self.db.commit()
+            _data = self.cur.fetchone()
+            if _data is not None:
+                try:
+                    sql_update = "update v9_member set publish_num = publish_num+1 where id = %s"
+                    self.cur.execute(sql_update, (_data[0]))
+                    self.db.commit()
+                    # logging.info('')
+                except Exception as e0:
+                    print(str(e0))
+                    logging.info('update ' + items['uname'] + ' error')
+                    self.db.rollback()
+            else:
+                try:
+                    sql_insert = "insert into v9_member (uid,nickname,userpic,groupid,publish_num,create_time) values (%s,%s,%s,%s,%s,%s)"
+                    self.cur.execute(sql_insert, (
+                        items['uid'],
+                        items['uname'],
+                        items['userpic'],
+                        '9',
+                        '1',
+                        items['create_time']
+                    ))
+                    self.cur.execute("select last_insert_id()")
+
+                    data = self.cur.fetchone()
+                    sql_insert = "insert into v9_member_detail (userid) values (%s)"
+                    self.cur.execute(sql_insert, (
+                        data[0]
+                    ))
+                    self.db.commit()
+                    logging.info('insert ' + items['uname'])
+                except Exception as e1:
+                    print(str(e1))
+                    logging.info('insert ' + items['uname']+' error')
+                    self.db.rollback()
+        except Exception as e:
+            print(str(e))
+            logging.info(str(e))
+            self.db.rollback()
+            scrapy.exceptions.CloseSpider('mysql update error')
+
     def insert_db(self, items):
         insert_data = items
         insert_data['spider_imgs'] = json.dumps(insert_data['spider_imgs'])
@@ -359,8 +406,8 @@ class MysqlDB(object):
             data = self.cur.fetchone()
             sql_data = "insert into v9_news_data(id,content,content2,pictureurls,spider_content_pic) values (%s,%s,%s,%s,%s)"
             self.cur.execute(sql_data, (
-            data[0], insert_data['content'], insert_data['content2'], insert_data['content_pic'],
-            insert_data['spider_content_pic']))
+                data[0], insert_data['content'], insert_data['content2'], insert_data['content_pic'],
+                insert_data['spider_content_pic']))
             self.db.commit()
             return True
         except Exception as e:
@@ -414,6 +461,12 @@ class itemExistsPipeline(MysqlDB):
         else:
             return item
 
+# 更新发布者信息 insert or update member表
+# 只根据uid判断重复，所以只适合于一个站（newsSohu）
+class MysqlMemberPipeline(MysqlDB):
+    def process_item(self, item, spider):
+        self.update_member(item)
+        return item
 
 # 直接insert
 class MysqlWriterPipeline(MysqlDB):

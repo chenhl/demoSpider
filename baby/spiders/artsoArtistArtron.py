@@ -19,7 +19,7 @@ class DefaultItemLoader(ItemLoader):
     pass
 #D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
-#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron9
+#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron0
 class artsoArtistArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -42,7 +42,7 @@ class artsoArtistArtronSpider(CrawlSpider):
     start_urls = [
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=198",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=853",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=1136",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=577",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=雕塑&BirthArea=&Graduated=&page=244",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=版画&BirthArea=&Graduated=&page=237",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=水粉水彩&BirthArea=&Graduated=&page=138",
@@ -71,7 +71,7 @@ class artsoArtistArtronSpider(CrawlSpider):
         },
         'DUPEFILTER_DEBUG': True,
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE': 'logs/log-artist9.txt',
+        'LOG_FILE': 'logs/log-artist0.txt',
         'LOG_LEVEL': 'INFO',
     }
     #不同的start_urls也有不同的rules，
