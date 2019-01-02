@@ -304,14 +304,14 @@ class MysqlDB(object):
 
     def update_member(self, items):
         # insert_data = items
-        sql = "select id from v9_member where uid = %s"
+        sql = "select userid from v9_member where uid = %s"
         try:
             self.cur.execute(sql, (items['uid']))
             self.db.commit()
             _data = self.cur.fetchone()
             if _data is not None:
                 try:
-                    sql_update = "update v9_member set publish_num = publish_num+1 where id = %s"
+                    sql_update = "update v9_member set publish_num = publish_num+1 where userid = %s"
                     self.cur.execute(sql_update, (_data[0]))
                     self.db.commit()
                     # logging.info('')
@@ -321,9 +321,10 @@ class MysqlDB(object):
                     self.db.rollback()
             else:
                 try:
-                    sql_insert = "insert into v9_member (uid,nickname,userpic,groupid,publish_num,create_time) values (%s,%s,%s,%s,%s,%s)"
+                    sql_insert = "insert into v9_member (uid,username,nickname,userpic,groupid,publish_num,create_time) values (%s,%s,%s,%s,%s,%s,%s)"
                     self.cur.execute(sql_insert, (
                         items['uid'],
+                        items['uname'],
                         items['uname'],
                         items['userpic'],
                         '9',
@@ -341,10 +342,12 @@ class MysqlDB(object):
                     logging.info('insert ' + items['uname'])
                 except Exception as e1:
                     print(str(e1))
+                    logging.info(e1)
                     logging.info('insert ' + items['uname']+' error')
                     self.db.rollback()
         except Exception as e:
             print(str(e))
+            logging.info(e)
             logging.info(str(e))
             self.db.rollback()
             scrapy.exceptions.CloseSpider('mysql update error')
