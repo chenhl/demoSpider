@@ -19,7 +19,7 @@ class DefaultItemLoader(ItemLoader):
     pass
 #D:/apps/baby/baby
 #f:/baby/scrapy/demoSpider/baby
-#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron01
+#scrapy crawl artist.artron -s JOBDIR=D:/xampp7/scrapy/crawls/artist_artron
 class artsoArtistArtronSpider(CrawlSpider):
     # https://news.artron.net//morenews/list732/
     # http: // comment.artron.net / column
@@ -40,15 +40,15 @@ class artsoArtistArtronSpider(CrawlSpider):
     # 初始化，手动执行各个分类，增量时使用另一个spider
     # cate = '国画'
     start_urls = [
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=198",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=853",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=577",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=雕塑&BirthArea=&Graduated=&page=244",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=版画&BirthArea=&Graduated=&page=237",
-        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=水粉水彩&BirthArea=&Graduated=&page=138",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=当代艺术&BirthArea=&Graduated=&page=124",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=当代水墨&BirthArea=&Graduated=&page=53",
-        # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=漆画&BirthArea=&Graduated=&page=19",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=国画&BirthArea=&Graduated=&page=1",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=书法&BirthArea=&Graduated=&page=1",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=油画&BirthArea=&Graduated=&page=1",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=雕塑&BirthArea=&Graduated=&page=1",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=版画&BirthArea=&Graduated=&page=1",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=水粉水彩&BirthArea=&Graduated=&page=1",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=当代艺术&BirthArea=&Graduated=&page=1",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=当代水墨&BirthArea=&Graduated=&page=1",
+        "http://artso.artron.net/artist/search_artist.php?keyword=&Class=漆画&BirthArea=&Graduated=&page=1",
 
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E5%9B%BD%E7%94%BB&BirthArea=&Graduated=&page=2131",
         # "http://artso.artron.net/artist/search_artist.php?keyword=&Class=%E4%B9%A6%E6%B3%95&BirthArea=&Graduated=&page=952",
