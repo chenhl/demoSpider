@@ -493,13 +493,7 @@ class MysqlUpdatePipeline(MysqlDB):
             _data = self.cur.fetchone()
             if _data is not None:
                 data_tags = json.loads(_data[3])
-                # logging.info(data_tags)
                 item_tags = insert_data['spider_tags'][0]
-                # logging.info(item_tags)
-                # print(data_tags)
-                # print(item_tags)
-                # print(insert_data['tags'])
-                # print('----------')
                 if item_tags not in data_tags:
                     data_tags.append(item_tags)
                     insert_data['tags'] = data_tags
@@ -526,41 +520,6 @@ class JsonWriterPipeline(object):
     def process_item(self, item, spider):
         line = json.dumps(dict(item)) + "\n"
         self.file.write(line)
-        return item
-
-
-class MultiImagesPipeline(ImagesPipeline):
-    # 从项目设置文件中导入图片下载路径
-    img_store = get_project_settings().get('IMAGES_STORE')
-
-    def get_media_requests(self, item, info):
-        # for image_url in item['image_urls']:
-        if item['spider_imgs']:
-            for img in item['spider_imgs']:
-                print(img + "$$$$$")
-                yield scrapy.Request(img)
-
-    def item_completed(self, results, item, info):
-        image_path = [x['path'] for ok, x in results if ok]
-        if not image_path:
-            raise DropItem("Item contains no images")
-
-        for img in image_path:
-            pass
-        # 定义分类保存的路径
-        _path = image_path[0].lstrip("full/")
-        _path1 = _path[0:2]
-        _path2 = _path[2:4]
-        img_path = "%s\\%s\\%s" % (self.img_store, _path1, _path2)
-        # 目录不存在则创建目录
-        if os.path.exists(img_path) == False:
-            os.makedirs(img_path)
-        # 将文件从默认下路路径移动到指定路径下
-        shutil.move(self.img_store + image_path[0], img_path + "\\" + _path)
-
-        item['thumb'] = _path1 + '/' + _path2 + '/' + _path
-        print(item['thumb'])
-        print(image_path)
         return item
 
 
